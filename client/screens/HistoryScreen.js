@@ -4,7 +4,7 @@ import React from "react";
 const HistoryScreen = () => {
   return (
     <View>
-      <Text>I am History Screen</Text>
+      <Text> History Screen</Text>
     </View>
   );
 };
