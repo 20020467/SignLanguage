@@ -24,7 +24,7 @@ const HomeScreen = () => {
       <Header />
 
       <View style={styles.body}>
-        <Text>body</Text>
+        <Text>test branch</Text>
       </View>
 
       <View style={styles.test}>
