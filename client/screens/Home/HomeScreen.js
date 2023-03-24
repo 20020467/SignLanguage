@@ -8,8 +8,7 @@ import {
 } from "react-native";
 import React, { useLayoutEffect } from "react";
 import { useNavigation } from "@react-navigation/native";
-import Header from "../components/Header";
-import Footer from "../components/Footer";
+import Header from "../../components/Header";
 
 const HomeScreen = () => {
   const navigation = useNavigation();
@@ -35,7 +34,8 @@ const HomeScreen = () => {
             placeholder="Nhập gì đó..."
           ></TextInput>
         </View>
-        <Footer />
+
+        {/* <Footer /> */}
       </View>
     </SafeAreaView>
   );
