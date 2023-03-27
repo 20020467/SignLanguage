@@ -13,7 +13,7 @@ const Header = () => {
         </View>
         <TouchableOpacity
           style={styles.imgwrap}
-          onPress={() => navigation.navigate("ProfileScreen")}
+          onPress={() => navigation.navigate("Profile")}
         >
           <Image style={styles.img} source={require("../assets/icon.png")} />
         </TouchableOpacity>

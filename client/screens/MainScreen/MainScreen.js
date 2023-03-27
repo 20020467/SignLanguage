@@ -1,5 +1,7 @@
 import {
   FlatList,
+  KeyboardAvoidingView,
+  Platform,
   ScrollView,
   StatusBar,
   StyleSheet,
@@ -23,6 +25,7 @@ const MainScreen = () => {
       screenOptions={{
         headerShown: false,
         tabBarShowLabel: false,
+        tabBarHideOnKeyboard: true,
       }}
     >
       <Tab.Screen
@@ -47,7 +50,10 @@ const MainScreen = () => {
                 size={iconSize}
               />
               <Text
-                style={{ color: focused ? "#e32f45" : "#748c94", fontSize: 12 }}
+                style={{
+                  color: focused ? "#e32f45" : "#748c94",
+                  fontSize: 12,
+                }}
               >
                 Home
               </Text>
@@ -77,7 +83,10 @@ const MainScreen = () => {
                 size={iconSize}
               />
               <Text
-                style={{ color: focused ? "#e32f45" : "#748c94", fontSize: 12 }}
+                style={{
+                  color: focused ? "#e32f45" : "#748c94",
+                  fontSize: 12,
+                }}
               >
                 Study
               </Text>
@@ -107,7 +116,10 @@ const MainScreen = () => {
                 size={iconSize}
               />
               <Text
-                style={{ color: focused ? "#e32f45" : "#748c94", fontSize: 12 }}
+                style={{
+                  color: focused ? "#e32f45" : "#748c94",
+                  fontSize: 12,
+                }}
               >
                 History
               </Text>
