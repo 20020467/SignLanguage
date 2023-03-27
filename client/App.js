@@ -1,11 +1,20 @@
-import React from "react";
-import StackNavigator from "./StackNavigator";
-import { NavigationContainer } from "@react-navigation/native";
-
+import { StatusBar } from 'expo-status-bar';
+import { StyleSheet, Text, View } from 'react-native';
+import Header from './components/Header';
+import StudyScreen from './screens/Study/StudyScreen';
 export default function App() {
   return (
-    <NavigationContainer>
-      <StackNavigator />
-    </NavigationContainer>
+   <StudyScreen>
+    
+   </StudyScreen>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+});
