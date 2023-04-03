@@ -1,9 +1,10 @@
 import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
 import React from "react";
-import useNavigation from "@react-navigation/native";
-import ProfileScreen from "../screens/Profile/ProfileScreen";
+import { useNavigation } from "@react-navigation/native";
 
 const Header = () => {
+  const navigation = useNavigation();
+
   return (
     <View>
       <View style={styles.top}>
@@ -13,7 +14,10 @@ const Header = () => {
         </View>
         <TouchableOpacity
           style={styles.imgwrap}
-          onPress={() => navigation.navigate("Profile")}
+          onPress={() => {
+            console.log("Profile");
+            navigation.navigate("Profile");
+          }}
         >
           <Image style={styles.img} source={require("../assets/icon.png")} />
         </TouchableOpacity>

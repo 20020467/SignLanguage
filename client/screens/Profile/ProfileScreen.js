@@ -66,7 +66,7 @@ const ProfileScreen = () => {
           <View style={styles.header}>
             <Image
               style={styles.img}
-              source={require("../../assets/cat.jpg")}
+              source={require("../../assets/icon.png")}
             ></Image>
             <TouchableOpacity>
               <Text style={{ color: "#0C8CE9", marginTop: 10 }}>
