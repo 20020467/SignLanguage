@@ -55,24 +55,26 @@ const StudyScreen = () => {
   const navigation = useNavigation()
   const [sentence, setSentence] =  useState([
     {
-      mean: 'Hello', key: '1', img:''
+      mean: 'Hello', key: '1', img:require("../../assets/icon.png")
     },
     {
-      mean: 'Goodbye', key: '2',img: ''
+      mean: 'Goodbye', key: '2',img: require("../../assets/icon.png")
     },
     {
-      mean: 'How are you', key: '3',img: ''
+      mean: 'How are you', key: '3',img:require("../../assets/icon.png")
     },
     {
-      mean: 'Thank you', key: '4',img: ''
+      mean: 'Thank you', key: '4',img: require("../../assets/icon.png")
     },
     {
-      mean: 'How are you?', key: '5',img: ''
+      mean: 'How are you?', key: '5',img: require("../../assets/icon.png")
     },
     {
-      mean: 'What is your address?', key: '6',img: ''
+      mean: 'What is your address?', key: '6',img: require("../../assets/icon.png")
     }
   ]);
+  const [shouldShow,setShoudShow] = useState(false);
+  const img = 'require("../../assets/icon.png")';
 
   return (
     <View  style={[
@@ -93,7 +95,7 @@ const StudyScreen = () => {
             <View style={style.card}>
             <View style={{marginHorizontal: 20}}>
               <Text style={{fontSize: 18, fontWeight: 'bold'}}>Flashcard</Text>
-              <Text style={{fontSize: 14, color: 'gray', marginTop: 1}}>
+              <Text style={{fontSize: 14, color: 'brown', marginTop: 1}}>
                 Hơn 30 thẻ
               </Text>
             </View>
@@ -109,13 +111,13 @@ const StudyScreen = () => {
             <View style={style.card}>
             <View style={{marginHorizontal: 20}}>
               <Text style={{fontSize: 18, fontWeight: 'bold'}}>Bảng chữ cái</Text>
-              <Text style={{fontSize: 14, color: 'gray', marginTop: 2}}>
+              <Text style={{fontSize: 14, color: 'brown', marginTop: 2}}>
                 29 chữ cái
               </Text>
             </View>
             
             <View style={{alignItems: 'center'}}>
-              <Image source={require('../../assets/flashcard.jpg')} style={{height: 60, width: 100}} />
+              <Image source={require('../../assets/alphabet.jpg')} style={{height: 60, width: 100}} />
             </View>
             
             <View
@@ -133,13 +135,13 @@ const StudyScreen = () => {
             <View style={style.card}>
             <View style={{marginHorizontal: 20}}>
               <Text style={{fontSize: 18, fontWeight: 'bold'}}>Trắc nghiệm</Text>
-              <Text style={{fontSize: 14, color: 'gray', marginTop: 2}}>
+              <Text style={{fontSize: 14, color: 'brown', marginTop: 2}}>
                 Hơn 100 câu
               </Text>
             </View>
             
             <View style={{alignItems: 'center'}}>
-              <Image source={require('../../assets/flashcard.jpg')} style={{height: 60, width: 100}} />
+              <Image source={require('../../assets/multiple_choice.jpg')} style={{height: 60, width: 100}} />
             </View>
             
             <View
@@ -184,10 +186,27 @@ const StudyScreen = () => {
                   <Text >
                     {i.mean}
                   </Text>
-                  <Icon
+                  
+                  <View>
+                    {
+                      shouldShow ? (
+                        <Image source={i.img} />
+
+                      ): null
+                    }
+                    <Icon
                   name="arrow-drop-down"
                   type="MaterialIcons"
+                  onPress={()=>{
+                    if(i){
+                      setShoudShow(!shouldShow),
+                    console.log(img)
+
+                    }
+                    
+                  }}
                   />
+                  </View>
                 </View>
               )
 
