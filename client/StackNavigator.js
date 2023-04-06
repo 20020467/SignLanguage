@@ -3,12 +3,12 @@ import React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import HomeScreen from "./screens/Home/HomeScreen";
 import HistoryScreen from "./screens/History/HistoryScreen";
-import StudyScreen from "./screens/Study/StudyScreen";
 import ProfileScreen from "./screens/Profile/ProfileScreen";
 import SignIn from "./screens/SignIn/SignIn";
 import MainScreen from "./screens/MainScreen/MainScreen";
 import SignUp from "./screens/SignUp/SignUp";
 import Flashcard from "./screens/Study/FlashCard";
+import StudyScreen from "./screens/Study/StudyScreen";
 
 const Stack = createNativeStackNavigator();
 

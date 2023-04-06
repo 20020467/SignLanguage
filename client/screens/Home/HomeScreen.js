@@ -39,7 +39,7 @@ const HomeScreen = () => {
         <View style={styles.inputwrap}>
           <TextInput
             style={styles.input}
-            placeholder="Nhập gì đó..."
+            placeholder="Nhập gì đó....."
           ></TextInput>
         </View>
       </View>

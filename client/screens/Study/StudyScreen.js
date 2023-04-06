@@ -1,12 +1,17 @@
-import { View, Text, ScrollView, StyleSheet } from "react-native";
+import { View, Text,
+        ScrollView, 
+        StyleSheet, 
+        TouchableOpacity, 
+        Dimensions, 
+        Image 
+      } from "react-native";
 import React, { useState } from "react";
 import Header from "../../components/Header";
-import { TouchEvent , TouchableOpacity, Button} from "react-native";
-import { Card, Icon } from 'react-native-elements'
-import { Image } from "react-native";
+import {Icon} from 'react-native-elements'
 import { useNavigation } from "@react-navigation/native";
-import Flashcard from "./FlashCard";
 
+// style 
+const width = Dimensions.get('window').width;
 
 const style = StyleSheet.create({
   container: {
@@ -25,17 +30,21 @@ const style = StyleSheet.create({
 
   },
   item1:{
-    marginLeft: 30,
-    marginRight:30,
+    marginRight: width/15,
+    marginLeft: width/15,
+    
     marginTop:10,
     backgroundColor:'#9FD0E6',
     fontSize:24,
     padding:10,
-    borderRadius:10
+    borderRadius:10,
+    alignContent:'center',
+    justifyContent:'center'
+
   },
   item2:{
-    marginLeft: 30,
-    marginRight:30,
+    marginRight: width/15,
+    marginLeft: width/15,
     marginTop:10,
     backgroundColor:'#FFFF99',
     fontSize:24,
@@ -43,7 +52,7 @@ const style = StyleSheet.create({
     borderRadius:10
   },
   suggest:{
-    margin:10
+   
   },
   text:{
     marginLeft: 10
@@ -53,28 +62,29 @@ const style = StyleSheet.create({
 )
 const StudyScreen = () => {
   const navigation = useNavigation()
+  const [type, setType] = useState("MaterialIcons");
   const [sentence, setSentence] =  useState([
     {
-      mean: 'Hello', key: '1', img:require("../../assets/icon.png")
+      mean: 'Chào bạn', key: '1', img:require("../../assets/hi.png")
     },
     {
-      mean: 'Goodbye', key: '2',img: require("../../assets/icon.png")
+      mean: 'Bạn có khỏe không', key: '2',img: require("../../assets/health.png")
     },
     {
-      mean: 'How are you', key: '3',img:require("../../assets/icon.png")
+      mean: 'Tôi khỏe', key: '3',img:require("../../assets/icon.png")
     },
     {
-      mean: 'Thank you', key: '4',img: require("../../assets/icon.png")
+      mean: 'Cảm ơn', key: '4',img: require("../../assets/icon.png")
     },
     {
-      mean: 'How are you?', key: '5',img: require("../../assets/icon.png")
+      mean: 'Tạm biệt', key: '5',img: require("../../assets/icon.png")
     },
     {
-      mean: 'What is your address?', key: '6',img: require("../../assets/icon.png")
+      mean: 'Quê bạn ở đâu?', key: '6',img: require("../../assets/icon.png")
     }
   ]);
   const [shouldShow,setShoudShow] = useState(false);
-  const img = 'require("../../assets/icon.png")';
+  const [state, setState] = useState(0);
 
   return (
     <View  style={[
@@ -83,85 +93,61 @@ const StudyScreen = () => {
         flexDirection: 'column',
       },
     ]}>
+      {/*Header */}
       <View style={{flex:1}} >
         <Header/>
       </View>
+      {/* Content 1*/}
       <View style={{flex:2,}}>
         <Text style = {style.text}>
           Danh sách học phần
         </Text>
         <ScrollView horizontal>
+          {/* Flashcard*/}
           <TouchableOpacity onPress={() => navigation.navigate("FlashCard")}>
             <View style={style.card}>
-            <View style={{marginHorizontal: 20}}>
-              <Text style={{fontSize: 18, fontWeight: 'bold'}}>Flashcard</Text>
-              <Text style={{fontSize: 14, color: 'brown', marginTop: 1}}>
-                Hơn 30 thẻ
-              </Text>
-            </View>
-            
-            <View style={{alignItems: 'center'}}>
-              <Image source={require('../../assets/flashcard.jpg')} style={{height: 60, width: 100}} />
-            </View>
-            
-           
+              <View style={{marginHorizontal: 20}}>
+                <Text style={{fontSize: 18, fontWeight: 'bold'}}>Flashcard</Text>
+                <Text style={{fontSize: 14, color: 'brown', marginTop: 1}}>
+                  50 thẻ
+                </Text>
+              </View> 
+              <View style={{alignItems: 'center'}}>
+                <Image source={require('../../assets/flashcard.jpg')} style={{height: 60, width: 100}} />
+              </View>
             </View>          
           </TouchableOpacity>
+          {/*Bảng chữ cái*/}
           <TouchableOpacity>
             <View style={style.card}>
-            <View style={{marginHorizontal: 20}}>
-              <Text style={{fontSize: 18, fontWeight: 'bold'}}>Bảng chữ cái</Text>
-              <Text style={{fontSize: 14, color: 'brown', marginTop: 2}}>
-                29 chữ cái
-              </Text>
-            </View>
-            
-            <View style={{alignItems: 'center'}}>
-              <Image source={require('../../assets/alphabet.jpg')} style={{height: 60, width: 100}} />
-            </View>
-            
-            <View
-              style={{
-                marginTop: 10,
-                marginHorizontal: 20,
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-              }}>
-            
-            </View>
+              <View style={{marginHorizontal: 20}}>
+                <Text style={{fontSize: 18, fontWeight: 'bold'}}>Bảng chữ cái</Text>
+                <Text style={{fontSize: 14, color: 'brown', marginTop: 2}}>
+                  29 chữ cái
+                </Text>
+              </View>
+              <View style={{alignItems: 'center'}}>
+                <Image source={require('../../assets/alphabet.jpg')} style={{height: 60, width: 100}} />
+              </View>
             </View>          
           </TouchableOpacity>
+          {/*Trắc nghiệm*/}
           <TouchableOpacity>
             <View style={style.card}>
-            <View style={{marginHorizontal: 20}}>
-              <Text style={{fontSize: 18, fontWeight: 'bold'}}>Trắc nghiệm</Text>
-              <Text style={{fontSize: 14, color: 'brown', marginTop: 2}}>
-                Hơn 100 câu
-              </Text>
-            </View>
-            
-            <View style={{alignItems: 'center'}}>
-              <Image source={require('../../assets/multiple_choice.jpg')} style={{height: 60, width: 100}} />
-            </View>
-            
-            <View
-              style={{
-                marginTop: 10,
-                marginHorizontal: 20,
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-              }}>
-            
-            </View>
+              <View style={{marginHorizontal: 20}}>
+                <Text style={{fontSize: 18, fontWeight: 'bold'}}>Trắc nghiệm</Text>
+                <Text style={{fontSize: 14, color: 'brown', marginTop: 2}}>
+                  Hơn 100 câu
+                </Text>
+              </View>
+              <View style={{alignItems: 'center'}}>
+                <Image source={require('../../assets/multiple_choice.jpg')} style={{height: 60, width: 100}} />
+              </View>
             </View>          
           </TouchableOpacity>
-
-
-          
-        
         </ScrollView>
-       
       </View>
+      {/*Content 2*/}
       <View style={{flex:3,}}>
         <Text style ={style.text}>
           Một số câu giao tiếp bằng thủ ngữ
@@ -174,47 +160,52 @@ const StudyScreen = () => {
                   <Text >
                     {i.mean}
                   </Text>
-                  <Icon
-                  name="arrow-drop-down"
-                  type="MaterialIcons"
-                  />
+                  <View style={{justifyContent:'center', alignItems:'center'}}>
+                    {
+                      shouldShow && state == i ? (
+                        <Image source={i.img} style ={{ resizeMode: 'contain',  height:200}}/>
+
+                      ): null
+                    }
+                    <Icon
+                    name="arrow-drop-down"
+                    type="MaterialIcons"
+                    onPress={()=>{
+                      setShoudShow(!shouldShow),
+                      setState(i)
+                    }}
+                    />
+                  </View>
                 </View>
               )
-            } else{
+            } else {
               return (
                 <View key = {i.key} style = {style.item2}>
                   <Text >
                     {i.mean}
                   </Text>
-                  
-                  <View>
+                  <View style={{justifyContent:'center', alignItems:'center'}}>
                     {
-                      shouldShow ? (
-                        <Image source={i.img} />
+                      shouldShow && state == i ? (
+                        <Image source={i.img} style ={{ resizeMode: 'contain',height:200}} />
 
                       ): null
                     }
                     <Icon
-                  name="arrow-drop-down"
-                  type="MaterialIcons"
-                  onPress={()=>{
-                    if(i){
+                    name="arrow-drop-down"
+                    type={type}
+                    onPress={()=>{
                       setShoudShow(!shouldShow),
-                    console.log(img)
-
-                    }
-                    
-                  }}
-                  />
+                      setState(i)
+                    }}
+                    />
                   </View>
                 </View>
               )
-
             }})
           }
         </ScrollView>
       </View>
-      
     </View>
   );
 };
