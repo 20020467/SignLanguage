@@ -44,7 +44,7 @@ const SignIn = () => {
         navigation.navigate("MainScreen");
       }
     } catch (error) {
-      console.log(error, "khong fetch dc");
+      console.log(error, "Không fetch dc // SigninScreen");
       // let response = error.response.data;
     }
   };
