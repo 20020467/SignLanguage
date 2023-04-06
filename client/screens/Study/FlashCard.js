@@ -8,8 +8,11 @@ import { Dimensions,
         StyleSheet, 
         Text, View, 
         Animated, 
-        TouchableOpacity 
+        TouchableOpacity,
+        Modal
 } from "react-native";
+import {Card} from 'react-native-paper';
+import { Icon } from "react-native-elements";
 
 //dimention
 var height  = Dimensions.get('window').height;
@@ -18,8 +21,8 @@ var width = Dimensions.get('window').width;
 //style
 const style = StyleSheet.create({
   img:{
-    height: height/4,
-    width: width/2,
+    resizeMode:'contain',
+   
   },
   container:{
     justifyContent: 'center',
@@ -36,6 +39,8 @@ const style = StyleSheet.create({
   text:{
     alignContent:'center',
     justifyContent:'center',
+    fontSize: 24,
+    fontWeight: 'bold'
   },
   icon:{
     marginTop:150,
@@ -97,9 +102,23 @@ const style = StyleSheet.create({
     justifyContent:'center',
     alignItems:'center'
   },
+  cardback:{
+    height: height/4,
+    width: width/2,
+    marginLeft: width/4,
+    marginRight:width/4,
+    marginHorizontal: 10,
+    marginBottom: 10,
+    margin: 10,
+    borderRadius: 15,
+    elevation: 13,
+    backgroundColor:'white',
+    justifyContent:'center',
+    alignItems:'center'
+  },
 })
 const Flashcard = ()=>{
-  //data bang chu cai va hinh anh
+  //data alphabet
   const [sentence, setSentence] =  useState([
     {
       mean: 'A', key: '1', img:require("../../assets/a.jpg")
@@ -153,6 +172,53 @@ const Flashcard = ()=>{
       mean: 'F', key: '17',img: require("../../assets/icon.png")
     }
   ]);
+
+  //data number
+  const [number, setNumber] = useState([
+    {
+      title: '1', key: '1', img:require("../../assets/1.png")
+    },
+    {
+      title: '2', key: '2', img:require("../../assets/2.png")
+    },
+    {
+      title: '3', key: '3', img:require("../../assets/3.png")
+    },
+    {
+      title: '4', key: '4', img:require("../../assets/4.png")
+    },
+    {
+      title:'5', key: '5',img:require("../../assets/5.png")
+    },
+    {
+      title: '6', key: '6', img:require("../../assets/6.png")
+    },
+    {
+      title: '7', key: '7', img:require("../../assets/7.png")
+    },
+    {
+      title:'8', key: '8', img:require("../../assets/8.png")
+    },
+    {
+      title:'9', key: '9', img:require("../../assets/9.png")
+    },
+    {
+      title: '0', key: '10', img:require("../../assets/0.png")
+    }
+
+
+  ])
+  const [title, setTitle] = useState([
+    {
+      title: 'Chữ cái',key: '1'
+    },
+    {
+      title: "Số", key: '2'
+    },
+    {
+      title: "Dấu", key: '3'
+    }
+  ])
   const navigation = useNavigation()
   const [isFlipped, setIsFlipped] = useState(false)
   const animate = useRef(new Animated.Value(0));
@@ -174,9 +240,21 @@ const Flashcard = ()=>{
     inputRange:[0,180],
     outputRange:['180deg', '360deg']
   });
+
+  // change color title card
+  const [show, setShow] = useState(0)
+  //display alphabet
+  const [display, setDisplay] = useState(0);
+  //display number
+  const [num, setNum] =useState(0);
+  //display punctuation
+  const [pun, setPun]= useState(0)
+  //modal
+  const [modalOpen, setModalOpen] = useState(false);
   
   return (
-    <SafeAreaView >
+    <SafeAreaView>
+      
       {/*header*/}
       <View style= {{ paddingTop: 20,
       marginBottom: 5,
@@ -208,13 +286,38 @@ const Flashcard = ()=>{
 
       {/*Title*/}
       <View>
-        <Text style ={{margin:20}}>
-          Chữ cái không dấu
-        </Text>
+        <Text style = {{fontSize: 19, fontWeight:'bold', marginLeft: 15, marginTop:10}}>Chọn chủ đề flashcard?</Text>
+      </View>
+      <View style={{flexDirection: 'row', 
+                    alignContent:'center', 
+                    justifyContent:'center',
+                    marginTop:20, marginBottom:20,
+                    }}>
+        
+
+       {title.map((i)=>{
+        return (
+          <TouchableOpacity onPress={()=>{
+            setShow(i),
+            i.key== 1 ? setDisplay(1): setDisplay(0),
+            i.key == 2 ? setNum(1):setNum(0),
+            i.key == 3 ? setPun(1):setPun(0),
+            console.log(i)
+          }
+          }>
+          <Card style={{marginRight:20, backgroundColor: show == i ? '#FFFF99': '#9FD0E6'  }}>
+            <Text style = {{padding:10, fontSize: 15}}>{i.title}</Text>
+          </Card>
+          </TouchableOpacity>   
+        )
+           
+       })}
+            
       </View>
 
-      {/*Main Card*/}
-      <ScrollView pagingEnabled horizontal showsHorizontalScrollIndicator = {false}  >
+      {/*Main Alphabet FlashCard*/}
+      {display ? (
+        <ScrollView pagingEnabled horizontal showsHorizontalScrollIndicator = {false}>
         {
           sentence.map((i)=>{
             return (
@@ -229,7 +332,7 @@ const Flashcard = ()=>{
                   </Animated.View>
 
                   <Animated.View style = {[style.back, style.hidden, {transform:[{rotateY: interpolateBack}]}]}>
-                    <View style ={style.card}>
+                    <View style ={style.cardback}>
                     <Image style = {style.img}source = {i.img}/>
                     </View>
                   </Animated.View>
@@ -241,7 +344,111 @@ const Flashcard = ()=>{
             )
           })
         }
-      </ScrollView>
+        </ScrollView>
+      ): null}
+
+      {/*Main Number FlashCard*/}
+      {num ? (
+        <ScrollView pagingEnabled horizontal showsHorizontalScrollIndicator = {false}>
+        {
+          number.map((i)=>{
+            return (
+              <View style = {style.container}>
+                <TouchableOpacity onPress={handleFlip} style = {{}}>                    
+                  <Animated.View style = {[{transform:[{rotateY: interpolateFront}]}, style.hidden]}>
+                    <View style ={style.card}>
+                      <Text style = {style.text}>
+                        {i.title}
+                      </Text>
+                    </View>
+                  </Animated.View>
+
+                  <Animated.View style = {[style.back, style.hidden, {transform:[{rotateY: interpolateBack}]}]}>
+                    <View style ={style.cardback}>
+                    <Image style = {style.img}source = {i.img}/>
+                    </View>
+                  </Animated.View>
+                </TouchableOpacity>
+                <Text>
+                  {i.key}/10
+                </Text>
+              </View>               
+            )
+          })
+        }
+        </ScrollView>
+
+      ): null}
+
+      {/*Main Puntuation FlashCard*/}
+      {pun ? (
+        <ScrollView pagingEnabled horizontal showsHorizontalScrollIndicator = {false}>
+        {
+          sentence.map((i)=>{
+            return (
+              <View style = {style.container}>
+                <TouchableOpacity onPress={handleFlip} style = {{}}>                    
+                  <Animated.View style = {[{transform:[{rotateY: interpolateFront}]}, style.hidden]}>
+                    <View style ={style.card}>
+                      <Text style = {style.text}>
+                        {i.mean}
+                      </Text>
+                    </View>
+                  </Animated.View>
+
+                  <Animated.View style = {[style.back, style.hidden, {transform:[{rotateY: interpolateBack}]}]}>
+                    <View style ={style.cardback}>
+                    <Image style = {style.img}source = {i.img}/>
+                    </View>
+                  </Animated.View>
+                </TouchableOpacity>
+                <Text>
+                  {i.key}/5
+                </Text>
+              </View>               
+            )
+          })
+        }
+        </ScrollView>
+
+      ): null}
+
+      {/* Expand*/}
+      <View>
+        <Text style = {{fontSize: 19, fontWeight:'bold', marginLeft: 15, marginTop:20}}>
+          Có thể bạn thích?
+        </Text>
+      </View>
+      <View style ={{marginLeft: width/15, 
+                    marginRight: width/15}}>
+
+        <TouchableOpacity onPress={()=>setModalOpen(true)}>
+          <Card style={{backgroundColor:'#9FD0E6', alignItems:'center',marginBottom:20,marginTop:20}}>
+            <Text style = {{padding:10, fontSize: 15}}>
+              Xem toàn bộ bảng chữ cái
+            </Text>
+          </Card>
+
+        </TouchableOpacity>
+        <Modal visible = {modalOpen} style={{marginTop:90, backgroundColor:'black', justifyContent:'center', alignItems:'center'}} animationType="slide">
+          <View style=  {{width: width/2, height: height/2, 
+                          backgroundColor:'green', 
+                          marginLeft: width/4, 
+                          marginTop:height/4, justifyContent:'center', 
+                          alignItems:'center'}}>
+          <Image source={require('../../assets/alphabet.jpg')}></Image>
+          <TouchableOpacity onPress={()=>setModalOpen(false)}>
+            <Icon name="close">
+            </Icon>
+          </TouchableOpacity>
+          </View>  
+        </Modal>     
+        <Card style={{backgroundColor:'#9FD0E6', alignItems:'center'}}>
+          <Text style = {{padding:10, fontSize: 15}}>
+            Làm bài tập trắc nghiệm
+          </Text>
+        </Card>    
+      </View>
     </SafeAreaView>   
   )  
 }
