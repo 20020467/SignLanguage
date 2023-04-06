@@ -44,7 +44,6 @@ const HomeScreen = () => {
     });
   }, []);
 
-  const translate = "Tôi là Quyết";
   const data = [
     "T.png",
     "ô.png",
