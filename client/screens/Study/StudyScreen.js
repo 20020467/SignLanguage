@@ -132,7 +132,7 @@ const StudyScreen = () => {
             </View>          
           </TouchableOpacity>
           {/*Trắc nghiệm*/}
-          <TouchableOpacity>
+          <TouchableOpacity onPress={()=>navigation.navigate("MultipleChoice")}>
             <View style={style.card}>
               <View style={{marginHorizontal: 20}}>
                 <Text style={{fontSize: 18, fontWeight: 'bold'}}>Trắc nghiệm</Text>

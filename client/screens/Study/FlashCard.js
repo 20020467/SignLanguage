@@ -321,7 +321,7 @@ const Flashcard = ()=>{
         {
           sentence.map((i)=>{
             return (
-              <View style = {style.container}>
+              <View key={i.key} style = {style.container}>
                 <TouchableOpacity onPress={handleFlip} style = {{}}>                    
                   <Animated.View style = {[{transform:[{rotateY: interpolateFront}]}, style.hidden]}>
                     <View style ={style.card}>

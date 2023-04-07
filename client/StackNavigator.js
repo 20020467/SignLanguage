@@ -9,6 +9,7 @@ import MainScreen from "./screens/MainScreen/MainScreen";
 import SignUp from "./screens/SignUp/SignUp";
 import Flashcard from "./screens/Study/FlashCard";
 import StudyScreen from "./screens/Study/StudyScreen";
+import Exercise from "./screens/Study/MultipleChoice";
 
 const Stack = createNativeStackNavigator();
 
@@ -27,6 +28,7 @@ const StackNavigator = () => {
       <Stack.Screen name="Study" component={StudyScreen} />
       <Stack.Screen name="Profile" component={ProfileScreen} />
       <Stack.Screen name= "FlashCard" component={Flashcard}/>
+      <Stack.Screen name = "MultipleChoice" component={Exercise}/>
     </Stack.Navigator>
   );
 };
