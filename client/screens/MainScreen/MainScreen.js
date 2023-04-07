@@ -44,14 +44,14 @@ const MainScreen = () => {
                 style={{
                   width: 25,
                   height: 25,
-                  color: focused ? "#e32f45" : "#748c94",
+                  color: focused ? "#02B0F0" : "#748c94",
                 }}
                 name="home"
                 size={iconSize}
               />
               <Text
                 style={{
-                  color: focused ? "#e32f45" : "#748c94",
+                  color: focused ? "#02B0F0" : "#748c94",
                   fontSize: 12,
                 }}
               >
@@ -77,14 +77,14 @@ const MainScreen = () => {
                 style={{
                   width: 25,
                   height: 25,
-                  color: focused ? "#e32f45" : "#748c94",
+                  color: focused ? "#02B0F0" : "#748c94",
                 }}
                 name="menu-book"
                 size={iconSize}
               />
               <Text
                 style={{
-                  color: focused ? "#e32f45" : "#748c94",
+                  color: focused ? "#02B0F0" : "#748c94",
                   fontSize: 12,
                 }}
               >
@@ -110,14 +110,14 @@ const MainScreen = () => {
                 style={{
                   width: 25,
                   height: 25,
-                  color: focused ? "#e32f45" : "#748c94",
+                  color: focused ? "#02B0F0" : "#748c94",
                 }}
                 name="star-outline"
                 size={iconSize}
               />
               <Text
                 style={{
-                  color: focused ? "#e32f45" : "#748c94",
+                  color: focused ? "#02B0F0" : "#748c94",
                   fontSize: 12,
                 }}
               >
