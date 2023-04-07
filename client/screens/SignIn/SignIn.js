@@ -30,23 +30,24 @@ const SignIn = () => {
     };
     console.log(data);
 
-    try {
-      // console.log("fetch");
-      const res = await axios.post(`${API_HOST}/api/auth/login`, data);
-      const loginResponse = res.data;
+    // try {
+    //   // console.log("fetch");
+    //   const res = await axios.post(`${API_HOST}/api/auth/login`, data);
+    //   const loginResponse = res.data;
 
-      const userResponse = {
-        username: loginResponse.data.data.username,
-        token: loginResponse.data.token,
-      };
-      if (loginResponse.data.data.username == username) {
-        dispatch(LoginSuccess(userResponse));
-        navigation.navigate("MainScreen");
-      }
-    } catch (error) {
-      console.log(error, "khong fetch dc");
-      // let response = error.response.data;
-    }
+    //   const userResponse = {
+    //     username: loginResponse.data.data.username,
+    //     token: loginResponse.data.token,
+    //   };
+    //   if (loginResponse.data.data.username == username) {
+    //     dispatch(LoginSuccess(userResponse));
+    //     navigation.navigate("MainScreen");
+    //   }
+    // } catch (error) {
+    //   console.log(error, "khong fetch dc");
+    //   // let response = error.response.data;
+    // }
+    navigation.navigate("MainScreen");
   };
 
   return (
