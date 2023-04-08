@@ -15,6 +15,8 @@ import { useNavigation } from "@react-navigation/native";
 import Header from "../../components/Header";
 import Icon from "react-native-vector-icons/FontAwesome";
 import Send from "react-native-vector-icons/Feather";
+import Star from "react-native-vector-icons/Entypo";
+import NoStar from "react-native-vector-icons/EvilIcons";
 import Voice from "@react-native-voice/voice";
 import Result from "./Result";
 import { API_HOST } from "@env";
@@ -24,8 +26,8 @@ import axios from "axios";
 const HomeScreen = () => {
   const navigation = useNavigation();
   const { token, user } = useContext(AppContext);
-  console.log(user);
-  console.log(token);
+  // console.log(user);
+  // console.log(token);
 
   const axiosOptions = {
     headers: {
@@ -35,6 +37,8 @@ const HomeScreen = () => {
 
   const [sentence, setSentence] = useState();
   const [sentenceSend, setSentenceSend] = useState();
+  const [star, setStar] = useState(false);
+  const [word, setWord] = useState();
 
   const [isRecording, setIsRecording] = useState(false);
 
@@ -44,23 +48,11 @@ const HomeScreen = () => {
     });
   }, []);
 
-  const data = [
-    "T.png",
-    "ô.png",
-    "i.png",
-    "l.png",
-    "à.png",
-    "T.png",
-    "ô.png",
-    "i.png",
-    "l.png",
-    "à.png",
-  ];
-
   const handelSend = async () => {
-    const data = {
-      sentence: sentence,
-    };
+    // const data = {
+    //   sentence: sentence,
+    // };
+    // console.log(data);
     // try {
     //   console.log("fetch");
     //   const res = await axios.put(
@@ -76,6 +68,25 @@ const HomeScreen = () => {
     //   console.log(response);
     // }
     setSentenceSend(sentence);
+    var arrTu = sentence?.split(" ");
+    var arrKetQua = [];
+    for (var i = 0; i < arrTu.length; i++) {
+      if (arrTu[i] != "") {
+        arrKetQua.push(arrTu[i]);
+      }
+    }
+    setWord(arrKetQua);
+  };
+
+  const handelStar = async () => {
+    setStar(!star);
+
+    if (!star) {
+      const data = {
+        sentence: sentenceSend,
+      };
+      console.log(data);
+    }
   };
 
   return (
@@ -84,21 +95,21 @@ const HomeScreen = () => {
       <ScrollView>
         <View style={styles.body}>
           <View style={styles.sentence}>
-            <View style={styles.sentenceWrap}>
-              <Text style={styles.text} numberOfLines={undefined}>
-                {/* {sentenceSend} */}
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis
-                vitae elit ac metus convallis ultrices. Lorem ipsum dolor sit
-                amet, consectetur adipiscing elit. Duis vitae elit ac metus
-                convallis ultrices. Lorem ipsum dolor sit amet, consectetur
-                adipiscing elit. Duis vitae elit ac metus convallis ultrices.
-              </Text>
-            </View>
+            <Text style={styles.text}>{sentenceSend}</Text>
+            {star ? (
+              <Star
+                onPress={handelStar}
+                name="star"
+                style={[styles.star, { color: "#EFC615" }]}
+              />
+            ) : (
+              <NoStar onPress={handelStar} name="star" style={styles.star} />
+            )}
           </View>
 
           <View>
-            {data.map((item, index) => {
-              return <Result key={index} img={item} />;
+            {word?.map((item, index) => {
+              return <Result key={index} word={item} />;
             })}
           </View>
         </View>
@@ -109,7 +120,7 @@ const HomeScreen = () => {
           <TextInput
             onChangeText={(text) => setSentence(text)}
             style={styles.input}
-            placeholder="Nhập gì đó..."
+            placeholder="Nhập văn bản..."
           ></TextInput>
 
           <TouchableOpacity onPress={() => setIsRecording(!isRecording)}>
@@ -132,34 +143,45 @@ export default HomeScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    // backgroundColor: "#e7feff",
     backgroundColor: "#F3F2F3",
+    // backgroundColor: "white",
   },
   body: {
     flex: 1,
     // backgroundColor: "pink",
     marginBottom: 10,
     paddingHorizontal: 13,
-    paddingTop: 10,
-  },
-  sentenceWrap: {
-    flex: 1,
+    paddingTop: 7,
   },
   sentence: {
-    height: 50,
-    backgroundColor: "pink",
+    minHeight: 70,
+    backgroundColor: "#E7E3E3",
     borderRadius: 10,
-    elevation: 2,
-    justifyContent: "center",
-    alignItems: "center",
+    elevation: 5,
+    // justifyContent: "center",
+    // alignItems: "center",
     marginBottom: 10,
-
-    maxHeight: 150,
-    overflow: "hidden",
+    display: "flex",
+    flexDirection: "row",
   },
   text: {
     fontSize: 17,
+    display: "flex",
+    flexWrap: "wrap-reverse",
+    flexDirection: "column",
+    padding: 15,
+    marginRight: 23,
+    marginTop: 5,
+    alignItems: "center",
+    justifyContent: "center",
   },
+  star: {
+    fontSize: 30,
+    position: "absolute",
+    top: 17,
+    right: 10,
+  },
+
   test: {
     elevation: 20,
     backgroundColor: "white",
