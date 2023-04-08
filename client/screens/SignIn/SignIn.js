@@ -23,8 +23,6 @@ const SignIn = () => {
   const [password, setPassword] = useState();
   const [show, setShow] = useState(false);
 
-  
-
   const handleLogin = async () => {
     // const data = {
     //   username: username,

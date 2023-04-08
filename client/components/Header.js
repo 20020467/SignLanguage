@@ -19,7 +19,7 @@ const Header = () => {
             navigation.navigate("Profile");
           }}
         >
-          <Image style={styles.img} source={require("../assets/cat.jpg")} />
+          <Image style={styles.img} source={require("../assets/icon.png")} />
         </TouchableOpacity>
       </View>
     </View>
