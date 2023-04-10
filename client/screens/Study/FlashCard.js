@@ -13,6 +13,7 @@ import { Dimensions,
 } from "react-native";
 import {Card} from 'react-native-paper';
 import { Icon } from "react-native-elements";
+import {COLORS} from '../../constant'
 
 //dimention
 var height  = Dimensions.get('window').height;
@@ -430,24 +431,83 @@ const Flashcard = ()=>{
           </Card>
 
         </TouchableOpacity>
-        <Modal visible = {modalOpen} style={{marginTop:90, backgroundColor:'black', justifyContent:'center', alignItems:'center'}} animationType="slide">
-          <View style=  {{width: width/2, height: height/2, 
+        {/* <Modal visible = {modalOpen}  animationType="slide">
+          <View style=  {{
                           backgroundColor:'green', 
-                          marginLeft: width/4, 
-                          marginTop:height/4, justifyContent:'center', 
-                          alignItems:'center'}}>
-          <Image source={require('../../assets/alphabet.jpg')}></Image>
+                          justifyContent:'center', 
+                          alignItems:'center',
+                          
+                          borderColor:"green"}}>
+            <View style = {{width:'90%'}}>
+            <Image source={require('../../assets/alphabet.jpg')}></Image>
           <TouchableOpacity onPress={()=>setModalOpen(false)}>
             <Icon name="close">
             </Icon>
           </TouchableOpacity>
+            </View>
+          
           </View>  
-        </Modal>     
+        </Modal>      */}
+         <Modal
+               animationType="slide"
+               transparent={true}
+               visible={modalOpen}
+               >
+
+                   <View style={{
+                       flex: 1,
+                       backgroundColor: COLORS.black,
+                       alignItems: 'center',
+                       justifyContent: 'center'
+                   }}>
+                       <View style={{
+                           backgroundColor: '#FFFF99',
+                           width: '90%',
+                           borderRadius: 20,
+                           padding: 20,
+                           alignItems: 'center'
+                       }}>
+                          <Text style ={{fontSize:30}}> Bảng chữ cái</Text>
+                        <Image source={require('../../assets/alphabet.jpg')} style = {{padding:0,resizeMode:'contain', width: '100%'}}/>
+
+                           <View style={{
+                               flexDirection: 'row',
+                               justifyContent: 'flex-start',
+                               alignItems: 'center',
+                               marginVertical: 20
+                           }}>
+                              
+                           </View>
+                           {/* Retry Quiz button */}
+                           <View style ={{flexDirection:'row'}}>
+                           
+                           <TouchableOpacity
+                           onPress={()=>setModalOpen(false)}
+                           style={{
+                            backgroundColor:'#9FD0E6',
+                               padding: 20, width: '50%', borderRadius: 20
+                           }}>
+                               <Text style={{
+                                   textAlign: 'center', color: COLORS.white, fontSize: 20
+                               }}>Close</Text>
+                           </TouchableOpacity>
+
+                           </View>
+                         
+                
+
+                       </View>
+
+                   </View>
+               </Modal>
+        <TouchableOpacity onPress={()=>navigation.navigate('MultipleChoice')}>
         <Card style={{backgroundColor:'#9FD0E6', alignItems:'center'}}>
           <Text style = {{padding:10, fontSize: 15}}>
             Làm bài tập trắc nghiệm
           </Text>
         </Card>    
+        </TouchableOpacity>
+       
       </View>
     </SafeAreaView>   
   )  

@@ -9,6 +9,7 @@ import React, { useState } from "react";
 import Header from "../../components/Header";
 import {Icon} from 'react-native-elements'
 import { useNavigation } from "@react-navigation/native";
+import Ionicons from '@expo/vector-icons/Ionicons'
 
 // style 
 const width = Dimensions.get('window').width;
@@ -62,7 +63,7 @@ const style = StyleSheet.create({
 )
 const StudyScreen = () => {
   const navigation = useNavigation()
-  const [type, setType] = useState("MaterialIcons");
+  const [type, setType] = useState("chevron-down-sharp");
   const [sentence, setSentence] =  useState([
     {
       mean: 'Chào bạn', key: '1', img:require("../../assets/hi.png")
@@ -167,9 +168,9 @@ const StudyScreen = () => {
 
                       ): null
                     }
-                    <Icon
-                    name="arrow-drop-down"
-                    type="MaterialIcons"
+                    <Ionicons
+                    name={shouldShow && state == i?'chevron-up':'chevron-down'} 
+                    size={20}                  
                     onPress={()=>{
                       setShoudShow(!shouldShow),
                       setState(i)
@@ -191,9 +192,9 @@ const StudyScreen = () => {
 
                       ): null
                     }
-                    <Icon
-                    name="arrow-drop-down"
-                    type={type}
+                    <Ionicons
+                    name={shouldShow && state == i?'chevron-up':'chevron-down'} 
+                    size={20}                  
                     onPress={()=>{
                       setShoudShow(!shouldShow),
                       setState(i)
