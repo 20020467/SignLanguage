@@ -1,27 +1,22 @@
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import {
-  FlatList,
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-  StatusBar,
   StyleSheet,
   Text,
-  useColorScheme,
-  View,
+  View
 } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import HomeScreen from "../Home/HomeScreen";
+import StoreScreen from "../Store/StoreScreen";
 import StudyScreen from "../Study/StudyScreen";
-import HistoryScreen from "../History/HistoryScreen";
 
 const Tab = createBottomTabNavigator();
+
 const MainScreen = () => {
   const iconSize = 28;
 
   return (
     <Tab.Navigator
-      initialRouteName="Home"
+      initialRouteName="HomeTab"
       screenOptions={{
         headerShown: false,
         tabBarShowLabel: false,
@@ -95,8 +90,8 @@ const MainScreen = () => {
         }}
       />
       <Tab.Screen
-        name="HistoryTab"
-        component={HistoryScreen}
+        name="StoreTab"
+        component={StoreScreen}
         options={{
           title: "History",
           tabBarIcon: ({ focused }) => (
@@ -130,6 +125,7 @@ const MainScreen = () => {
     </Tab.Navigator>
   );
 };
+
 const styles = StyleSheet.create({
   background: {
     // backgroundColor: "#0F0F29",
@@ -137,4 +133,5 @@ const styles = StyleSheet.create({
     // height: "100%",
   },
 });
+
 export default MainScreen;
