@@ -4,6 +4,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import { AppContextProvider } from "./context/AppContext";
 
 export default function App() {
+
   return (
     <AppContextProvider>
       <NavigationContainer>

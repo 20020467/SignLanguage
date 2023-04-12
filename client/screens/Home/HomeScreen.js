@@ -9,6 +9,7 @@ import {
   ScrollView,
   Platform,
   TouchableOpacity,
+  Keyboard,
 } from "react-native";
 import React, { useContext, useEffect, useLayoutEffect, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
@@ -67,6 +68,7 @@ const HomeScreen = () => {
     //   let response = error.response.data;
     //   console.log(response);
     // }
+    Keyboard.dismiss();
     setSentenceSend(sentence);
     var arrTu = sentence?.split(" ");
     var arrKetQua = [];

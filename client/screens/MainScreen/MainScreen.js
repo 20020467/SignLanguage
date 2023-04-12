@@ -10,6 +10,9 @@ import {
   View,
 } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
+import Star from "react-native-vector-icons/Entypo";
+import NoStar from "react-native-vector-icons/EvilIcons";
+
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import HomeScreen from "../Home/HomeScreen";
 import StudyScreen from "../Study/StudyScreen";
@@ -106,19 +109,33 @@ const MainScreen = () => {
                 justifyContent: "center",
               }}
             >
-              <Icon
-                style={{
-                  width: 25,
-                  height: 25,
-                  color: focused ? "#02B0F0" : "#748c94",
-                }}
-                name="star-outline"
-                size={iconSize}
-              />
+              {focused ? (
+                <Star
+                  style={{
+                    width: 25,
+                    height: 25,
+                    color: "#02B0F0",
+                  }}
+                  name="star"
+                  size={26}
+                />
+              ) : (
+                <NoStar
+                  style={{
+                    width: 25,
+                    height: 25,
+                    color: "#748c94",
+                  }}
+                  name="star"
+                  size={iconSize}
+                />
+              )}
+
               <Text
                 style={{
                   color: focused ? "#02B0F0" : "#748c94",
                   fontSize: 12,
+                  marginLeft: 5,
                 }}
               >
                 History

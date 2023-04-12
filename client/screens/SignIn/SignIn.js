@@ -10,6 +10,7 @@ import React from "react";
 import { useNavigation } from "@react-navigation/native";
 import { useContext, useState } from "react";
 import { AppContext } from "../../context/AppContext";
+import CustomText from "../../components/CustomText";
 import { LoginSuccess } from "../../context/AppAction";
 import { API_HOST } from "@env";
 import Icon from "react-native-vector-icons/Ionicons";
@@ -19,9 +20,30 @@ const SignIn = () => {
   const navigation = useNavigation();
   const { dispatch } = useContext(AppContext);
 
-  const [username, setUsername] = useState();
-  const [password, setPassword] = useState();
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
   const [show, setShow] = useState(false);
+  const [warning, setWarning] = useState({
+    username: "",
+    password: ""
+  })
+console.log(warning);
+  const isValid = () => {
+    let isValid = true
+    console.log(username, password);
+    if (username === "") {
+      setWarning(prevState => ({...prevState, username: "Nhap username"}));
+      isValid = false
+    }
+    if (password === "") {
+      setWarning(prevState => ({...prevState, password: "Nhap password"}));
+      isValid = false
+    }
+    if(isValid) {
+      handleLogin();
+    }
+
+  }
 
   const handleLogin = async () => {
     // const data = {
@@ -53,7 +75,7 @@ const SignIn = () => {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.login}>Login</Text>
+        <CustomText textValue={"Đăng nhập"} fontSize={28} />
       </View>
 
       <View style={styles.body}>
@@ -62,8 +84,10 @@ const SignIn = () => {
           <TextInput
             style={styles.input}
             placeholder="Username"
+            onFocus={() => setWarning(prevState => ({...prevState, username: ""}))}
             onChangeText={(val) => setUsername(val)}
           ></TextInput>
+          <Text style={{color: "red", marginTop: -5}}>{warning.username}</Text>
         </View>
 
         <View style={styles.item}>
@@ -71,6 +95,7 @@ const SignIn = () => {
           <TextInput
             style={[styles.input, { paddingRight: 50 }]}
             placeholder="Password"
+            onFocus={() => setWarning(prevState => ({...prevState, password: ""}))}
             secureTextEntry={!show}
             onChangeText={(val) => setPassword(val)}
           ></TextInput>
@@ -87,15 +112,20 @@ const SignIn = () => {
               onPress={() => setShow(!show)}
             />
           )}
+          <Text style={{color: "red", marginTop: -5}}>{warning.password}</Text>
         </View>
       </View>
 
-      <Button title="Login" onPress={handleLogin}></Button>
+      {/* <Button title="Login" onPress={isValid}></Button> */}
+
+      <TouchableOpacity style={styles.loginButton} onPress={isValid}>
+        <Text style={{fontSize: 20}}>Đăng nhập</Text>
+      </TouchableOpacity>
 
       <View style={styles.noAccount}>
-        <Text>Don't have an account?</Text>
+        <Text>Bạn chưa có tài khoản?</Text>
         <TouchableOpacity onPress={() => navigation.navigate("SignUp")}>
-          <Text style={{ color: "#2805FF", marginLeft: 5 }}>Sign Up</Text>
+          <Text style={{ color: "#2805FF", marginLeft: 5 }}>Đăng ký</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -125,7 +155,7 @@ const styles = StyleSheet.create({
     display: "flex",
     flexDirection: "column",
     gap: 10,
-    marginBottom: 20,
+    marginBottom: 10,
   },
   input: {
     paddingHorizontal: 12,
@@ -141,6 +171,15 @@ const styles = StyleSheet.create({
     fontSize: 25,
     right: 15,
     top: 37,
+  },
+  loginButton: {
+    marginHorizontal: 24,
+    height: 50,
+    backgroundColor: '#B4AAF2',
+    borderRadius: 8,
+    justifyContent: "center",
+    alignItems: "center",
+
   },
   noAccount: {
     display: "flex",

@@ -35,7 +35,7 @@ export default Result;
 const styles = StyleSheet.create({
   item: {
     flexDirection: "column",
-    backgroundColor: "pink",
+    backgroundColor: "#E7E3E3",
 
     padding: 10,
     marginBottom: 10,
