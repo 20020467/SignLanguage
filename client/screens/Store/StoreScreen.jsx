@@ -1,13 +1,10 @@
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
-import { NavigationContainer } from "@react-navigation/native";
-import { React } from "react";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, View, Text } from "react-native";
 import Header from "../../components/Header";
 import HistoryTab from "./HistoryTab";
 import SaveTab from "./SaveTab";
-import SafeAreaView from "react-native-safe-area-context"
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import Icon from 'react-native-vector-icons/FontAwesome5'
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
 
 const styles = StyleSheet.create({
   container: {
@@ -66,6 +63,14 @@ const StoreScreen = () => {
           component={HistoryTab}
           options={{
             tabBarLabel: "Lịch sử",
+            tabBarIcon: () => (
+              <Icon
+                name="clock"
+                size={styles.iconSize}
+                style={{
+                }}
+              />
+            )
           }}
         // style={ styles.navigateButton }
         />
@@ -82,16 +87,11 @@ const StoreScreen = () => {
                 }}
               >
                 <Icon
-                  name="home"
+                  name="content-save"
                   size={styles.iconSize}
                   style={{
                   }}
                 />
-                {/* <Text
-                  style={{ color: focused ? "#e32f45" : "#748c94", fontSize: 12 }}
-                >
-                  Đã lưu
-                </Text> */}
               </View>
             ),
           }}

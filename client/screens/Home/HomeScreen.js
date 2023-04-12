@@ -1,7 +1,6 @@
 import {
   View,
   Text,
-  Button,
   SafeAreaView,
   StyleSheet,
   TextInput,
@@ -10,12 +9,13 @@ import {
   Platform,
 } from "react-native";
 import React, { useLayoutEffect, useState } from "react";
-import { useNavigation } from "@react-navigation/native";
 import Header from "../../components/Header";
 import Voice from "@react-native-voice/voice";
 
-const HomeScreen = () => {
-  const navigation = useNavigation();
+const HomeScreen = ({ route, navigation }) => {
+  // combine with triggering the search function
+  const { storedText } = route.params ?? ""
+
   const [result, setResult] = useState("");
   const [error, setError] = useState("");
   const [isRecording, setIsRecording] = useState(false);
@@ -40,7 +40,9 @@ const HomeScreen = () => {
           <TextInput
             style={styles.input}
             placeholder="Nhập gì đó..."
-          ></TextInput>
+          >
+            {storedText ?? ""}
+          </TextInput>
         </View>
       </View>
     </SafeAreaView>

@@ -32,7 +32,7 @@ const SavedRecord = props => {
   const navigation = useNavigation()
 
   const handlePress = () => {
-    navigation.navigate("HomeTab", { sentence: value })
+    navigation.navigate("HomeTab", { storedText: value })
   }
 
   return (

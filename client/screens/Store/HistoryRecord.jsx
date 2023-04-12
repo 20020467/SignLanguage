@@ -40,7 +40,7 @@ const HistoryRecord = props => {
   const navigation = useNavigation()
 
   const handlePress = (e) => {
-    navigation.navigate("HomeTab", { sentence: value })
+    navigation.navigate("HomeTab", { storedText: value })
   }
 
   const saveRecord = (e) => {
