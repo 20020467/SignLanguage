@@ -21,7 +21,6 @@ const styles = StyleSheet.create({
     flex: 2,
     flexDirection: "row",
     justifyContent: "space-around",
-    // alignItems: "center",
   },
   button: {
 
@@ -44,7 +43,8 @@ const HistoryRecord = props => {
   }
 
   const saveRecord = (e) => {
-    // Send POST request or store in local
+    // Send POST request to store in server and local
+    // or store in local only
     setIsSaved(!isSaved)
   }
 

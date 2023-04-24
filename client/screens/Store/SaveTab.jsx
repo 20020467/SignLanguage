@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react'
-import { FlatList, View, Alert } from 'react-native'
+import { Alert, FlatList, RefreshControl, View } from 'react-native'
 import SavedRecord from './SavedRecord'
 
 const SaveTab = () => {
-  let [dataset, setDataset] = useState([])
+  const [dataset, setDataset] = useState([])
+  const [resfreshing, setResfreshing] = useState(false)
 
   useEffect(() => {
     setDataset([
@@ -31,18 +32,37 @@ const SaveTab = () => {
     setDataset(dataset.filter(record => record.id != deletedId))
   }
 
+  const refreshList = e => {
+    setResfreshing(true)
+    try {
+      // send GET request and reload the list
+      setTimeout(() => {
+        const next_id = dataset[dataset.length - 1].id
+        setDataset([...dataset, { id: next_id + 1, value: "sentence 00" + next_id, saved: false }])
+        setResfreshing(false)
+      }, 1010)
+    } catch(e) {
+      console.log(e)
+      setResfreshing(false)
+    }
+  }
+
   return (
     <View>
       <FlatList
         data={dataset}
         renderItem={({ item }) => (
-          <SavedRecord 
-            key={item.id} 
-            value={item.value} 
+          <SavedRecord
+            id={item.id}
+            value={item.value}
             saved={item.saved}
-            onDelete={ e => askForDeletion(e, item.id)}
+            onDelete={e => askForDeletion(e, item.id)}
           />
         )}
+        refreshControl={
+          <RefreshControl refreshing={resfreshing} onRefresh={refreshList} />
+
+        }
       />
     </View>
   )
