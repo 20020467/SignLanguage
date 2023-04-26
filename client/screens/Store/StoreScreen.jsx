@@ -6,31 +6,6 @@ import SaveTab from "./SaveTab";
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
 
-const styles = StyleSheet.create({
-  container: {
-    flexDirection: "row",
-    // alignContent: "stretch",
-    paddingTop: 1,
-    height: "5%",
-  },
-  navigateButton: {
-    flex: 1,
-    backgroundColor: "white",
-    // borderBottomColor: "black",
-    borderBottom: "2px solid black",
-    borderStyle: "dashed",
-  },
-  navigateText: {
-    textAlign: "center",
-  },
-  tab: {
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  iconSize: 22,
-});
-
-
 const Tab = createMaterialTopTabNavigator()
 
 /**
@@ -40,12 +15,12 @@ const StoreScreen = () => {
   const insets = useSafeAreaInsets()
 
   return (
-    <View 
-      style={{ 
-        flex: 1, 
-        paddingTop: insets.top, 
-        paddingBottom: insets.bottom, 
-        paddingLeft: insets.left, 
+    <View
+      style={{
+        flex: 1,
+        paddingTop: insets.top,
+        paddingBottom: insets.bottom,
+        paddingLeft: insets.left,
         paddingRight: insets.right,
       }}
     >
@@ -53,23 +28,30 @@ const StoreScreen = () => {
       <Tab.Navigator
         initialRouteName="HistoryTab"
         screenOptions={{
-          tabBarActiveTintColor: '#e91e63',
-          tabBarLabelStyle: { fontSize: 12 },
-          tabBarStyle: { backgroundColor: 'powderblue' },
+          //highlight label
+          tabBarActiveTintColor: '#e32f02',
+          tabBarInactiveTintColor: '#748c94',
+          tabBarLabelStyle: styles.topTabBarLabel,
+          tabBarAccessibilityLabel: 'abc',
+          tabBarStyle: styles.topTabBar,
         }}
+        backBehavior="none"
       >
         <Tab.Screen
           name="HistoryTab"
           component={HistoryTab}
           options={{
             tabBarLabel: "Lịch sử",
-            tabBarIcon: () => (
-              <Icon
-                name="clock"
-                size={styles.iconSize}
-                style={{
-                }}
-              />
+            tabBarIcon: ({ focused, color }) => (
+              <View
+                style={styles.topTabBarButton}
+              >
+                <Icon
+                  name="clock"
+                  size={styles.iconSize}
+                  style={{ color: highlight(focused) }} // highlight icon
+                />
+              </View>
             )
           }}
         // style={ styles.navigateButton }
@@ -79,18 +61,14 @@ const StoreScreen = () => {
           component={SaveTab}
           options={{
             tabBarLabel: "Đã Lưu",
-            tabBarIcon: () => (
+            tabBarIcon: ({ focused, color }) => (
               <View
-                style={{
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
+                style={styles.topTabBarButton}
               >
                 <Icon
                   name="content-save"
                   size={styles.iconSize}
-                  style={{
-                  }}
+                  style={{ color: highlight(focused) }}
                 />
               </View>
             ),
@@ -106,3 +84,23 @@ StoreScreen.propTypes = {
 }
 
 export default StoreScreen
+
+const styles = StyleSheet.create({
+  topTabBar: {
+    backgroundColor: 'rgb(160, 140, 120)',
+    height: '9%',
+  },
+  topTabBarButton: {
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  topTabBarLabel: {
+    fontSize: 12,
+  },
+  iconSize: 22,
+  // unused
+})
+
+function highlight(focused) {
+  return focused ? "#e32f02" : "#748c94"
+}

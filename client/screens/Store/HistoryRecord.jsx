@@ -1,36 +1,13 @@
-import PropTypes from 'prop-types'
-import { View, StyleSheet, Text, TouchableOpacity } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
-import Icon from 'react-native-vector-icons/FontAwesome5'
-import { useState, useEffect, useRef } from 'react'
 import Checkbox from 'expo-checkbox'
-
-const styles = StyleSheet.create({
-  container: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-around",
-    textAlign: "center",
-    height: 40,
-  },
-  text: {
-    fontSize: 18,
-    flex: 7,
-    paddingLeft: 4,
-  },
-  buttonGroup: {
-    flex: 2,
-    flexDirection: "row",
-    justifyContent: "space-around",
-  },
-  checkboxButton: {
-    marginRight: 4,
-  },
-  iconSize: 25,
-});
+import PropTypes from 'prop-types'
+import { useEffect, useState } from 'react'
+import { Text, TouchableOpacity, View } from 'react-native'
+import Icon from 'react-native-vector-icons/FontAwesome5'
+import { HistoryRecordStyles as styles } from './style'
 
 /**
- * History record
+ * History record component
  */
 const HistoryRecord = props => {
   const id = props.id
@@ -77,31 +54,31 @@ const HistoryRecord = props => {
       onLongPress={inDeletionMode ? handleOnCheck : openDeletionMode}
       style={styles.container}
     >
-      <Text style={styles.text}>
-        {value}
-      </Text>
-      {
-        inDeletionMode ?
-          <Checkbox style={styles.checkboxButton} value={checked}/>
-          :
-          <View style={styles.buttonGroup}>
-            <TouchableOpacity onPress={saveRecord}>
-              <Icon
-                name="bookmark"
-                size={styles.iconSize}
-                style={styles.saveButton}
-                solid={isSaved}
-              />
-            </TouchableOpacity>
-            <TouchableOpacity onPress={openPromt}>
-              <Icon
-                name="trash"
-                size={styles.iconSize}
-                style={styles.deleteButton}
-              />
-            </TouchableOpacity>
-          </View>
-      }
+        <Text style={styles.text}>
+          {value}
+        </Text>
+        {
+          inDeletionMode ?
+            <Checkbox style={styles.checkboxButton} value={checked}/>
+            :
+            <View style={styles.buttonGroup}>
+              <TouchableOpacity onPress={saveRecord}>
+                <Icon
+                  name="bookmark"
+                  size={styles.iconSize}
+                  style={styles.saveButton}
+                  solid={isSaved}
+                />
+              </TouchableOpacity>
+              <TouchableOpacity onPress={openPromt}>
+                <Icon
+                  name="trash"
+                  size={styles.iconSize}
+                  style={styles.deleteButton}
+                />
+              </TouchableOpacity>
+            </View>
+        }
     </TouchableOpacity>
   )
 }

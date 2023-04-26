@@ -1,8 +1,10 @@
-import { useEffect, useState } from 'react'
-import { Alert, FlatList, RefreshControl, View, Text, Pressable, StyleSheet, TouchableOpacity } from 'react-native'
-import HistoryRecord from './HistoryRecord'
-import Icon from 'react-native-vector-icons/FontAwesome5'
 import Checkbox from 'expo-checkbox'
+import { useEffect, useState } from 'react'
+import { Alert, BackHandler, FlatList, Pressable, RefreshControl, Text, TouchableOpacity, View } from 'react-native'
+import { Divider } from 'react-native-elements'
+import Icon from 'react-native-vector-icons/FontAwesome5'
+import HistoryRecord from './HistoryRecord'
+import { HistoryTabStyles as styles } from './style'
 
 const HistoryTab = () => {
   const [dataset, setDataset] = useState([])
@@ -18,11 +20,31 @@ const HistoryTab = () => {
     setDataset([
       { id: 0, value: "Leonardo", saved: false },
       { id: 1, value: "Vangogh jiofdasjkl;sdaj n oljgsilajo n. gjoae. gsaflgjsa. gfajgr. rfagreasg, reger,gh ht6; fgreg5h", saved: true },
-      { id: 2, value: "sentence 001", saved: false },
-      { id: 3, value: "sentence 002", saved: true },
-      { id: 4, value: "sentence 003", saved: false },
-      { id: 5, value: "sentence 004", saved: false },
+      { id: 2, value: "Vangogh jiofdasjkl;sdaj n oljgsilajo n. gjoae. gsaflgjsa. gfajgr. rfagreasg, reger,gh ht6; fgreg5h", saved: true },
+      { id: 3, value: "Vangogh jiofdasjkl;sdaj n oljgsilajo n. gjoae. gsaflgjsa. gfajgr. rfagreasg, reger,gh ht6; fgreg5h", saved: true },
+      { id: 4, value: "Vangogh jiofdasjkl;sdaj n oljgsilajo n. gjoae. gsaflgjsa. gfajgr. rfagreasg, reger,gh ht6; fgreg5h", saved: true },
+      { id: 5, value: "Vangogh jiofdasjkl;sdaj n oljgsilajo n. gjoae. gsaflgjsa. gfajgr. rfagreasg, reger,gh ht6; fgreg5h", saved: true },
+      { id: 6, value: "Vangogh jiofdasjkl;sdaj n oljgsilajo n. gjoae. gsaflgjsa. gfajgr. rfagreasg, reger,gh ht6; fgreg5h", saved: true },
+      { id: 7, value: "Vangogh jiofdasjkl;sdaj n oljgsilajo n. gjoae. gsaflgjsa. gfajgr. rfagreasg, reger,gh ht6; fgreg5h", saved: true },
+      { id: 8, value: "Vangogh jiofdasjkl;sdaj n oljgsilajo n. gjoae. gsaflgjsa. gfajgr. rfagreasg, reger,gh ht6; fgreg5h", saved: true },
+      { id: 9, value: "Vangogh jiofdasjkl;sdaj n oljgsilajo n. gjoae. gsaflgjsa. gfajgr. rfagreasg, reger,gh ht6; fgreg5h", saved: true },
+      { id: 10, value: "Vangogh jiofdasjkl;sdaj n oljgsilajo n. gjoae. gsaflgjsa. gfajgr. rfagreasg, reger,gh ht6; fgreg5h", saved: true },
+      { id: 11, value: "Vangogh jiofdasjkl;sdaj n oljgsilajo n. gjoae. gsaflgjsa. gfajgr. rfagreasg, reger,gh ht6; fgreg5h", saved: true },
+      { id: 12, value: "sentence 001", saved: false },
+      { id: 13, value: "sentence 002", saved: true },
+      { id: 14, value: "sentence 003", saved: false },
+      { id: 15, value: "sentence 004", saved: false },
+      { id: 16, value: "sentence 004", saved: false },
+      { id: 17, value: "sentence 004", saved: false },
+      { id: 18, value: "sentence 004", saved: false },
+      { id: 19, value: "sentence 004", saved: false },
+      { id: 20, value: "sentence 004", saved: false },
+      { id: 21, value: "sentence 004", saved: false },
     ])
+
+    BackHandler.addEventListener("hardwareBackPress", () => {
+
+    })
   }, [])
 
   useEffect(() => {
@@ -145,8 +167,14 @@ const HistoryTab = () => {
   function printPending() { console.log("pending set: "); pendingSet.forEach((v, v2) => { console.log(v) }) } // TEST
   console.log("pendingSet.size = " + pendingSet.size) // TEST
 
+  const separator = () => <Divider orientation="vertical" />
+
+  const emptyHistoryNotification = () => (
+    <Text style={{ textAlign: 'center', fontSize: 16 }}>Lịch sử trống</Text>
+  )
+
   return (
-    <>
+    <View style={{ flex: 1 }}>
       { // determine to render deletion nav bar based on the list is in deletion mode or not.
         isDeleting &&
         <View style={styles.deleteNavigationBar} >
@@ -173,10 +201,12 @@ const HistoryTab = () => {
           </View>
         </View>
       }
-      <View style={{ flex: 1, paddingTop: 5 }}>
+      <View style={styles.recordList}>
         <FlatList
+          ItemSeparatorComponent={separator}
+          ListEmptyComponent={emptyHistoryNotification}
           data={dataset}
-          renderItem={({ item }) => (
+          renderItem={({ item, index, separators }) => (
             <HistoryRecord
               id={item.id}
               value={item.value}
@@ -190,7 +220,6 @@ const HistoryTab = () => {
           )}
           refreshControl={
             <RefreshControl refreshing={resfreshing} onRefresh={refreshList} />
-
           }
         />
       </View>
@@ -201,7 +230,6 @@ const HistoryTab = () => {
             style={{ alignItems: 'center' }}
             onPress={() => askForDeletion()}
             disabled={pendingSet.size === 0}
-            activeOpacity={0.1}
           >
             <Icon
               name="trash"
@@ -212,7 +240,7 @@ const HistoryTab = () => {
           </TouchableOpacity>
         </View>
       }
-    </>
+    </View>
   )
 }
 
@@ -221,32 +249,3 @@ HistoryTab.propTypes = {
 }
 
 export default HistoryTab
-
-const styles = StyleSheet.create({
-  deleteNavigationBar: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    height: 50,
-    backgroundColor: 'rgb(140, 67, 20)'
-  },
-  cancelButton: {
-    flex: 1,
-  },
-  checkAllButtonGroup: {
-    flex: 1,
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-    alignItems: 'center',
-  },
-  checkAllButton: { /** Cannot ultilize 'space-around' style */
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    alignItems: 'center',
-  },
-  deleteButton: {
-    alignItems: 'stretch',
-    justifyContent: 'center',
-    height: 50,
-    backgroundColor: 'pink',
-  }
-})
