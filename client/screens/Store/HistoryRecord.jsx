@@ -9,7 +9,7 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
+    justifyContent: "space-around",
     textAlign: "center",
     height: 40,
   },
@@ -23,8 +23,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-around",
   },
-  button: {
-
+  checkboxButton: {
+    marginRight: 4,
   },
   iconSize: 25,
 });
@@ -74,7 +74,7 @@ const HistoryRecord = props => {
   return (
     <TouchableOpacity
       onPress={inDeletionMode ? handleOnCheck : handlePress}
-      onLongPress={openDeletionMode}
+      onLongPress={inDeletionMode ? handleOnCheck : openDeletionMode}
       style={styles.container}
     >
       <Text style={styles.text}>
@@ -82,7 +82,7 @@ const HistoryRecord = props => {
       </Text>
       {
         inDeletionMode ?
-          <Checkbox value={checked}/>
+          <Checkbox style={styles.checkboxButton} value={checked}/>
           :
           <View style={styles.buttonGroup}>
             <TouchableOpacity onPress={saveRecord}>
