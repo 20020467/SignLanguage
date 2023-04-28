@@ -104,52 +104,57 @@ const StudyScreen = () => {
           Danh sách học phần
         </Text>
         <ScrollView horizontal>
-          {/* Flashcard*/}
-          <TouchableOpacity onPress={() => navigation.navigate("FlashCard")}>
+          {/* Flashcard*/}  
             <View style={style.card}>
-              <View style={{marginHorizontal: 20}}>
-                <Text style={{fontSize: 18, fontWeight: 'bold'}}>Flashcard</Text>
-                <Text style={{fontSize: 14, color: 'brown', marginTop: 1}}>
-                  50 thẻ
-                </Text>
-              </View> 
-              <View style={{alignItems: 'center'}}>
-                <Image source={require('../../assets/flashcard.jpg')} style={{height: 60, width: 100}} />
-              </View>
+              <TouchableOpacity 
+              onPress={() => navigation.navigate("FlashCard")}
+              activeOpacity={0.7}>
+                <View style={{marginHorizontal: 20}}>
+                  <Text style={{fontSize: 18, fontWeight: 'bold'}}>Flashcard</Text>
+                  <Text style={{fontSize: 14, color: 'brown', marginTop: 1}}>
+                    50 thẻ
+                  </Text>
+                </View> 
+                <View style={{alignItems: 'center'}}>
+                  <Image source={require('../../assets/flashcard.jpg')} style={{height: 60, width: 100}} />
+                </View>
+              </TouchableOpacity>
             </View>          
-          </TouchableOpacity>
           {/*Bảng chữ cái*/}
-          <TouchableOpacity>
             <View style={style.card}>
-              <View style={{marginHorizontal: 20}}>
-                <Text style={{fontSize: 18, fontWeight: 'bold'}}>Bảng chữ cái</Text>
-                <Text style={{fontSize: 14, color: 'brown', marginTop: 2}}>
-                  29 chữ cái
-                </Text>
-              </View>
-              <View style={{alignItems: 'center'}}>
-                <Image source={require('../../assets/alphabet.jpg')} style={{height: 60, width: 100}} />
-              </View>
+              <TouchableOpacity activeOpacity={0.8}>
+
+                <View style={{marginHorizontal: 20}}>
+                  <Text style={{fontSize: 18, fontWeight: 'bold'}}>Bảng chữ cái</Text>
+                  <Text style={{fontSize: 14, color: 'brown', marginTop: 2}}>
+                    29 chữ cái
+                  </Text>
+                </View>
+                <View style={{alignItems: 'center'}}>
+                  <Image source={require('../../assets/alphabet.jpg')} style={{height: 60, width: 100}} />
+                </View>
+              </TouchableOpacity>
+
             </View>          
-          </TouchableOpacity>
           {/*Trắc nghiệm*/}
-          <TouchableOpacity onPress={()=>navigation.navigate("MultipleChoice")}>
             <View style={style.card}>
-              <View style={{marginHorizontal: 20}}>
-                <Text style={{fontSize: 18, fontWeight: 'bold'}}>Trắc nghiệm</Text>
-                <Text style={{fontSize: 14, color: 'brown', marginTop: 2}}>
-                  Hơn 100 câu
-                </Text>
-              </View>
-              <View style={{alignItems: 'center'}}>
-                <Image source={require('../../assets/multiple_choice.jpg')} style={{height: 60, width: 100}} />
-              </View>
+              <TouchableOpacity onPress={()=>navigation.navigate("MultipleChoice")}
+              activeOpacity={0.8}>
+                <View style={{marginHorizontal: 20}}>
+                  <Text style={{fontSize: 18, fontWeight: 'bold'}}>Trắc nghiệm</Text>
+                  <Text style={{fontSize: 14, color: 'brown', marginTop: 2}}>
+                    Hơn 100 câu
+                  </Text>
+                </View>
+                <View style={{alignItems: 'center'}}>
+                  <Image source={require('../../assets/multiple_choice.jpg')} style={{height: 60, width: 100}} />
+                </View>
+              </TouchableOpacity>
             </View>          
-          </TouchableOpacity>
         </ScrollView>
       </View>
       {/*Content 2*/}
-      <View style={{flex:3,}}>
+      <View style={{flex:3, marginTop:-20}}>
         <Text style ={style.text}>
           Một số câu giao tiếp bằng thủ ngữ
         </Text>
