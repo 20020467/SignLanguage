@@ -1,10 +1,10 @@
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
-import { StyleSheet, View, Text } from "react-native";
-import Header from "../../components/Header";
+import { View } from "react-native";
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import HistoryTab from "./HistoryTab";
 import SaveTab from "./SaveTab";
-import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
+import { SECONDARY_1, SECONDARY_2, StoreScreenStyles as styles } from "./style";
 
 const Tab = createMaterialTopTabNavigator()
 
@@ -29,8 +29,8 @@ const StoreScreen = () => {
         initialRouteName="HistoryTab"
         screenOptions={{
           //highlight label
-          tabBarActiveTintColor: '#e32f02',
-          tabBarInactiveTintColor: '#748c94',
+          tabBarActiveTintColor: SECONDARY_1,
+          tabBarInactiveTintColor: SECONDARY_2,
           tabBarLabelStyle: styles.topTabBarLabel,
           tabBarAccessibilityLabel: 'abc',
           tabBarStyle: styles.topTabBar,
@@ -85,22 +85,6 @@ StoreScreen.propTypes = {
 
 export default StoreScreen
 
-const styles = StyleSheet.create({
-  topTabBar: {
-    backgroundColor: 'rgb(160, 140, 120)',
-    height: '9%',
-  },
-  topTabBarButton: {
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  topTabBarLabel: {
-    fontSize: 12,
-  },
-  iconSize: 22,
-  // unused
-})
-
 function highlight(focused) {
-  return focused ? "#e32f02" : "#748c94"
+  return focused ? SECONDARY_1 : SECONDARY_2
 }

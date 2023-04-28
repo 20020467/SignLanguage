@@ -21,6 +21,7 @@ const MainScreen = () => {
         headerShown: false,
         tabBarShowLabel: false,
         tabBarHideOnKeyboard: true,
+        tabBarStyle: styles.bottomTabBar
       }}
     >
       <Tab.Screen
@@ -30,25 +31,15 @@ const MainScreen = () => {
           title: "Home",
           tabBarIcon: ({ focused }) => (
             <View
-              style={{
-                alignItems: "center",
-                justifyContent: "center",
-              }}
+              style={styles.bottomtabBarButton}
             >
               <Icon
-                style={{
-                  width: 25,
-                  height: 25,
-                  color: focused ? "#e32f45" : "#748c94",
-                }}
+                style={[styles.bottomTabBarIcon, { color: highlight(focused) }]}
                 name="home"
                 size={iconSize}
               />
               <Text
-                style={{
-                  color: focused ? "#e32f45" : "#748c94",
-                  fontSize: 12,
-                }}
+                style={[styles.bottomTabBarLabel, { color: highlight(focused) }]}
               >
                 Home
               </Text>
@@ -63,25 +54,15 @@ const MainScreen = () => {
           title: "Study",
           tabBarIcon: ({ focused }) => (
             <View
-              style={{
-                alignItems: "center",
-                justifyContent: "center",
-              }}
+              style={styles.bottomtabBarButton}
             >
               <Icon
-                style={{
-                  width: 25,
-                  height: 25,
-                  color: focused ? "#e32f45" : "#748c94",
-                }}
+                style={[styles.bottomTabBarIcon, { color: highlight(focused) }]}
                 name="menu-book"
                 size={iconSize}
               />
               <Text
-                style={{
-                  color: focused ? "#e32f45" : "#748c94",
-                  fontSize: 12,
-                }}
+                style={[styles.bottomTabBarLabel, { color: highlight(focused) }]}
               >
                 Study
               </Text>
@@ -96,25 +77,15 @@ const MainScreen = () => {
           title: "History",
           tabBarIcon: ({ focused }) => (
             <View
-              style={{
-                alignItems: "center",
-                justifyContent: "center",
-              }}
+              style={styles.bottomtabBarButton}
             >
               <Icon
-                style={{
-                  width: 25,
-                  height: 25,
-                  color: focused ? "#e32f45" : "#748c94",
-                }}
+                style={[styles.bottomTabBarIcon, { color: highlight(focused) }]}
                 name="star-outline"
                 size={iconSize}
               />
               <Text
-                style={{
-                  color: focused ? "#e32f45" : "#748c94",
-                  fontSize: 12,
-                }}
+                style={[styles.bottomTabBarLabel, { color: highlight(focused) }]}
               >
                 History
               </Text>
@@ -132,6 +103,24 @@ const styles = StyleSheet.create({
     // width: "100%",
     // height: "100%",
   },
-});
+  bottomTabBar: {
+    height: '7%',
+  },
+  bottomtabBarButton: {
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  bottomTabBarIcon: {
+    width: 25,
+    height: 25,
+  },
+  bottomTabBarLabel: {
+    fontSize: 12,
+  }
+})
+
+function highlight(focused) {
+  return focused ? "#e32f45" : "#748c94"
+}
 
 export default MainScreen;

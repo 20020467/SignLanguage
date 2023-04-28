@@ -1,49 +1,45 @@
 import Checkbox from 'expo-checkbox'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Alert, BackHandler, FlatList, Pressable, RefreshControl, Text, TouchableOpacity, View } from 'react-native'
 import { Divider } from 'react-native-elements'
 import Icon from 'react-native-vector-icons/FontAwesome5'
+import FixedHeightAnimatedView from './FixedHeightAnimatedView'
+import FixedVerticalAnimatedView, { initialize } from './FixedVerticalAnimatedView'
 import HistoryRecord from './HistoryRecord'
 import { HistoryTabStyles as styles } from './style'
 
 const HistoryTab = () => {
+  // [before, after]
+  const deleteNavBarPosition = initialize(-16, 0)
+  const listPosition = initialize(1.2, 9)
+  const listSize = initialize(97.8, 81.6)
+  const deleteButtonPosition = initialize(91, 82)
+
   const [dataset, setDataset] = useState([])
   const [resfreshing, setResfreshing] = useState(false)
-  const [isDeleting, setIsDeleting] = useState(false)
+  const [isDeleting, setIsDeleting] = useState(false) // deletion mode
   const [allChecked, setAllChecked] = useState(false)
   const [pendingSet, setPendingSet] = useState(new Set(null))
+
+  const deleteNavBar = useRef(null)
+  const movableList = useRef(null)
+  const resizingList = useRef(null)
+  const deleteButton = useRef(null)
+  /**
+   * Used to auto-scroll when changing deletion mode state
+   */
+  const flatListRef = useRef(null)
+  const deleteNavBarLayoutPosition = useRef({ before: 0, after: 0 })
 
   /**
    * GET data from server and render on screen
    */
   useEffect(() => {
-    setDataset([
-      { id: 0, value: "Leonardo", saved: false },
-      { id: 1, value: "Vangogh jiofdasjkl;sdaj n oljgsilajo n. gjoae. gsaflgjsa. gfajgr. rfagreasg, reger,gh ht6; fgreg5h", saved: true },
-      { id: 2, value: "Vangogh jiofdasjkl;sdaj n oljgsilajo n. gjoae. gsaflgjsa. gfajgr. rfagreasg, reger,gh ht6; fgreg5h", saved: true },
-      { id: 3, value: "Vangogh jiofdasjkl;sdaj n oljgsilajo n. gjoae. gsaflgjsa. gfajgr. rfagreasg, reger,gh ht6; fgreg5h", saved: true },
-      { id: 4, value: "Vangogh jiofdasjkl;sdaj n oljgsilajo n. gjoae. gsaflgjsa. gfajgr. rfagreasg, reger,gh ht6; fgreg5h", saved: true },
-      { id: 5, value: "Vangogh jiofdasjkl;sdaj n oljgsilajo n. gjoae. gsaflgjsa. gfajgr. rfagreasg, reger,gh ht6; fgreg5h", saved: true },
-      { id: 6, value: "Vangogh jiofdasjkl;sdaj n oljgsilajo n. gjoae. gsaflgjsa. gfajgr. rfagreasg, reger,gh ht6; fgreg5h", saved: true },
-      { id: 7, value: "Vangogh jiofdasjkl;sdaj n oljgsilajo n. gjoae. gsaflgjsa. gfajgr. rfagreasg, reger,gh ht6; fgreg5h", saved: true },
-      { id: 8, value: "Vangogh jiofdasjkl;sdaj n oljgsilajo n. gjoae. gsaflgjsa. gfajgr. rfagreasg, reger,gh ht6; fgreg5h", saved: true },
-      { id: 9, value: "Vangogh jiofdasjkl;sdaj n oljgsilajo n. gjoae. gsaflgjsa. gfajgr. rfagreasg, reger,gh ht6; fgreg5h", saved: true },
-      { id: 10, value: "Vangogh jiofdasjkl;sdaj n oljgsilajo n. gjoae. gsaflgjsa. gfajgr. rfagreasg, reger,gh ht6; fgreg5h", saved: true },
-      { id: 11, value: "Vangogh jiofdasjkl;sdaj n oljgsilajo n. gjoae. gsaflgjsa. gfajgr. rfagreasg, reger,gh ht6; fgreg5h", saved: true },
-      { id: 12, value: "sentence 001", saved: false },
-      { id: 13, value: "sentence 002", saved: true },
-      { id: 14, value: "sentence 003", saved: false },
-      { id: 15, value: "sentence 004", saved: false },
-      { id: 16, value: "sentence 004", saved: false },
-      { id: 17, value: "sentence 004", saved: false },
-      { id: 18, value: "sentence 004", saved: false },
-      { id: 19, value: "sentence 004", saved: false },
-      { id: 20, value: "sentence 004", saved: false },
-      { id: 21, value: "sentence 004", saved: false },
-    ])
+    setDataset(require('./mock_dataset.json'))
 
+    // handle back gesture
     BackHandler.addEventListener("hardwareBackPress", () => {
-
+      if (isDeleting) closeDeletionMode()
     })
   }, [])
 
@@ -52,6 +48,20 @@ const HistoryTab = () => {
     if (pendingSet.size == dataset.length) setAllChecked(true) // may happen due to async executing
     else setAllChecked(false)
   }, [pendingSet, dataset]) // run mainly based on pendingSet
+
+  /**
+   * Shift some components and change list size based on Deletion mode
+   */
+  useEffect(() => {
+    if (isDeleting) {
+      deleteNavBar.current.shift(deleteNavBarPosition.after)
+      movableList.current.shift(listPosition.after)
+      resizingList.current.change(listSize.after)
+      deleteButton.current.shift(deleteButtonPosition.after)
+    }
+    else {
+    }
+  }, [isDeleting])
 
   /**
    * Display alert before deleting
@@ -88,7 +98,7 @@ const HistoryTab = () => {
       setTimeout(() => {
         const next_id = dataset[dataset.length - 1].id
         setDataset([...dataset, { id: next_id + 1, value: "sentence 00" + next_id, saved: false }])
-        closeDeletionMode()
+        if (isDeleting) closeDeletionMode()
         setResfreshing(false)
       }, 1010)
     } catch (e) {
@@ -147,8 +157,14 @@ const HistoryTab = () => {
   }
 
   const closeDeletionMode = () => {
+    if (!isDeleting) return
+
+    deleteNavBar.current.shift(deleteNavBarPosition.before)
+    movableList.current.shift(listPosition.before)
+    resizingList.current.change(listSize.before)
+    deleteButton.current.shift(deleteButtonPosition.before, () => setIsDeleting(false))
+
     if (pendingSet.size != 0) setPendingSet(new Set())
-    setIsDeleting(false)
   }
 
   /**
@@ -164,68 +180,95 @@ const HistoryTab = () => {
     closeDeletionMode()
   }
 
-  function printPending() { console.log("pending set: "); pendingSet.forEach((v, v2) => { console.log(v) }) } // TEST
+  function printPending() { console.log("pending set: "); pendingSet.forEach((v) => { console.log(v) }) } // TEST
   console.log("pendingSet.size = " + pendingSet.size) // TEST
 
-  const separator = () => <Divider orientation="vertical" />
+  const separator = () => (
+    <View style={{ minHeight: 10, justifyContent: 'center' }}>
+      <Divider orientation="vertical" />
+    </View>
+  )
+
+  const listHeader = () => <Text style={{ fontWeight: 700, fontSize: 21, }}>Lịch sử tìm kiếm</Text>
 
   const emptyHistoryNotification = () => (
     <Text style={{ textAlign: 'center', fontSize: 16 }}>Lịch sử trống</Text>
   )
 
+  const autoScrollList = (event) => {
+    const { x, y } = event.nativeEvent.layout
+    const position = deleteNavBarLayoutPosition.current
+
+    if (position.before == 0) position.before = y
+    position.after = y
+
+    flatListRef.current.scrollToOffset({ offset: 100/**position.after - position.before*/ })
+    position.before = x
+  }
+
   return (
     <View style={{ flex: 1 }}>
-      { // determine to render deletion nav bar based on the list is in deletion mode or not.
-        isDeleting &&
-        <View style={styles.deleteNavigationBar} >
-          <View style={styles.cancelButton}>
-            <Pressable
-              style={{ flexDirection: 'row', maxWidth: 40, justifyContent: 'space-around' }}
-              android_ripple={{ color: 'grey' }}
-              onPress={closeDeletionMode}
-            >
-              <Icon
-                name="times"
-                size={20}
-                style={{ height: 20 }}
-              />
-            </Pressable>
-          </View>
-          <View style={styles.checkAllButtonGroup}>
-            <Pressable style={styles.checkAllButton} onPress={checkAll}>
-              <Text style={{ marginRight: 8 }}>Đã chọn: {pendingSet.size}</Text>
-              <Pressable style={{ marginRight: 4 }} android_ripple={{ color: 'grey' }}>
-                <Checkbox value={allChecked} />
-              </Pressable>
-            </Pressable>
-          </View>
-        </View>
-      }
-      <View style={styles.recordList}>
-        <FlatList
-          ItemSeparatorComponent={separator}
-          ListEmptyComponent={emptyHistoryNotification}
-          data={dataset}
-          renderItem={({ item, index, separators }) => (
-            <HistoryRecord
-              id={item.id}
-              value={item.value}
-              saved={item.saved}
-              inDeletionMode={isDeleting}
-              checked={pendingSet.has(item.id)}
-              onCheck={() => modifyPendingSet(false, item.id)}
-              onDelete={() => askForDeletion(item.id)}
-              onLongPress={() => markAndOpenDeletionMode(item.id)}
+      <FixedVerticalAnimatedView
+        style={{
+          ...styles.deleteNavigationBar,
+          display: isDeleting ? 'flex' : 'none'
+        }}
+        initial={deleteNavBarPosition.before}
+        ref={deleteNavBar}
+        onLayout={event => console.log(event.nativeEvent.layout)}
+      >
+        <View style={styles.cancelButton}>
+          <Pressable
+            style={{ flexDirection: 'row', maxWidth: 40, justifyContent: 'space-around' }}
+            android_ripple={{ color: 'grey' }}
+            onPress={closeDeletionMode}
+          >
+            <Icon
+              name="times"
+              size={20}
+              style={{ height: 20 }}
             />
-          )}
-          refreshControl={
-            <RefreshControl refreshing={resfreshing} onRefresh={refreshList} />
-          }
-        />
-      </View>
+          </Pressable>
+        </View>
+        <View style={styles.checkAllButtonGroup}>
+          <Pressable style={styles.checkAllButton} onPress={checkAll}>
+            <Text style={{ marginRight: 8 }}>Đã chọn: {pendingSet.size}</Text>
+            <Pressable style={{ marginRight: 4 }} android_ripple={{ color: 'grey' }}>
+              <Checkbox value={allChecked} onValueChange={checkAll} />
+            </Pressable>
+          </Pressable>
+        </View>
+      </FixedVerticalAnimatedView>
+      <FixedVerticalAnimatedView style={{ ...styles.recordList }} initial={listPosition.before} ref={movableList}>
+        <FixedHeightAnimatedView style={{}} initial={listSize.before} ref={resizingList}>
+          <FlatList
+            ItemSeparatorComponent={separator}
+            ListEmptyComponent={emptyHistoryNotification}
+            // ListHeaderComponent={listHeader}
+            // onLayout={autoScrollList}
+            ref={flatListRef}
+            data={dataset}
+            renderItem={({ item, index, separators }) => (
+              <HistoryRecord
+                id={item.id}
+                value={item.value}
+                saved={item.saved}
+                inDeletionMode={isDeleting}
+                checked={pendingSet.has(item.id)}
+                onCheck={() => modifyPendingSet(false, item.id)}
+                onDelete={() => askForDeletion(item.id)}
+                onLongPress={() => markAndOpenDeletionMode(item.id)}
+              />
+            )}
+            refreshControl={
+              <RefreshControl refreshing={resfreshing} onRefresh={refreshList} />
+            }
+          />
+        </FixedHeightAnimatedView>
+      </FixedVerticalAnimatedView>
       {
         isDeleting &&
-        <View style={styles.deleteButton}>
+        <FixedVerticalAnimatedView style={styles.deleteButton} initial={deleteButtonPosition.before} ref={deleteButton}>
           <TouchableOpacity
             style={{ alignItems: 'center' }}
             onPress={() => askForDeletion()}
@@ -238,7 +281,7 @@ const HistoryTab = () => {
             />
             <Text style={{ textAlign: 'center' }}>Xóa</Text>
           </TouchableOpacity>
-        </View>
+        </FixedVerticalAnimatedView>
       }
     </View>
   )

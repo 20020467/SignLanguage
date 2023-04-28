@@ -2,7 +2,7 @@ import { useNavigation } from '@react-navigation/native'
 import Checkbox from 'expo-checkbox'
 import PropTypes from 'prop-types'
 import { useEffect, useState } from 'react'
-import { Text, TouchableOpacity, View } from 'react-native'
+import { Animated, Text, ToastAndroid, TouchableOpacity } from 'react-native'
 import Icon from 'react-native-vector-icons/FontAwesome5'
 import { HistoryRecordStyles as styles } from './style'
 
@@ -19,15 +19,20 @@ const HistoryRecord = props => {
   const handleOnCheck = props.onCheck
 
   const [isSaved, setIsSaved] = useState(props.saved)
-  const [isChecked, setIsChecked] = useState(false)
-  // const previousChecked = useRef(false)
   const navigation = useNavigation()
 
-  useEffect(() => {
-    // handleOnCheck(id, isChecked)
-    // previousChecked.current = isChecked // save previous state
-  }, [isChecked])
-  
+  useEffect(() => { // may be called by ref
+    if (inDeletionMode) {
+      // swipe(functionButtonAnimation, 10, () => {
+      //   swipe(checkboxAnimation, 0)
+      // })
+    } else {
+      // swipe(checkboxAnimation, 10, () => {
+      //   swipe(functionButtonAnimation, 0)
+      // })
+    }
+  }, [inDeletionMode])
+
   const handlePress = (e) => {
     navigation.navigate("HomeTab", { storedText: value })
   }
@@ -38,15 +43,17 @@ const HistoryRecord = props => {
     setIsSaved(!isSaved)
   }
 
-  const check = (value) => {
-    if (value === undefined) setIsChecked(!isChecked)
-    else if (typeof value === 'boolean') setIsChecked(value)
-    else throw(`Passed argument is not of boolean; data type of ${value} is  + ${typeof value}.`)
-  }
+  // const swipe = (animationObject, position, callback) => {
+  //   Animated.timing(animationObject, {
+  //     toValue: position,
+  //     duration: 300,
+  //     useNativeDriver: false,
+  //   }).start(callback)
+  // }
 
-  // The 'isChecked' state's value varies on the 'checked' property
-  // run when 'checked' prop's value is changed from outside
-  // if (isChecked != checked) check(checked) | console.log(`State: ${isChecked} \n Prop: ${checked}`)
+  const showToast = () => {
+    ToastAndroid.show('', ToastAndroid.SHORT);
+  };
 
   return (
     <TouchableOpacity
@@ -54,31 +61,43 @@ const HistoryRecord = props => {
       onLongPress={inDeletionMode ? handleOnCheck : openDeletionMode}
       style={styles.container}
     >
-        <Text style={styles.text}>
-          {value}
-        </Text>
-        {
-          inDeletionMode ?
-            <Checkbox style={styles.checkboxButton} value={checked}/>
-            :
-            <View style={styles.buttonGroup}>
-              <TouchableOpacity onPress={saveRecord}>
-                <Icon
-                  name="bookmark"
-                  size={styles.iconSize}
-                  style={styles.saveButton}
-                  solid={isSaved}
-                />
-              </TouchableOpacity>
-              <TouchableOpacity onPress={openPromt}>
-                <Icon
-                  name="trash"
-                  size={styles.iconSize}
-                  style={styles.deleteButton}
-                />
-              </TouchableOpacity>
-            </View>
-        }
+      <Text style={styles.text}>
+        {value}
+      </Text>
+      <Animated.View
+        style={{
+          ...styles.checkboxButton,
+          display: inDeletionMode ? 'flex' : 'none',
+          // left: 
+        }}
+      >
+        <Checkbox
+          value={checked}
+        />
+      </Animated.View>
+      <Animated.View
+        style={{
+          ...styles.buttonGroup,
+          display: inDeletionMode ? 'none' : 'flex',
+          // left: 
+        }}
+      >
+        <TouchableOpacity onPress={saveRecord} style={styles.button}>
+          <Icon
+            name="bookmark"
+            size={styles.iconSize}
+            style={styles.saveButton}
+            solid={isSaved}
+          />
+        </TouchableOpacity>
+        <TouchableOpacity onPress={openPromt} style={styles.button}>
+          <Icon
+            name="trash"
+            size={styles.iconSize}
+            style={styles.deleteButton}
+          />
+        </TouchableOpacity>
+      </Animated.View>
     </TouchableOpacity>
   )
 }
