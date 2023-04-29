@@ -1,7 +1,7 @@
 import { useNavigation } from '@react-navigation/native'
 import Checkbox from 'expo-checkbox'
 import PropTypes from 'prop-types'
-import { forwardRef, useImperativeHandle, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Pressable, Text, ToastAndroid, TouchableOpacity, View } from 'react-native'
 import Icon from 'react-native-vector-icons/FontAwesome5'
 import OpacityAnimatedView from './OpacityAnimatedView'
@@ -10,7 +10,7 @@ import { HistoryRecordStyles as styles } from './style'
 /**
  * History record component
  */
-const HistoryRecord = forwardRef((props, ref) => {
+const HistoryRecord = (props, ref) => {
   const id = props.id
   const value = props.value // translated text
   const inDeletionMode = props.inDeletionMode
@@ -28,24 +28,17 @@ const HistoryRecord = forwardRef((props, ref) => {
 
   const navigation = useNavigation()
 
-  // useEffect(() => { // may be called by ref
-  // }, [inDeletionMode])
-
-  useImperativeHandle(ref, () => ({
-    switchButtons
-  }), [])
-
-  const switchButtons = () => {
-    if (!inDeletionMode) { // may be null ?? or previous state when called
-      bookmarkButton.current.fade(0)
-      deleteButton.current.fade(0)
-      checkboxButton.current.fade(1)
-    } else {
+  useEffect(() => {
+    if (!inDeletionMode) {
       bookmarkButton.current.fade(1)
       deleteButton.current.fade(1)
       checkboxButton.current.fade(0)
+    } else {
+      bookmarkButton.current.fade(0)
+      deleteButton.current.fade(0)
+      checkboxButton.current.fade(1)
     }
-  }
+  }, [inDeletionMode])
 
   const navigateAndTranslate = (e) => {
     navigation.navigate("HomeTab", { storedText: value })
@@ -125,7 +118,7 @@ const HistoryRecord = forwardRef((props, ref) => {
       </View>
     </Pressable >
   )
-})
+}
 
 HistoryRecord.propTypes = {
   id: PropTypes.number,

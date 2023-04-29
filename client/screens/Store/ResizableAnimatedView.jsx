@@ -31,7 +31,6 @@ const ResizableAnimatedView = forwardRef((props, ref) => {
     const listener = animatedSize.addListener(value => {
       size.width = value.x
       size.height = value.y
-      console.log(`LIST SIZE: { width: ${size.width} , height: ${size.height} }`) // TEST
     })
 
     return () => {

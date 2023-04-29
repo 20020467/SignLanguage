@@ -37,7 +37,6 @@ const HistoryTab = () => {
   const deleteNavBar = useRef(null)
   const movableList = useRef(null)
   const resizableList = useRef(null)
-  const listItem = useRef(null)
   const deleteButton = useRef(null)
   /**
    * Used to auto-scroll when changing deletion mode state; may be removed
@@ -72,9 +71,6 @@ const HistoryTab = () => {
       movableList.current.verticalShift(listState.after)
       resizableList.current.changeHeight(listSizeState.after, null, () => console.log("resized list!"))
       deleteButton.current.verticalShift(deleteButtonState.after)
-      listItem.current?.switchButtons() // sometimes get error if question mark doesn't exist ???
-    } else {
-      listItem.current?.switchButtons()
     }
   }, [isDeleting])
 
@@ -206,22 +202,9 @@ const HistoryTab = () => {
     </View>
   )
 
-  const listHeader = () => <Text style={{ fontWeight: 700, fontSize: 21, }}>Lịch sử tìm kiếm</Text>
-
   const emptyHistoryNotification = () => (
     <Text style={{ textAlign: 'center', fontSize: 16 }}>Lịch sử trống</Text>
   )
-
-  // const autoScrollList = (event) => {
-  //   const { x, y } = event.nativeEvent.layout
-  //   const position = deleteNavBarLayoutPosition.current
-
-  //   if (position.before == 0) position.before = y
-  //   position.after = y
-
-  //   flatListRef.current.scrollToOffset({ offset: 100/**position.after - position.before*/ })
-  //   position.before = x
-  // }
 
   return (
     <View style={styles.container}>
@@ -277,9 +260,6 @@ const HistoryTab = () => {
             style={styles.recordList}
             ItemSeparatorComponent={separator}
             ListEmptyComponent={emptyHistoryNotification}
-            // ListHeaderComponent={listHeader}
-            // onLayout={autoScrollList}
-            ref={flatListRef}
             data={dataset}
             renderItem={({ item, index, separators }) => (
               <HistoryRecord
@@ -291,7 +271,6 @@ const HistoryTab = () => {
                 onCheck={() => modifyPendingSet(false, item.id)}
                 onDelete={() => askForDeletion(item.id)}
                 onLongPress={() => markAndOpenDeletionMode(item.id)}
-                ref={listItem}
               />
             )}
             refreshControl={
