@@ -54,13 +54,13 @@ export const HistoryTabStyles = StyleSheet.create({
   checkAllButtonGroup: { // checkAll is the name of checkbox
     width: '86%', // subtract cancel button element
     height: '100%',
-    ...border,
+    // ...border,
     flexDirection: 'row',
     justifyContent: 'flex-end',
     alignItems: 'center',
   },
   checkAllButton: { /** Cannot ultilize 'space-around' style */
-    ...border,
+    // ...border,
     width: '42%',
     height: '100%',
     paddingRight: '3%',
@@ -72,15 +72,17 @@ export const HistoryTabStyles = StyleSheet.create({
     flex: 1,
     position: 'absolute',
     width: '100%',
-    height: '100%', // create function to get this value's number part directly
-    top: '10%',
-    ...border,
+    height: '99%', // may create function to get this value's number part directly
+    top: '10%', // get overwritten
+    // ...border,
     alignItems: 'center',
   },
   recordListView: { //resizable
+    // flex: 1,
+    // ...border,
+    height: '100%',
   },
   recordList: {
-    flex: 1,
   },
   separator: {
     minHeight: 10,
@@ -98,35 +100,34 @@ export const HistoryTabStyles = StyleSheet.create({
 
 export const HistoryRecordStyles = StyleSheet.create({
   container: {
-    // display: 'none',
-    height: 50,
     // ...border,
     marginVertical: 2,
     marginHorizontal: '2%',
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
+    minHeight: 40,
   },
   text: {
-    width: '75%',
-    maxHeight: '100%',
-    // flex: 7,
-    fontSize: 18,
+    width: '74%',
+    height: '100%',
+    fontSize: 22,
     paddingLeft: '1%',
     // ...border,
+    justifyContent: 'center',
   },
   buttonGroup: {
     width: '25%',
     height: '80%',
-    // flex: 2,
     // ...border,
     // marginRight: '2%',
     flexDirection: 'row',
     justifyContent: 'space-around',
+    alignItems: 'center',
   },
   button: {
-    width: '85%',
-    height: '100%',
+    width: 36,
+    height: 36,
     // borderWidth: 2,
     // borderColor: 'black',
     borderRadius: 8,

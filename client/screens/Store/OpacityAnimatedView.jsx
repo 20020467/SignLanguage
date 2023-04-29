@@ -23,13 +23,13 @@ const OpacityAnimatedView = forwardRef((props, ref) => {
 
   useImperativeHandle(ref,
     () => ({
-      fade
+      fade, fadeIn, fadeOut
     }),
     [],
   )
 
   /**
-   * @param {number} value coordinate y (counted from initial opacity)
+   * @param {number} value opacity value
    * @param {number | undefined} new_duration 
    * @param {function} callback
    */
@@ -49,6 +49,22 @@ const OpacityAnimatedView = forwardRef((props, ref) => {
     } catch (err) {
       console.error(err)
     }
+  }
+
+  /**
+   * @param {number | undefined} new_duration 
+   * @param {function} callback
+   */
+  const fadeIn = (new_duration, callback) => {
+    fade(1, new_duration, callback)
+  }
+
+  /**
+   * @param {number | undefined} new_duration 
+   * @param {function} callback
+   */
+  const fadeOut = (new_duration, callback) => {
+    fade(0, new_duration, callback)
   }
 
   return (

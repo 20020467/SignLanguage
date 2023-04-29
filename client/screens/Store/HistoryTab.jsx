@@ -1,11 +1,11 @@
 import Checkbox from 'expo-checkbox'
 import { useEffect, useRef, useState } from 'react'
-import { Alert, BackHandler, FlatList, Pressable, RefreshControl, Text, TouchableOpacity, View, useWindowDimensions } from 'react-native'
+import { Alert, BackHandler, FlatList, Pressable, RefreshControl, Text, TouchableOpacity, View } from 'react-native'
 import { Divider } from 'react-native-elements'
 import Icon from 'react-native-vector-icons/FontAwesome5'
-import ResizableAnimatedView, { initialize as initializeSize } from './ResizableAnimatedView'
-import MovableAnimatedView, { initialize as initializePosition } from './MovableAnimatedView'
 import HistoryRecord from './HistoryRecord'
+import MovableAnimatedView, { initialize as initializePosition } from './MovableAnimatedView'
+import ResizableAnimatedView, { initialize as initializeSize } from './ResizableAnimatedView'
 import { HistoryTabStyles as styles } from './style'
 
 // Store 2 main states of components: before and after changed
@@ -15,8 +15,8 @@ function stateInfo(before, after) {
 }
 
 const deleteNavBarState = stateInfo(-16, 0) // y
-const listState = stateInfo(1.2, 9) // y
-const listSizeState = stateInfo(97.8, 81.6) // height
+const listState = stateInfo(0.5, 9) // y
+const listSizeState = stateInfo(100, 83.5) // height
 const deleteButtonState = stateInfo(80, 82) // y
 
 // { x, y }
@@ -27,7 +27,6 @@ const deleteButtonPosition = initializePosition(0, deleteButtonState.before)
 const listSize = initializeSize(100, deleteButtonState.before)
 
 const HistoryTab = () => {
-  const { height, width, scale } = useWindowDimensions()
   const [dataset, setDataset] = useState([])
   const [resfreshing, setResfreshing] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false) // deletion mode
@@ -51,7 +50,7 @@ const HistoryTab = () => {
    */
   useEffect(() => {
     setDataset(require('./mock_dataset.json'))
-
+    resizableList.current.changeHeight(listSizeState.before)
     // handle back gesture; not worked
     BackHandler.addEventListener("hardwareBackPress", () => {
       if (isDeleting) closeDeletionMode()
@@ -113,7 +112,7 @@ const HistoryTab = () => {
       // send GET request and reload the list
       setTimeout(() => {
         const next_id = dataset[dataset.length - 1].id
-        setDataset([...dataset, { id: next_id + 1, value: "sentence 00" + next_id, saved: false }])
+        setDataset([...dataset, { id: next_id + 1, value: dataset[1].value + next_id, saved: false }])
         if (isDeleting) closeDeletionMode()
         setResfreshing(false)
       }, 1010)
@@ -155,7 +154,7 @@ const HistoryTab = () => {
   const modifyPendingSet = (contains_all = false, specific_id = undefined) => {
     if (!contains_all && typeof specific_id !== 'number') throw (`Invalid arguments. 'specific_id' must be a number.`)
 
-    console.log(`modifyPendingSet(): consider contains_all: ${contains_all}, specific_id: ${specific_id}.`)
+    // console.log(`modifyPendingSet(): contains_all: ${contains_all}, specific_id: ${specific_id}.`)
 
     let new_pending_set = new Set(pendingSet)
 
@@ -268,7 +267,12 @@ const HistoryTab = () => {
         byPercent={true}
         ref={movableList}
       >
-        <ResizableAnimatedView style={{ ...styles.recordListView }} initial={listSize} byPercent={true} ref={resizableList}>
+        <ResizableAnimatedView
+          style={{ ...styles.recordListView }}
+          initial={listSize}
+          byPercent={true}
+          ref={resizableList}
+        >
           <FlatList
             style={styles.recordList}
             ItemSeparatorComponent={separator}

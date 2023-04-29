@@ -1,6 +1,5 @@
 import PropTypes from 'prop-types'
-import { useEffect } from 'react'
-import { forwardRef, useImperativeHandle, useRef } from 'react'
+import { forwardRef, useEffect, useImperativeHandle, useRef } from 'react'
 import { Animated } from 'react-native'
 
 /**
@@ -24,7 +23,7 @@ const ResizableAnimatedView = forwardRef((props, ref) => {
   const size = useRef(props.initial).current
   const animatedSize = useRef(new Animated.ValueXY({ x: size.width, y: size.height })).current
   const inputRange = useRef(props.byPercent ?
-    [0, 5, 10, 20, 50, 100] 
+    [0, 5, 10, 20, 50, 100]
     : [0, 10, 50, 100, 500, 1000, 2000, 5000, 2000])
   const outputRange = useRef(props.byPercent ? inputRange?.current.map(value => value + '%') : inputRange?.current)
 
@@ -32,8 +31,7 @@ const ResizableAnimatedView = forwardRef((props, ref) => {
     const listener = animatedSize.addListener(value => {
       size.width = value.x
       size.height = value.y
-      console.log('LIST SIZE: ') // TEST
-      console.log(size) // TEST
+      console.log(`LIST SIZE: { width: ${size.width} , height: ${size.height} }`) // TEST
     })
 
     return () => {

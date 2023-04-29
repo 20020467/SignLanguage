@@ -1,16 +1,16 @@
 import { useNavigation } from '@react-navigation/native'
 import Checkbox from 'expo-checkbox'
 import PropTypes from 'prop-types'
-import { useEffect, useRef, useState, forwardRef, useImperativeHandle } from 'react'
-import { Text, ToastAndroid, TouchableOpacity, View } from 'react-native'
+import { forwardRef, useImperativeHandle, useRef, useState } from 'react'
+import { Pressable, Text, ToastAndroid, TouchableOpacity, View } from 'react-native'
 import Icon from 'react-native-vector-icons/FontAwesome5'
-import { HistoryRecordStyles as styles } from './style'
 import OpacityAnimatedView from './OpacityAnimatedView'
+import { HistoryRecordStyles as styles } from './style'
 
 /**
  * History record component
  */
-const HistoryRecord = forwardRef(( props, ref ) => {
+const HistoryRecord = forwardRef((props, ref) => {
   const id = props.id
   const value = props.value // translated text
   const inDeletionMode = props.inDeletionMode
@@ -20,6 +20,7 @@ const HistoryRecord = forwardRef(( props, ref ) => {
   const handleOnCheck = props.onCheck
 
   const [isSaved, setIsSaved] = useState(props.saved)
+  const [height, setHeight] = useState(80) // initial list item height
 
   const bookmarkButton = useRef(null)
   const deleteButton = useRef(null)
@@ -46,7 +47,7 @@ const HistoryRecord = forwardRef(( props, ref ) => {
     }
   }
 
-  const handlePress = (e) => {
+  const navigateAndTranslate = (e) => {
     navigation.navigate("HomeTab", { storedText: value })
   }
 
@@ -60,14 +61,26 @@ const HistoryRecord = forwardRef(( props, ref ) => {
     ToastAndroid.show('', ToastAndroid.SHORT);
   };
 
+  // Set container height based on text element height at the first time of rendering
+  const handleTextLayout = (event) => {
+    const layout = event.nativeEvent.layout // text layout
+    // 4: magic number
+    if (layout.height < height - 4) {
+      // console.log(`Text ${id}:`) || console.log(layout) // TEST
+      if ((layout.height + 4) < styles.container.minHeight) {
+        setHeight(styles.container.minHeight)
+      } else setHeight(layout.height + 4)
+    }
+  }
+
   return (
-    <View style={styles.container}>
+    <Pressable style={{ ...styles.container, height: height }} onPress={handleOnCheck}>
       <TouchableOpacity
         style={styles.text}
-        onPress={inDeletionMode ? handleOnCheck : handlePress}
+        onPress={inDeletionMode ? handleOnCheck : navigateAndTranslate}
         onLongPress={inDeletionMode ? handleOnCheck : openDeletionMode}
       >
-        <Text>
+        <Text onLayout={handleTextLayout}>
           {value}
         </Text>
       </TouchableOpacity>
@@ -81,6 +94,7 @@ const HistoryRecord = forwardRef(( props, ref ) => {
       >
         <Checkbox
           value={checked}
+          onValueChange={handleOnCheck}
         />
       </OpacityAnimatedView>
       <View
@@ -109,7 +123,7 @@ const HistoryRecord = forwardRef(( props, ref ) => {
           </TouchableOpacity>
         </OpacityAnimatedView>
       </View>
-    </View >
+    </Pressable >
   )
 })
 
