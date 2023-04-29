@@ -97,7 +97,7 @@
     {
         "id": 19,
         "value": "sentence 004",
-        "saved": false
+        "saved": true
     },
     {
         "id": 20,
@@ -107,6 +107,6 @@
     {
         "id": 21,
         "value": "sentence 004",
-        "saved": false
+        "saved": true
     }
 ]

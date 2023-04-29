@@ -24,18 +24,15 @@ const StoreScreen = () => {
         paddingRight: insets.right,
       }}
     >
-      {/* <Header /> */}
       <Tab.Navigator
         initialRouteName="HistoryTab"
         screenOptions={{
-          //highlight label
           tabBarActiveTintColor: SECONDARY_1,
           tabBarInactiveTintColor: SECONDARY_2,
           tabBarLabelStyle: styles.topTabBarLabel,
-          tabBarAccessibilityLabel: 'abc',
           tabBarStyle: styles.topTabBar,
         }}
-        backBehavior="none"
+        // backBehavior="none"
       >
         <Tab.Screen
           name="HistoryTab"
@@ -48,13 +45,12 @@ const StoreScreen = () => {
               >
                 <Icon
                   name="clock"
-                  size={styles.iconSize}
-                  style={{ color: highlight(focused) }} // highlight icon
+                  size={styles.topTabBarButton.iconSize}
+                  style={{ color: highlight(focused) }}
                 />
               </View>
             )
           }}
-        // style={ styles.navigateButton }
         />
         <Tab.Screen
           name="SaveTab"
@@ -67,7 +63,7 @@ const StoreScreen = () => {
               >
                 <Icon
                   name="content-save"
-                  size={styles.iconSize}
+                  size={styles.topTabBarButton.iconSize}
                   style={{ color: highlight(focused) }}
                 />
               </View>

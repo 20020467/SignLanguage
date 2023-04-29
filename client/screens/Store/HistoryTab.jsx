@@ -1,32 +1,47 @@
 import Checkbox from 'expo-checkbox'
 import { useEffect, useRef, useState } from 'react'
-import { Alert, BackHandler, FlatList, Pressable, RefreshControl, Text, TouchableOpacity, View } from 'react-native'
+import { Alert, BackHandler, FlatList, Pressable, RefreshControl, Text, TouchableOpacity, View, useWindowDimensions } from 'react-native'
 import { Divider } from 'react-native-elements'
 import Icon from 'react-native-vector-icons/FontAwesome5'
-import FixedHeightAnimatedView from './FixedHeightAnimatedView'
-import FixedVerticalAnimatedView, { initialize } from './FixedVerticalAnimatedView'
+import ResizableAnimatedView, { initialize as initializeSize } from './ResizableAnimatedView'
+import MovableAnimatedView, { initialize as initializePosition } from './MovableAnimatedView'
 import HistoryRecord from './HistoryRecord'
 import { HistoryTabStyles as styles } from './style'
 
-const HistoryTab = () => {
-  // [before, after]
-  const deleteNavBarPosition = initialize(-16, 0)
-  const listPosition = initialize(1.2, 9)
-  const listSize = initialize(97.8, 81.6)
-  const deleteButtonPosition = initialize(91, 82)
+// Store 2 main states of components: before and after changed
+// Created by practical purpose in this component and only used here
+function stateInfo(before, after) {
+  return { before, after }
+}
 
+const deleteNavBarState = stateInfo(-16, 0) // y
+const listState = stateInfo(1.2, 9) // y
+const listSizeState = stateInfo(97.8, 81.6) // height
+const deleteButtonState = stateInfo(80, 82) // y
+
+// { x, y }
+const deleteNavBarPosition = initializePosition(0, deleteNavBarState.before)
+const listPosition = initializePosition(0, listState.before)
+const deleteButtonPosition = initializePosition(0, deleteButtonState.before)
+// { width, height }
+const listSize = initializeSize(100, deleteButtonState.before)
+
+const HistoryTab = () => {
+  const { height, width, scale } = useWindowDimensions()
   const [dataset, setDataset] = useState([])
   const [resfreshing, setResfreshing] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false) // deletion mode
   const [allChecked, setAllChecked] = useState(false)
   const [pendingSet, setPendingSet] = useState(new Set(null))
 
+  // Store ref to Animated View
   const deleteNavBar = useRef(null)
   const movableList = useRef(null)
-  const resizingList = useRef(null)
+  const resizableList = useRef(null)
+  const listItem = useRef(null)
   const deleteButton = useRef(null)
   /**
-   * Used to auto-scroll when changing deletion mode state
+   * Used to auto-scroll when changing deletion mode state; may be removed
    */
   const flatListRef = useRef(null)
   const deleteNavBarLayoutPosition = useRef({ before: 0, after: 0 })
@@ -37,7 +52,7 @@ const HistoryTab = () => {
   useEffect(() => {
     setDataset(require('./mock_dataset.json'))
 
-    // handle back gesture
+    // handle back gesture; not worked
     BackHandler.addEventListener("hardwareBackPress", () => {
       if (isDeleting) closeDeletionMode()
     })
@@ -50,16 +65,17 @@ const HistoryTab = () => {
   }, [pendingSet, dataset]) // run mainly based on pendingSet
 
   /**
-   * Shift some components and change list size based on Deletion mode
+   * Open deletion mode
    */
   useEffect(() => {
     if (isDeleting) {
-      deleteNavBar.current.shift(deleteNavBarPosition.after)
-      movableList.current.shift(listPosition.after)
-      resizingList.current.change(listSize.after)
-      deleteButton.current.shift(deleteButtonPosition.after)
-    }
-    else {
+      deleteNavBar.current.verticalShift(deleteNavBarState.after)
+      movableList.current.verticalShift(listState.after)
+      resizableList.current.changeHeight(listSizeState.after, null, () => console.log("resized list!"))
+      deleteButton.current.verticalShift(deleteButtonState.after)
+      listItem.current?.switchButtons() // sometimes get error if question mark doesn't exist ???
+    } else {
+      listItem.current?.switchButtons()
     }
   }, [isDeleting])
 
@@ -158,11 +174,13 @@ const HistoryTab = () => {
 
   const closeDeletionMode = () => {
     if (!isDeleting) return
-
-    deleteNavBar.current.shift(deleteNavBarPosition.before)
-    movableList.current.shift(listPosition.before)
-    resizingList.current.change(listSize.before)
-    deleteButton.current.shift(deleteButtonPosition.before, () => setIsDeleting(false))
+    // backward vertical shift is not shown, elements disappeared immidiately
+    movableList.current.verticalShift(listState.before)
+    resizableList.current.changeHeight(listSizeState.before)
+    // listItem.current.switchButtons()
+    deleteNavBar.current.verticalShift(deleteNavBarState.before)
+    deleteButton.current.verticalShift(deleteButtonState.before, null,
+      () => setIsDeleting(false))
 
     if (pendingSet.size != 0) setPendingSet(new Set())
   }
@@ -174,17 +192,17 @@ const HistoryTab = () => {
    * so consider to put later one in useEffect() or other solutions.
    */
   const deleteMultipleRecords = () => {
-    printPending() // TEST
+    // printPending() // TEST
     // send DELETE request, then reset dataset and pendingSet state.
     setDataset(dataset.filter((record) => !pendingSet.has(record.id)))
     closeDeletionMode()
   }
 
-  function printPending() { console.log("pending set: "); pendingSet.forEach((v) => { console.log(v) }) } // TEST
-  console.log("pendingSet.size = " + pendingSet.size) // TEST
+  // function printPending() { console.log("pending set: "); pendingSet.forEach((v) => { console.log(v) }) } // TEST
+  // console.log("pendingSet.size = " + pendingSet.size) // TEST
 
   const separator = () => (
-    <View style={{ minHeight: 10, justifyContent: 'center' }}>
+    <View style={styles.separator}>
       <Divider orientation="vertical" />
     </View>
   )
@@ -195,53 +213,64 @@ const HistoryTab = () => {
     <Text style={{ textAlign: 'center', fontSize: 16 }}>Lịch sử trống</Text>
   )
 
-  const autoScrollList = (event) => {
-    const { x, y } = event.nativeEvent.layout
-    const position = deleteNavBarLayoutPosition.current
+  // const autoScrollList = (event) => {
+  //   const { x, y } = event.nativeEvent.layout
+  //   const position = deleteNavBarLayoutPosition.current
 
-    if (position.before == 0) position.before = y
-    position.after = y
+  //   if (position.before == 0) position.before = y
+  //   position.after = y
 
-    flatListRef.current.scrollToOffset({ offset: 100/**position.after - position.before*/ })
-    position.before = x
-  }
+  //   flatListRef.current.scrollToOffset({ offset: 100/**position.after - position.before*/ })
+  //   position.before = x
+  // }
 
   return (
-    <View style={{ flex: 1 }}>
-      <FixedVerticalAnimatedView
+    <View style={styles.container}>
+      <MovableAnimatedView
         style={{
           ...styles.deleteNavigationBar,
           display: isDeleting ? 'flex' : 'none'
         }}
-        initial={deleteNavBarPosition.before}
+        initial={deleteNavBarPosition}
+        byPercent={true}
         ref={deleteNavBar}
-        onLayout={event => console.log(event.nativeEvent.layout)}
+        onLayout={event => { console.log("deleteNavBar changed!"); console.log(event.nativeEvent.layout) }}
       >
-        <View style={styles.cancelButton}>
+        <View style={styles.cancelButtonView}>
           <Pressable
-            style={{ flexDirection: 'row', maxWidth: 40, justifyContent: 'space-around' }}
+            style={styles.cancelButton}
             android_ripple={{ color: 'grey' }}
             onPress={closeDeletionMode}
           >
             <Icon
               name="times"
-              size={20}
-              style={{ height: 20 }}
+              size={styles.cancelButton.iconSize}
             />
           </Pressable>
         </View>
         <View style={styles.checkAllButtonGroup}>
-          <Pressable style={styles.checkAllButton} onPress={checkAll}>
-            <Text style={{ marginRight: 8 }}>Đã chọn: {pendingSet.size}</Text>
-            <Pressable style={{ marginRight: 4 }} android_ripple={{ color: 'grey' }}>
+          <Pressable
+            style={styles.checkAllButton}
+            android_ripple={{ color: 'grey' }}
+
+            onPress={checkAll}
+          >
+            <Text style={{ marginRight: '1%' }}>Đã chọn: {pendingSet.size}</Text>
+            <Pressable style={{}} android_ripple={{ color: 'grey' }}>
               <Checkbox value={allChecked} onValueChange={checkAll} />
             </Pressable>
           </Pressable>
         </View>
-      </FixedVerticalAnimatedView>
-      <FixedVerticalAnimatedView style={{ ...styles.recordList }} initial={listPosition.before} ref={movableList}>
-        <FixedHeightAnimatedView style={{}} initial={listSize.before} ref={resizingList}>
+      </MovableAnimatedView>
+      <MovableAnimatedView
+        style={{ ...styles.recordListContainer }}
+        initial={listPosition}
+        byPercent={true}
+        ref={movableList}
+      >
+        <ResizableAnimatedView style={{ ...styles.recordListView }} initial={listSize} byPercent={true} ref={resizableList}>
           <FlatList
+            style={styles.recordList}
             ItemSeparatorComponent={separator}
             ListEmptyComponent={emptyHistoryNotification}
             // ListHeaderComponent={listHeader}
@@ -258,31 +287,33 @@ const HistoryTab = () => {
                 onCheck={() => modifyPendingSet(false, item.id)}
                 onDelete={() => askForDeletion(item.id)}
                 onLongPress={() => markAndOpenDeletionMode(item.id)}
+                ref={listItem}
               />
             )}
             refreshControl={
               <RefreshControl refreshing={resfreshing} onRefresh={refreshList} />
             }
           />
-        </FixedHeightAnimatedView>
-      </FixedVerticalAnimatedView>
-      {
-        isDeleting &&
-        <FixedVerticalAnimatedView style={styles.deleteButton} initial={deleteButtonPosition.before} ref={deleteButton}>
-          <TouchableOpacity
-            style={{ alignItems: 'center' }}
-            onPress={() => askForDeletion()}
-            disabled={pendingSet.size === 0}
-          >
-            <Icon
-              name="trash"
-              size={20}
-              style={{ height: 20 }}
-            />
-            <Text style={{ textAlign: 'center' }}>Xóa</Text>
-          </TouchableOpacity>
-        </FixedVerticalAnimatedView>
-      }
+        </ResizableAnimatedView>
+      </MovableAnimatedView>
+      <MovableAnimatedView
+        style={{ ...styles.deleteButtonView, display: isDeleting ? 'flex' : 'none' }}
+        initial={deleteButtonPosition}
+        byPercent={true}
+        ref={deleteButton}
+      >
+        <TouchableOpacity
+          style={{ alignItems: 'center' }}
+          onPress={() => askForDeletion()}
+          disabled={pendingSet.size === 0}
+        >
+          <Icon
+            name="trash"
+            size={styles.deleteButtonView.iconSize}
+          />
+          <Text style={{ textAlign: 'center' }}>Xóa</Text>
+        </TouchableOpacity>
+      </MovableAnimatedView>
     </View>
   )
 }

@@ -8,7 +8,7 @@ import { Animated } from 'react-native'
  * This component will help to alter height size based on modifying the height value.
  * (Note that height value is read with % (percent))
  * 
- * Usage: shiftDown(args), shiftUp(args)
+ * Operations: change(args)
  * args: callback is optional
  * 
  * Properties to be passed: ref (useRef), initial position (number)
