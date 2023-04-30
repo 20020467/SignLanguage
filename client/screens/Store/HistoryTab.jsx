@@ -15,10 +15,11 @@ function stateInfo(before, after) {
 }
 
 const deleteNavBarState = stateInfo(-16, 0) // y
-const listState = stateInfo(0.5, 9) // y
+const listState = stateInfo(0.2, 9) // y
 const listSizeState = stateInfo(100, 83.5) // height
-const deleteButtonState = stateInfo(80, 82) // y
+const deleteButtonState = stateInfo(95, 82.5) // y
 
+// Used only at the fisrt time of instantiating element; consider to convert to inline
 // { x, y }
 const deleteNavBarPosition = initializePosition(0, deleteNavBarState.before)
 const listPosition = initializePosition(0, listState.before)
@@ -261,7 +262,7 @@ const HistoryTab = () => {
             ItemSeparatorComponent={separator}
             ListEmptyComponent={emptyHistoryNotification}
             data={dataset}
-            renderItem={({ item, index, separators }) => (
+            renderItem={({ item }) => (
               <HistoryRecord
                 id={item.id}
                 value={item.value}

@@ -11,6 +11,21 @@ export const SECONDARY_2 = 'rgb(116, 140, 148)' // rgb(94, 110, 115)
 
 const border = { borderWidth: 1, borderColor: 'black' } // dev purpose
 
+// helper function
+export function getPercentValue(str) {
+  if (typeof str != 'string' || str[str.length - 1] != '%') {
+    throw "Input is not of valid percent value"
+  }
+
+  let result = ""
+  
+  for (i = 0; i < str.length - 1; i++) {
+    result += str[i]
+  }
+
+  return Number(result)
+}
+
 export const StoreScreenStyles = StyleSheet.create({
   topTabBar: {
     backgroundColor: PRIMARY_0,
@@ -84,6 +99,10 @@ export const HistoryTabStyles = StyleSheet.create({
   },
   recordList: {
   },
+  listItem: {
+    // ...border,
+    width: '100%',
+  },
   separator: {
     minHeight: 10,
     justifyContent: 'center'
@@ -100,44 +119,60 @@ export const HistoryTabStyles = StyleSheet.create({
 
 export const HistoryRecordStyles = StyleSheet.create({
   container: {
+    // flex: 1,
+    width: '100%', // out of width range of listItem ???
+    minHeight: 40,
+    maxHeight: 80,
     // ...border,
     marginVertical: 2,
     marginHorizontal: '2%',
     flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    minHeight: 40,
+    // alignItems: "center",
+    justifyContent: 'space-between',
+  },
+  textContainer: {
+    flexDirection: "row",
+    width: '94%',
+    height: '100%',
+    // paddingLeft: '1%',
+    // ...border,
+    justifyContent: 'center',
+    
+  },
+  textWrapper: {
+    width: '100%', 
+    height: '100%',
+    // ...border,
   },
   text: {
-    width: '74%',
-    height: '100%',
-    fontSize: 22,
-    paddingLeft: '1%',
+    fontSize: 18,
     // ...border,
-    justifyContent: 'center',
   },
-  buttonGroup: {
-    width: '25%',
-    height: '80%',
-    // ...border,
-    // marginRight: '2%',
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    alignItems: 'center',
-  },
-  button: {
-    width: 36,
-    height: 36,
-    // borderWidth: 2,
-    // borderColor: 'black',
-    borderRadius: 8,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: PRIMARY_1,
-    iconSize: 25,
-  },
+  // buttonGroup: {
+  //   width: '25%',
+  //   height: '80%',
+  //   // ...border,
+  //   // marginRight: '2%',
+  //   flexDirection: 'row',
+  //   justifyContent: 'space-around',
+  //   alignItems: 'center',
+  // },
+  // button: {
+  //   width: 36,
+  //   height: 36,
+  //   // borderWidth: 2,
+  //   // borderColor: 'black',
+  //   borderRadius: 8,
+  //   alignItems: 'center',
+  //   justifyContent: 'center',
+  //   backgroundColor: PRIMARY_1,
+  //   iconSize: 25,
+  // },
   checkboxButton: {
+    width: '7%',
     marginRight: '2%',
+    // ...border,
+    justifyContent: 'center',
   },
 })
 
@@ -148,6 +183,7 @@ export const SavedRecordStyles = StyleSheet.create({
     justifyContent: "space-between",
     textAlign: "center",
     height: 40,
+    iconSize: 25,
   },
   text: {
     fontSize: 18,
@@ -159,5 +195,4 @@ export const SavedRecordStyles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-around",
   },
-  iconSize: 25,
 });

@@ -32,6 +32,7 @@ const StoreScreen = () => {
           tabBarInactiveTintColor: SECONDARY_2,
           tabBarLabelStyle: styles.topTabBarLabel,
           tabBarStyle: styles.topTabBar,
+          swipeEnabled: false,
         }}
         // backBehavior="none"
       >

@@ -24,8 +24,9 @@ const ResizableAnimatedView = forwardRef((props, ref) => {
   const animatedSize = useRef(new Animated.ValueXY({ x: size.width, y: size.height })).current
   const inputRange = useRef(props.byPercent ?
     [0, 5, 10, 20, 50, 100]
-    : [0, 10, 50, 100, 500, 1000, 2000, 5000, 2000])
+    : [0, 10, 50, 100, 500, 1000, 2000, 5000])
   const outputRange = useRef(props.byPercent ? inputRange?.current.map(value => value + '%') : inputRange?.current)
+  // const outputRange = useRef(props.byPercent ? inputRange?.current.map(value => parseFloat(value / 100)) : inputRange?.current)
 
   useEffect(() => {
     const listener = animatedSize.addListener(value => {
@@ -119,6 +120,20 @@ const ResizableAnimatedView = forwardRef((props, ref) => {
           inputRange: inputRange.current,
           outputRange: outputRange.current,
         }),
+        // transform: [
+        //   {
+        //     scaleX: animatedSize.x.interpolate({
+        //       inputRange: inputRange.current,
+        //       outputRange: outputRange.current,
+        //     })
+        //   },
+        //   {
+        //     scaleY: animatedSize.y.interpolate({
+        //       inputRange: inputRange.current,
+        //       outputRange: outputRange.current,
+        //     })
+        //   }
+        // ],
       }}
     >
       {props.children}
@@ -138,7 +153,7 @@ ResizableAnimatedView.propTypes = {
 ResizableAnimatedView.defaultProps = {
   initial: { width: 100, height: 100 }, //if calculated as percent
   animatedDuration: 300,
-  byPercent: false,
+  byPercent: true,
 }
 
 export default ResizableAnimatedView

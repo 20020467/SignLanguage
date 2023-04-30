@@ -10,24 +10,6 @@ import { HistoryTabStyles as styles } from './style'
 import { ListItem, Button } from '@rneui/themed'
 // import { Button } from 'react-native-elements'
 
-const leftContent = (reset) => (
-  <Button
-    title="Lưu"
-    onPress={() => reset()}
-    icon={{ name: 'save', color: 'white' }}
-    buttonStyle={{ minHeight: '100%' }}
-  />
-)
-
-const rightContent = (reset) => (
-  <Button
-    title="Xóa"
-    onPress={() => reset()}
-    icon={{ name: 'delete', color: 'white' }}
-    buttonStyle={{ minHeight: '100%', backgroundColor: 'red' }}
-  />
-)
-
 // Store 2 main states of components: before and after changed
 // Created by practical purpose in this component and only used here
 function stateInfo(before, after) {
@@ -57,8 +39,9 @@ const DemoTab = (props) => {
   const deleteNavBar = useRef(null)
   const movableList = useRef(null)
   const resizableList = useRef(null)
-  const listItem = useRef(null)
   const deleteButton = useRef(null)
+  const listItems = useRef([]) // [...{id, reset}]
+  const swipedItem = useRef(null) // stores id of item being swiped
 
   /**
  * GET data from server and render on screen
@@ -87,9 +70,6 @@ const DemoTab = (props) => {
       movableList.current.verticalShift(listState.after)
       resizableList.current.changeHeight(listSizeState.after, null, () => console.log("resized list!"))
       deleteButton.current.verticalShift(deleteButtonState.after)
-      listItem.current?.switchButtons() // sometimes get error if question mark doesn't exist ???
-    } else {
-      listItem.current?.switchButtons()
     }
   }, [isDeleting])
 
@@ -225,6 +205,42 @@ const DemoTab = (props) => {
     <Text style={{ textAlign: 'center', fontSize: 16 }}>Lịch sử trống</Text>
   )
 
+  const leftContent = (reset, id) => {
+    listItems.current.push({ id, reset })
+
+    return (
+      <Button
+        title="Lưu"
+        onPress={() => reset()}
+        icon={{ name: 'save', color: 'white' }}
+        buttonStyle={{ minHeight: '100%' }}
+      />
+    )
+  }
+
+  const rightContent = (reset, id) => {
+    listItems.current.push({ id, reset })
+
+    return (
+      <Button
+        title="Xóa"
+        onPress={() => askForDeletion(id)}
+        icon={{ name: 'delete', color: 'white' }}
+        buttonStyle={{ minHeight: '100%', backgroundColor: 'red' }}
+      />
+    )
+  }
+
+  const replaceSwipedItem = (id) => {
+    listItems.current.forEach((item, idx) => {
+      if (typeof item.id == 'number' && typeof item.reset == 'function') {
+        if (item.id == swipedItem.current) item.reset()
+      }
+    })
+
+    swipedItem.current = id
+  }
+
   return (
     <View style={styles.container}>
       <MovableAnimatedView
@@ -286,10 +302,12 @@ const DemoTab = (props) => {
             renderItem={({ item, index }) => (
               <ListItem.Swipeable
                 key={index}
-                leftContent={leftContent}
-                rightContent={rightContent}
+                leftContent={(reset) => leftContent(reset, item.id)}
+                rightContent={(reset) => rightContent(reset, item.id)}
+                // onSwipeBegin={() => replaceSwipedItem(item.id)}
+                onSwipeEnd={() => replaceSwipedItem(item.id)} // determining swipeEnd is based on "stop dragging" gesture
               >
-                <ListItem.Content>
+                <ListItem.Content style={styles.listItem}>
                   <HistoryRecord
                     id={item.id}
                     value={item.value}
@@ -299,7 +317,6 @@ const DemoTab = (props) => {
                     onCheck={() => modifyPendingSet(false, item.id)}
                     onDelete={() => askForDeletion(item.id)}
                     onLongPress={() => markAndOpenDeletionMode(item.id)}
-                    ref={listItem}
                   />
                 </ListItem.Content>
               </ListItem.Swipeable>

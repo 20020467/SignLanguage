@@ -1,16 +1,19 @@
-import { useNavigation } from '@react-navigation/native'
+import { getStateFromPath, useNavigation } from '@react-navigation/native'
 import Checkbox from 'expo-checkbox'
 import PropTypes from 'prop-types'
 import { useEffect, useRef, useState } from 'react'
 import { Pressable, Text, ToastAndroid, TouchableOpacity, View } from 'react-native'
 import Icon from 'react-native-vector-icons/FontAwesome5'
 import OpacityAnimatedView from './OpacityAnimatedView'
-import { HistoryRecordStyles as styles } from './style'
+import { getPercentValue, HistoryRecordStyles as styles } from './style'
+import ResizableAnimatedView, { initialize } from './ResizableAnimatedView'
+
+const textViewSize = initialize(getPercentValue(styles.textContainer.width), 100)
 
 /**
  * History record component
  */
-const HistoryRecord = (props, ref) => {
+const HistoryRecord = (props) => {
   const id = props.id
   const value = props.value // translated text
   const inDeletionMode = props.inDeletionMode
@@ -20,23 +23,24 @@ const HistoryRecord = (props, ref) => {
   const handleOnCheck = props.onCheck
 
   const [isSaved, setIsSaved] = useState(props.saved)
-  const [height, setHeight] = useState(80) // initial list item height
+  const [height, setHeight] = useState(styles.container.maxHeight) // initial list item height
+  // const [textWidth, setTextWidth] = useState(getPercentValue(styles.textContainer.width))
 
   const bookmarkButton = useRef(null)
   const deleteButton = useRef(null)
   const checkboxButton = useRef(null)
+  const textRef = useRef(null)
 
   const navigation = useNavigation()
 
+  // Consider to change text width and display checkbox
   useEffect(() => {
-    if (!inDeletionMode) {
-      bookmarkButton.current.fade(1)
-      deleteButton.current.fade(1)
-      checkboxButton.current.fade(0)
+    if (!inDeletionMode) { // not in deletion mode
+      checkboxButton.current.fadeOut()
+      textRef.current.changeWidth(textViewSize.width) // "before" state
     } else {
-      bookmarkButton.current.fade(0)
-      deleteButton.current.fade(0)
-      checkboxButton.current.fade(1)
+      checkboxButton.current.fadeIn()
+      textRef.current.changeWidth(85) // "after" state
     }
   }, [inDeletionMode])
 
@@ -67,16 +71,26 @@ const HistoryRecord = (props, ref) => {
   }
 
   return (
-    <Pressable style={{ ...styles.container, height: height }} onPress={handleOnCheck}>
-      <TouchableOpacity
-        style={styles.text}
-        onPress={inDeletionMode ? handleOnCheck : navigateAndTranslate}
-        onLongPress={inDeletionMode ? handleOnCheck : openDeletionMode}
+    <Pressable
+      style={{ ...styles.container, height: height }}
+      onPress={handleOnCheck}
+      // onLayout={(e) => console.log(`TextContainer ${id}:`) || console.log(e.nativeEvent.layout)}
+    >
+      <ResizableAnimatedView
+        style={styles.textContainer}
+        initial={textViewSize}
+        ref={textRef}
       >
-        <Text onLayout={handleTextLayout}>
-          {value}
-        </Text>
-      </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.textWrapper}
+          onPress={inDeletionMode ? handleOnCheck : navigateAndTranslate}
+          onLongPress={inDeletionMode ? handleOnCheck : openDeletionMode}
+        >
+          <Text onLayout={handleTextLayout} style={styles.text}>
+            {value}
+          </Text>
+        </TouchableOpacity>
+      </ResizableAnimatedView>
       <OpacityAnimatedView
         style={{
           ...styles.checkboxButton,
@@ -90,7 +104,7 @@ const HistoryRecord = (props, ref) => {
           onValueChange={handleOnCheck}
         />
       </OpacityAnimatedView>
-      <View
+      {/* <View
         style={{
           ...styles.buttonGroup,
           display: inDeletionMode ? 'none' : 'flex',
@@ -115,7 +129,7 @@ const HistoryRecord = (props, ref) => {
             />
           </TouchableOpacity>
         </OpacityAnimatedView>
-      </View>
+      </View> */}
     </Pressable >
   )
 }
