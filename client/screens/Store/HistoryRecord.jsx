@@ -24,6 +24,7 @@ const HistoryRecord = (props) => {
 
   const [isSaved, setIsSaved] = useState(props.saved)
   const [height, setHeight] = useState(styles.container.maxHeight) // initial list item height
+  const [showCheckbox, setShowCheckbox] = useState(false)
   // const [textWidth, setTextWidth] = useState(getPercentValue(styles.textContainer.width))
 
   const bookmarkButton = useRef(null)
@@ -36,11 +37,12 @@ const HistoryRecord = (props) => {
   // Consider to change text width and display checkbox
   useEffect(() => {
     if (!inDeletionMode) { // not in deletion mode
-      checkboxButton.current.fadeOut()
+      checkboxButton.current.fadeOut(null, () => setShowCheckbox(false))
       textRef.current.changeWidth(textViewSize.width) // "before" state
     } else {
+      setShowCheckbox(true)
       checkboxButton.current.fadeIn()
-      textRef.current.changeWidth(85) // "after" state
+      textRef.current.changeWidth(86) // "after" state
     }
   }, [inDeletionMode])
 
@@ -79,6 +81,7 @@ const HistoryRecord = (props) => {
       <ResizableAnimatedView
         style={styles.textContainer}
         initial={textViewSize}
+        animatedDuration={300}
         ref={textRef}
       >
         <TouchableOpacity
@@ -94,9 +97,9 @@ const HistoryRecord = (props) => {
       <OpacityAnimatedView
         style={{
           ...styles.checkboxButton,
-          display: inDeletionMode ? 'flex' : 'none',
+          display: showCheckbox ? 'flex' : 'none',
         }}
-        animatedDuration={600}
+        // animatedDuration={600}
         ref={checkboxButton}
       >
         <Checkbox

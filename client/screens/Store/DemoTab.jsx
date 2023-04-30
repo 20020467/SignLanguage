@@ -70,6 +70,7 @@ const DemoTab = (props) => {
       movableList.current.verticalShift(listState.after)
       resizableList.current.changeHeight(listSizeState.after, null, () => console.log("resized list!"))
       deleteButton.current.verticalShift(deleteButtonState.after)
+      resetSwipedItem()
     }
   }, [isDeleting])
 
@@ -77,7 +78,7 @@ const DemoTab = (props) => {
    * Display alert before deleting
    * @param {number} id record's id
    */
-  const askForDeletion = (id) => {
+  const askForDeletion = (id, cancelHandler) => {
     const is_id_list = typeof id == 'undefined'
 
     const ConfirmButton = {
@@ -86,7 +87,8 @@ const DemoTab = (props) => {
     }
 
     const CancelButton = {
-      text: "Không"
+      text: "Không",
+      onPress: cancelHandler ?? undefined,
     }
 
     Alert.alert("Bạn có muốn xóa không?", undefined, [ConfirmButton, CancelButton], { cancelable: true })
@@ -176,6 +178,8 @@ const DemoTab = (props) => {
     deleteButton.current.verticalShift(deleteButtonState.before, null,
       () => setIsDeleting(false))
 
+    resetSwipedItem()
+
     if (pendingSet.size != 0) setPendingSet(new Set())
   }
 
@@ -224,20 +228,29 @@ const DemoTab = (props) => {
     return (
       <Button
         title="Xóa"
-        onPress={() => askForDeletion(id)}
+        onPress={() => askForDeletion(id, reset)}
         icon={{ name: 'delete', color: 'white' }}
         buttonStyle={{ minHeight: '100%', backgroundColor: 'red' }}
       />
     )
   }
 
-  const replaceSwipedItem = (id) => {
-    listItems.current.forEach((item, idx) => {
+  const resetSwipedItem = () => {
+    const items = listItems.current
+    for (i = 0; i < items.length; i++) {
+      let item = items[i]
       if (typeof item.id == 'number' && typeof item.reset == 'function') {
-        if (item.id == swipedItem.current) item.reset()
+        if (item.id == swipedItem.current) {
+          item.reset()
+          console.log(item);
+          break
+        }
       }
-    })
+    }
+  }
 
+  const replaceSwipedItem = (id) => {
+    resetSwipedItem()
     swipedItem.current = id
   }
 
@@ -302,10 +315,9 @@ const DemoTab = (props) => {
             renderItem={({ item, index }) => (
               <ListItem.Swipeable
                 key={index}
-                leftContent={(reset) => leftContent(reset, item.id)}
-                rightContent={(reset) => rightContent(reset, item.id)}
-                // onSwipeBegin={() => replaceSwipedItem(item.id)}
-                onSwipeEnd={() => replaceSwipedItem(item.id)} // determining swipeEnd is based on "stop dragging" gesture
+                leftContent={isDeleting ? null : (reset) => leftContent(reset, item.id)}
+                rightContent={isDeleting ? null : (reset) => rightContent(reset, item.id)}
+                onSwipeEnd={() => replaceSwipedItem(item.id)} // determining swipeEnd is based on "stop dragging" event
               >
                 <ListItem.Content style={styles.listItem}>
                   <HistoryRecord

@@ -173,7 +173,6 @@ const HistoryTab = () => {
     // backward vertical shift is not shown, elements disappeared immidiately
     movableList.current.verticalShift(listState.before)
     resizableList.current.changeHeight(listSizeState.before)
-    // listItem.current.switchButtons()
     deleteNavBar.current.verticalShift(deleteNavBarState.before)
     deleteButton.current.verticalShift(deleteButtonState.before, null,
       () => setIsDeleting(false))

@@ -132,7 +132,7 @@ export const HistoryRecordStyles = StyleSheet.create({
   },
   textContainer: {
     flexDirection: "row",
-    width: '94%',
+    width: '96%', // default width
     height: '100%',
     // paddingLeft: '1%',
     // ...border,
