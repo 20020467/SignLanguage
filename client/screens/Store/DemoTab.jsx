@@ -16,24 +16,35 @@ function stateInfo(before, after) {
   return { before, after }
 }
 
+/** Following constans are only called once while starting UI  */
+// before-after position or size
 const deleteNavBarState = stateInfo(-16, 0) // y
-const listState = stateInfo(0.5, 9) // y
-const listSizeState = stateInfo(100, 83.5) // height
-const deleteButtonState = stateInfo(80, 82) // y
+const listState = stateInfo(0, 9) // y
+const listSizeState = stateInfo(100, 83) // height
+const deleteButtonState = stateInfo(91, 82) // y; doesn't really move down after closing deletion mode ?
 
 // { x, y }
 const deleteNavBarPosition = initializePosition(0, deleteNavBarState.before)
 const listPosition = initializePosition(0, listState.before)
 const deleteButtonPosition = initializePosition(0, deleteButtonState.before)
 // { width, height }
-const listSize = initializeSize(100, deleteButtonState.before)
+const listSize = initializeSize(100, listSizeState.before)
 
+/**
+ * Displays translated texts of user in the past.
+ * 
+ * Maintains 2 states which are normal (before) and deletion (after) mode
+ * where deletion mode allows user to delete search results in bulk.
+ * @param {object} props 
+ * @returns 
+ */
 const DemoTab = (props) => {
   const [dataset, setDataset] = useState([])
   const [resfreshing, setResfreshing] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false) // deletion mode
   const [allChecked, setAllChecked] = useState(false)
   const [pendingSet, setPendingSet] = useState(new Set(null))
+  const [containerSize, setContainerSize] = useState(initializeSize(0, 0))
 
   // Store ref to Animated View
   const deleteNavBar = useRef(null)
@@ -42,10 +53,10 @@ const DemoTab = (props) => {
   const deleteButton = useRef(null)
   const listItems = useRef([]) // [...{id, reset}]
   const swipedItem = useRef(null) // stores id of item being swiped
-
+  // const containerSize = useRef(initializeSize(0, 0))
   /**
- * GET data from server and render on screen
- */
+   * GET data from server and render on screen
+   */
   useEffect(() => {
     setDataset(require('./mock_dataset.json'))
     resizableList.current.changeHeight(listSizeState.before)
@@ -170,13 +181,14 @@ const DemoTab = (props) => {
 
   const closeDeletionMode = () => {
     if (!isDeleting) return
+
+    setIsDeleting(false)
     // backward vertical shift is not shown, elements disappeared immidiately
     movableList.current.verticalShift(listState.before)
     resizableList.current.changeHeight(listSizeState.before)
     // listItem.current.switchButtons()
     deleteNavBar.current.verticalShift(deleteNavBarState.before)
-    deleteButton.current.verticalShift(deleteButtonState.before, null,
-      () => setIsDeleting(false))
+    deleteButton.current.verticalShift(deleteButtonState.before)
 
     resetSwipedItem()
 
@@ -254,8 +266,17 @@ const DemoTab = (props) => {
     swipedItem.current = id
   }
 
+  const getContainerSize = (event) => {
+    // containerSize.current.width = event.nativeEvent.x
+    // containerSize.current.height = event.nativeEvent.y
+    setContainerSize({
+      width: layout.width,
+      height: layout.height,
+    })
+  }
+
   return (
-    <View style={styles.container}>
+    <View style={styles.container} onLayout={getContainerSize}>
       <MovableAnimatedView
         style={{
           ...styles.deleteNavigationBar,
@@ -263,8 +284,8 @@ const DemoTab = (props) => {
         }}
         initial={deleteNavBarPosition}
         byPercent={true}
+        parentSize={containerSize}
         ref={deleteNavBar}
-        onLayout={event => { console.log("deleteNavBar changed!"); console.log(event.nativeEvent.layout) }}
       >
         <View style={styles.cancelButtonView}>
           <Pressable
@@ -296,6 +317,7 @@ const DemoTab = (props) => {
         style={{ ...styles.recordListContainer }}
         initial={listPosition}
         byPercent={true}
+        parentSize={containerSize}
         ref={movableList}
       >
         <ResizableAnimatedView
@@ -340,6 +362,7 @@ const DemoTab = (props) => {
         style={{ ...styles.deleteButtonView, display: isDeleting ? 'flex' : 'none' }}
         initial={deleteButtonPosition}
         byPercent={true}
+        parentSize={containerSize}
         ref={deleteButton}
       >
         <TouchableOpacity

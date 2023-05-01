@@ -88,7 +88,7 @@ export const HistoryTabStyles = StyleSheet.create({
     position: 'absolute',
     width: '100%',
     height: '99%', // may create function to get this value's number part directly
-    top: '10%', // get overwritten
+    // top: '10%', // get overwritten
     // ...border,
     alignItems: 'center',
   },
@@ -108,11 +108,11 @@ export const HistoryTabStyles = StyleSheet.create({
     justifyContent: 'center'
   },
   deleteButtonView: {
+    height: '9%',
+    // top: '91%', // gets overwritten by translateY then causes error of being disappeared
+    backgroundColor: SECONDARY_1,
     alignItems: 'stretch',
     justifyContent: 'center',
-    height: '9%',
-    top: '82%',
-    backgroundColor: SECONDARY_1,
     iconSize: 20,
   }
 })
