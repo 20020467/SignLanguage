@@ -4,11 +4,11 @@ import PropTypes from 'prop-types'
 import { useEffect, useRef, useState } from 'react'
 import { Pressable, Text, ToastAndroid, TouchableOpacity, View } from 'react-native'
 import Icon from 'react-native-vector-icons/FontAwesome5'
-import OpacityAnimatedView from './OpacityAnimatedView'
+import { OpacityAnimatedView } from './AnimatedView'
 import { getPercentValue, HistoryRecordStyles as styles } from './style'
-import ResizableAnimatedView, { initialize } from './ResizableAnimatedView'
+import { ResizableAnimatedView, initializeSize } from './AnimatedView'
 
-const textViewSize = initialize(getPercentValue(styles.textContainer.width), 100)
+const textViewSize = initializeSize(getPercentValue(styles.textContainer.width), 100) // unused
 
 /**
  * History record component
@@ -57,12 +57,17 @@ const HistoryRecord = (props) => {
   const saveRecord = (e) => {
     // Send POST request to store in server and local
     // or store in local only
+    if (!isSaved) {
+      showToast("Đã lưu!")
+    }
+    else showToast("Hủy lưu!")
+
     setIsSaved(!isSaved)
-    reset()
+    // reset()
   }
 
-  const showToast = () => {
-    ToastAndroid.show('', ToastAndroid.SHORT);
+  const showToast = (message) => {
+    ToastAndroid.show(message, ToastAndroid.SHORT);
   };
 
   // Set container height based on text element height at the first time of rendering

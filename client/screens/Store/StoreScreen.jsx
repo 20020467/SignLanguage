@@ -5,7 +5,6 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import HistoryTab from "./HistoryTab";
 import SaveTab from "./SaveTab";
 import { SECONDARY_1, SECONDARY_2, StoreScreenStyles as styles } from "./style";
-import DemoTab from "./DemoTab";
 
 const Tab = createMaterialTopTabNavigator()
 
@@ -13,7 +12,7 @@ const Tab = createMaterialTopTabNavigator()
  * History & saved item list screen
  */
 const StoreScreen = () => {
-  const insets = useSafeAreaInsets()
+  const insets = useSafeAreaInsets() // apply to the main screen in near future update
 
   return (
     <View
@@ -41,24 +40,6 @@ const StoreScreen = () => {
           component={HistoryTab}
           options={{
             tabBarLabel: "Lịch sử",
-            tabBarIcon: ({ focused, color }) => (
-              <View
-                style={styles.topTabBarButton}
-              >
-                <Icon
-                  name="clock"
-                  size={styles.topTabBarButton.iconSize}
-                  style={{ color: highlight(focused) }}
-                />
-              </View>
-            )
-          }}
-        />
-        <Tab.Screen
-          name="DemoTab"
-          component={DemoTab}
-          options={{
-            tabBarLabel: "demo tab",
             tabBarIcon: ({ focused, color }) => (
               <View
                 style={styles.topTabBarButton}
