@@ -16,7 +16,7 @@ function stateInfo(before, after) {
   return { before, after }
 }
 
-/** Following constans are only called once while starting UI  */
+/** Following constants are only called once while starting UI  */
 // before-after position or size
 const deleteNavBarState = stateInfo(-16, 0) // y
 const listState = stateInfo(0, 9) // y
@@ -54,6 +54,7 @@ const DemoTab = (props) => {
   const listItems = useRef([]) // [...{id, reset}]
   const swipedItem = useRef(null) // stores id of item being swiped
   // const containerSize = useRef(initializeSize(0, 0))
+
   /**
    * GET data from server and render on screen
    */
@@ -79,7 +80,7 @@ const DemoTab = (props) => {
     if (isDeleting) {
       deleteNavBar.current.verticalShift(deleteNavBarState.after)
       movableList.current.verticalShift(listState.after)
-      resizableList.current.changeHeight(listSizeState.after, null, () => console.log("resized list!"))
+      resizableList.current.changeHeight(listSizeState.after)
       deleteButton.current.verticalShift(deleteButtonState.after)
       resetSwipedItem()
     }
@@ -106,8 +107,8 @@ const DemoTab = (props) => {
   }
 
   const deleteRecord = deletedId => {
-    // send DELETE request at first
-    console.log(deletedId)
+    // send DELETE request first
+    console.log(deletedId) // TEST
     setDataset(dataset.filter(record => record.id != deletedId))
   }
 
@@ -211,42 +212,7 @@ const DemoTab = (props) => {
   // function printPending() { console.log("pending set: "); pendingSet.forEach((v) => { console.log(v) }) } // TEST
   // console.log("pendingSet.size = " + pendingSet.size) // TEST
 
-  const separator = () => (
-    <View style={styles.separator}>
-      <Divider orientation="vertical" />
-    </View>
-  )
-
-  const emptyHistoryNotification = () => (
-    <Text style={{ textAlign: 'center', fontSize: 16 }}>Lịch sử trống</Text>
-  )
-
-  const leftContent = (reset, id) => {
-    listItems.current.push({ id, reset })
-
-    return (
-      <Button
-        title="Lưu"
-        onPress={() => reset()}
-        icon={{ name: 'save', color: 'white' }}
-        buttonStyle={{ minHeight: '100%' }}
-      />
-    )
-  }
-
-  const rightContent = (reset, id) => {
-    listItems.current.push({ id, reset })
-
-    return (
-      <Button
-        title="Xóa"
-        onPress={() => askForDeletion(id, reset)}
-        icon={{ name: 'delete', color: 'white' }}
-        buttonStyle={{ minHeight: '100%', backgroundColor: 'red' }}
-      />
-    )
-  }
-
+  // may refactor this
   const resetSwipedItem = () => {
     const items = listItems.current
     for (i = 0; i < items.length; i++) {
@@ -267,12 +233,49 @@ const DemoTab = (props) => {
   }
 
   const getContainerSize = (event) => {
+    const layout = event.nativeEvent.layout
     // containerSize.current.width = event.nativeEvent.x
     // containerSize.current.height = event.nativeEvent.y
     setContainerSize({
       width: layout.width,
       height: layout.height,
     })
+  }
+
+  const separator = () => (
+    <View style={styles.separator}>
+      <Divider orientation="vertical" />
+    </View>
+  )
+
+  const emptyHistoryNotification = () => (
+    <Text style={{ textAlign: 'center', fontSize: 16 }}>Lịch sử trống</Text>
+  )
+
+  // const leftContent = (reset, id) => {
+  //   listItems.current.push({ id, reset })
+
+  //   return (
+  //     <Button
+  //       title="Lưu"
+  //       onPress={() => reset()}
+  //       icon={{ name: 'save', color: 'white' }}
+  //       buttonStyle={{ minHeight: '100%' }}
+  //     />
+  //   )
+  // }
+
+  const rightContent = (reset, id) => {
+    listItems.current.push({ id, reset })
+
+    return (
+      <Button
+        title="Xóa"
+        icon={{ name: 'delete', color: 'white' }}
+        buttonStyle={{ ...styles.singleDeleteButton }}
+        onPress={() => askForDeletion(id, reset)}
+      />
+    )
   }
 
   return (
@@ -334,27 +337,30 @@ const DemoTab = (props) => {
               <RefreshControl refreshing={resfreshing} onRefresh={refreshList} />
             }
             data={dataset}
-            renderItem={({ item, index }) => (
-              <ListItem.Swipeable
-                key={index}
-                leftContent={isDeleting ? null : (reset) => leftContent(reset, item.id)}
-                rightContent={isDeleting ? null : (reset) => rightContent(reset, item.id)}
-                onSwipeEnd={() => replaceSwipedItem(item.id)} // determining swipeEnd is based on "stop dragging" event
-              >
-                <ListItem.Content style={styles.listItem}>
-                  <HistoryRecord
-                    id={item.id}
-                    value={item.value}
-                    saved={item.saved}
-                    inDeletionMode={isDeleting}
-                    checked={pendingSet.has(item.id)}
-                    onCheck={() => modifyPendingSet(false, item.id)}
-                    onDelete={() => askForDeletion(item.id)}
-                    onLongPress={() => markAndOpenDeletionMode(item.id)}
-                  />
-                </ListItem.Content>
-              </ListItem.Swipeable>
-            )}
+            renderItem={({ item, index }) => {
+              return (
+                <ListItem.Swipeable
+                  key={index}
+                  style={styles.listItem}
+                  leftContent={isDeleting ? null : (reset) => rightContent(reset, item.id)}
+                  rightContent={isDeleting ? null : (reset) => rightContent(reset, item.id)}
+                  onSwipeEnd={() => replaceSwipedItem(item.id)} // determining swipeEnd is based on "stop dragging" event
+                >
+                  <ListItem.Content>
+                    <HistoryRecord
+                      id={item.id}
+                      value={item.value}
+                      saved={item.saved}
+                      inDeletionMode={isDeleting}
+                      checked={pendingSet.has(item.id)}
+                      onCheck={() => modifyPendingSet(false, item.id)}
+                      onDelete={() => askForDeletion(item.id)}
+                      onLongPress={() => markAndOpenDeletionMode(item.id)}
+                    />
+                  </ListItem.Content>
+                </ListItem.Swipeable>
+              )
+            }}
           />
         </ResizableAnimatedView>
       </MovableAnimatedView>

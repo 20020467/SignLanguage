@@ -28,21 +28,24 @@ const HistoryRecord = (props) => {
   // const [textWidth, setTextWidth] = useState(getPercentValue(styles.textContainer.width))
 
   const bookmarkButton = useRef(null)
-  const deleteButton = useRef(null)
+  // const deleteButton = useRef(null)
   const checkboxButton = useRef(null)
-  const textRef = useRef(null)
+  // const textRef = useRef(null)
 
   const navigation = useNavigation()
 
   // Consider to change text width and display checkbox
   useEffect(() => {
     if (!inDeletionMode) { // not in deletion mode
-      checkboxButton.current.fadeOut(null, () => setShowCheckbox(false))
-      textRef.current.changeWidth(textViewSize.width) // "before" state
+      setShowCheckbox(false)
+      bookmarkButton.current.fadeIn()
+      checkboxButton.current.fadeOut(510)
+      // textRef.current.changeWidth(textViewSize.width) // "before" state
     } else {
       setShowCheckbox(true)
       checkboxButton.current.fadeIn()
-      textRef.current.changeWidth(86) // "after" state
+      bookmarkButton.current.fadeOut(110)
+      // textRef.current.changeWidth(86) // "after" state
     }
   }, [inDeletionMode])
 
@@ -76,13 +79,13 @@ const HistoryRecord = (props) => {
     <Pressable
       style={{ ...styles.container, height: height }}
       onPress={handleOnCheck}
-      // onLayout={(e) => console.log(`TextContainer ${id}:`) || console.log(e.nativeEvent.layout)}
+    // onLayout={(e) => console.log(`TextContainer ${id}:`) || console.log(e.nativeEvent.layout)}
     >
       <ResizableAnimatedView
         style={styles.textContainer}
         initial={textViewSize}
         animatedDuration={300}
-        ref={textRef}
+      // ref={textRef}
       >
         <TouchableOpacity
           style={styles.textWrapper}
@@ -96,10 +99,10 @@ const HistoryRecord = (props) => {
       </ResizableAnimatedView>
       <OpacityAnimatedView
         style={{
-          ...styles.checkboxButton,
+          ...styles.buttonGroup,
           display: showCheckbox ? 'flex' : 'none',
         }}
-        // animatedDuration={600}
+        animatedDuration={250}
         ref={checkboxButton}
       >
         <Checkbox
@@ -107,32 +110,23 @@ const HistoryRecord = (props) => {
           onValueChange={handleOnCheck}
         />
       </OpacityAnimatedView>
-      {/* <View
+      <OpacityAnimatedView
         style={{
           ...styles.buttonGroup,
-          display: inDeletionMode ? 'none' : 'flex',
+          display: showCheckbox ? 'none' : 'flex',
         }}
+        animatedDuration={250}
+        ref={bookmarkButton}
       >
-        <OpacityAnimatedView style={{ flex: 1 }} animatedDuration={600} ref={bookmarkButton}>
-          <TouchableOpacity onPress={saveRecord} style={styles.button}>
-            <Icon
-              name="bookmark"
-              size={styles.button.iconSize}
-              style={styles.saveButton}
-              solid={isSaved}
-            />
-          </TouchableOpacity>
-        </OpacityAnimatedView>
-        <OpacityAnimatedView style={{ flex: 1 }} animatedDuration={600} ref={deleteButton}>
-          <TouchableOpacity onPress={openPromt} style={styles.button}>
-            <Icon
-              name="trash"
-              size={styles.button.iconSize}
-              style={styles.deleteButton}
-            />
-          </TouchableOpacity>
-        </OpacityAnimatedView>
-      </View> */}
+        <TouchableOpacity onPress={saveRecord} style={styles.button}>
+          <Icon
+            name="star"
+            size={styles.button.iconSize}
+            style={{ ...styles.saveToggle, color: isSaved ? 'rgb(191, 47, 11)' : 'black' }}
+            solid={isSaved}
+          />
+        </TouchableOpacity>
+      </OpacityAnimatedView>
     </Pressable >
   )
 }

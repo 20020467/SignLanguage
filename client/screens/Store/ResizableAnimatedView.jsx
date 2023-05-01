@@ -3,7 +3,7 @@ import { forwardRef, useEffect, useImperativeHandle, useRef } from 'react'
 import { Animated } from 'react-native'
 
 /**
- * Movable 2D view.
+ * Resizable 2D view.
  * 
  * This component will help to move in 2D axis based on modifying the top style's value.
  * (top's value is read with pixel (by default) or percent)

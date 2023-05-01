@@ -100,8 +100,15 @@ export const HistoryTabStyles = StyleSheet.create({
   recordList: {
   },
   listItem: {
-    // ...border,
     width: '100%',
+  },
+  singleDeleteButton: {
+    minHeight: '100%', 
+    backgroundColor: 'rgb(255, 0, 0)',
+    // paddingLeft: 200,
+    // flexWrap: 'wrap',
+    // justifyContent: 'flex-end',
+    // width: 200,
   },
   separator: {
     minHeight: 10,
@@ -121,23 +128,22 @@ export const HistoryRecordStyles = StyleSheet.create({
   container: {
     // flex: 1,
     width: '100%', // out of width range of listItem ???
-    minHeight: 40,
+    minHeight: 30,
     maxHeight: 80,
     // ...border,
     marginVertical: 2,
-    marginHorizontal: '2%',
+    // marginHorizontal: '2%',
     flexDirection: "row",
     // alignItems: "center",
-    justifyContent: 'space-between',
+    // justifyContent: 'space-between',
   },
   textContainer: {
     flexDirection: "row",
-    width: '96%', // default width
+    width: '88%', // default width; no longer resizing text field
     height: '100%',
     // paddingLeft: '1%',
-    // ...border,
+    ...border,
     justifyContent: 'center',
-    
   },
   textWrapper: {
     width: '100%', 
@@ -148,32 +154,31 @@ export const HistoryRecordStyles = StyleSheet.create({
     fontSize: 18,
     // ...border,
   },
-  // buttonGroup: {
-  //   width: '25%',
-  //   height: '80%',
-  //   // ...border,
-  //   // marginRight: '2%',
-  //   flexDirection: 'row',
-  //   justifyContent: 'space-around',
-  //   alignItems: 'center',
-  // },
-  // button: {
-  //   width: 36,
-  //   height: 36,
-  //   // borderWidth: 2,
-  //   // borderColor: 'black',
-  //   borderRadius: 8,
-  //   alignItems: 'center',
-  //   justifyContent: 'center',
-  //   backgroundColor: PRIMARY_1,
-  //   iconSize: 25,
-  // },
-  checkboxButton: {
+  buttonGroup: {
     width: '7%',
-    marginRight: '2%',
-    // ...border,
+    marginHorizontal: '4%',
+    ...border,
     justifyContent: 'center',
+    alignItems: 'center',
   },
+  button: {
+    width: 36,
+    height: 36,
+    ...border,
+    // borderWidth: 2,
+    // borderColor: 'black',
+    // borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+    // backgroundColor: PRIMARY_1,
+    iconSize: 25,
+  },
+  // checkboxButton: {
+  //   width: '7%',
+  //   marginRight: '2%',
+  //   // ...border,
+  //   justifyContent: 'center',
+  // },
 })
 
 export const SavedRecordStyles = StyleSheet.create({
