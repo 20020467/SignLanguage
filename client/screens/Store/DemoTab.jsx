@@ -356,6 +356,7 @@ const DemoTab = (props) => {
                       onCheck={() => modifyPendingSet(false, item.id)}
                       onDelete={() => askForDeletion(item.id)}
                       onLongPress={() => markAndOpenDeletionMode(item.id)}
+                      reset={listItems.current.find(finded => finded.id == item.id).reset}
                     />
                   </ListItem.Content>
                 </ListItem.Swipeable>

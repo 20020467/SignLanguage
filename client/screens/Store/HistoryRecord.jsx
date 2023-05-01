@@ -21,6 +21,7 @@ const HistoryRecord = (props) => {
   const openPromt = props.onDelete // arrow function
   const openDeletionMode = props.onLongPress // arrow function
   const handleOnCheck = props.onCheck
+  const reset = props.reset
 
   const [isSaved, setIsSaved] = useState(props.saved)
   const [height, setHeight] = useState(styles.container.maxHeight) // initial list item height
@@ -57,6 +58,7 @@ const HistoryRecord = (props) => {
     // Send POST request to store in server and local
     // or store in local only
     setIsSaved(!isSaved)
+    reset()
   }
 
   const showToast = () => {

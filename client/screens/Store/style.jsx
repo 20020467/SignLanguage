@@ -142,7 +142,7 @@ export const HistoryRecordStyles = StyleSheet.create({
     width: '88%', // default width; no longer resizing text field
     height: '100%',
     // paddingLeft: '1%',
-    ...border,
+    // ...border,
     justifyContent: 'center',
   },
   textWrapper: {
@@ -157,14 +157,14 @@ export const HistoryRecordStyles = StyleSheet.create({
   buttonGroup: {
     width: '7%',
     marginHorizontal: '4%',
-    ...border,
+    // ...border,
     justifyContent: 'center',
     alignItems: 'center',
   },
   button: {
     width: 36,
     height: 36,
-    ...border,
+    // ...border,
     // borderWidth: 2,
     // borderColor: 'black',
     // borderRadius: 8,
