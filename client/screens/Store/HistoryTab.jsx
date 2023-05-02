@@ -7,8 +7,6 @@ import HistoryRecord from './HistoryRecord'
 import { MovableAnimatedView, initializePosition } from './AnimatedView'
 import { ResizableAnimatedView, initializeSize } from './AnimatedView'
 import { HistoryTabStyles as styles } from './style'
-import { ListItem, Button } from '@rneui/themed'
-// import { Button } from 'react-native-elements'
 
 // Store 2 main states of components: before and after changed
 // Created by practical purpose in this component and only used here
@@ -89,6 +87,7 @@ const HistoryTab = (props) => {
   /**
    * Display alert before deleting
    * @param {number} id record's id
+   * @param {function | undefined} cancelHandler
    */
   const askForDeletion = (id, cancelHandler) => {
     const is_id_list = typeof id == 'undefined'
@@ -220,7 +219,7 @@ const HistoryTab = (props) => {
       if (typeof item.id == 'number' && typeof item.reset == 'function') {
         if (item.id == swipedItem.current) {
           item.reset()
-          console.log(item);
+          console.log(item); // TEST
           break
         }
       }
@@ -251,33 +250,7 @@ const HistoryTab = (props) => {
   const emptyHistoryNotification = () => (
     <Text style={{ textAlign: 'center', fontSize: 16 }}>Lịch sử trống</Text>
   )
-
-  // const leftContent = (reset, id) => {
-  //   listItems.current.push({ id, reset })
-
-  //   return (
-  //     <Button
-  //       title="Lưu"
-  //       onPress={() => reset()}
-  //       icon={{ name: 'save', color: 'white' }}
-  //       buttonStyle={{ minHeight: '100%' }}
-  //     />
-  //   )
-  // }
-
-  const rightContent = (reset, id) => {
-    listItems.current.push({ id, reset })
-
-    return (
-      <Button
-        title="Xóa"
-        icon={{ name: 'delete', color: 'white' }}
-        buttonStyle={{ ...styles.singleDeleteButton }}
-        onPress={() => askForDeletion(id, reset)}
-      />
-    )
-  }
-
+console.log(listItems); // TEST
   return (
     <View style={styles.container} onLayout={getContainerSize}>
       <MovableAnimatedView
@@ -339,27 +312,19 @@ const HistoryTab = (props) => {
             data={dataset}
             renderItem={({ item, index }) => {
               return (
-                <ListItem.Swipeable
-                  key={index}
-                  style={styles.listItem}
-                  leftContent={isDeleting ? null : (reset) => rightContent(reset, item.id)}
-                  rightContent={isDeleting ? null : (reset) => rightContent(reset, item.id)}
-                  onSwipeEnd={() => replaceSwipedItem(item.id)} // determining swipeEnd is based on "stop dragging" event
-                >
-                  <ListItem.Content>
-                    <HistoryRecord
-                      id={item.id}
-                      value={item.value}
-                      saved={item.saved}
-                      inDeletionMode={isDeleting}
-                      checked={pendingSet.has(item.id)}
-                      onCheck={() => modifyPendingSet(false, item.id)}
-                      onDelete={() => askForDeletion(item.id)}
-                      onLongPress={() => markAndOpenDeletionMode(item.id)}
-                      // reset={listItems.current.find(finded => finded.id == item.id).reset}
-                    />
-                  </ListItem.Content>
-                </ListItem.Swipeable>
+                <HistoryRecord
+                  index={index}
+                  onSwipeEnd={() => replaceSwipedItem(index)} // determining swipeEnd is based on "stop dragging" event
+                  listItems={listItems.current}
+                  data={item}
+                  // value={item.value}
+                  // saved={item.saved}
+                  inDeletionMode={isDeleting}
+                  checked={pendingSet.has(item.id)}
+                  onCheck={() => modifyPendingSet(false, item.id)}
+                  onDelete={(reset) => askForDeletion(item.id, reset)}
+                  onLongPress={() => markAndOpenDeletionMode(item.id)}
+                />
               )
             }}
           />

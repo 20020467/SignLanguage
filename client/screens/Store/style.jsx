@@ -99,17 +99,6 @@ export const HistoryTabStyles = StyleSheet.create({
   },
   recordList: {
   },
-  listItem: {
-    width: '100%',
-  },
-  singleDeleteButton: {
-    minHeight: '100%', 
-    backgroundColor: 'rgb(255, 0, 0)',
-    // paddingLeft: 200,
-    // flexWrap: 'wrap',
-    // justifyContent: 'flex-end',
-    // width: 200,
-  },
   separator: {
     minHeight: 10,
     justifyContent: 'center'
@@ -173,12 +162,17 @@ export const HistoryRecordStyles = StyleSheet.create({
     // backgroundColor: PRIMARY_1,
     iconSize: 25,
   },
-  // checkboxButton: {
-  //   width: '7%',
-  //   marginRight: '2%',
-  //   // ...border,
-  //   justifyContent: 'center',
-  // },
+  listItem: {
+    width: '100%',
+  },
+  singleDeleteButton: {
+    minHeight: '100%', 
+    backgroundColor: 'rgb(255, 0, 0)',
+    // paddingLeft: 200,
+    // flexWrap: 'wrap',
+    // justifyContent: 'flex-end',
+    // width: 200,
+  },
 })
 
 export const SavedRecordStyles = StyleSheet.create({
