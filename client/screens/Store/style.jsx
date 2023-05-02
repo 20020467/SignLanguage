@@ -11,6 +11,21 @@ export const SECONDARY_2 = 'rgb(116, 140, 148)' // rgb(94, 110, 115)
 
 const border = { borderWidth: 1, borderColor: 'black' } // dev purpose
 
+// helper function
+export function getPercentValue(str) {
+  if (typeof str != 'string' || str[str.length - 1] != '%') {
+    throw "Input is not of valid percent value"
+  }
+
+  let result = ""
+  
+  for (i = 0; i < str.length - 1; i++) {
+    result += str[i]
+  }
+
+  return Number(result)
+}
+
 export const StoreScreenStyles = StyleSheet.create({
   topTabBar: {
     backgroundColor: PRIMARY_0,
@@ -73,7 +88,7 @@ export const HistoryTabStyles = StyleSheet.create({
     position: 'absolute',
     width: '100%',
     height: '99%', // may create function to get this value's number part directly
-    top: '10%', // get overwritten
+    // top: '10%', // get overwritten
     // ...border,
     alignItems: 'center',
   },
@@ -89,55 +104,74 @@ export const HistoryTabStyles = StyleSheet.create({
     justifyContent: 'center'
   },
   deleteButtonView: {
+    height: '9%',
+    // top: '91%', // gets overwritten by translateY then causes error of being disappeared
+    backgroundColor: SECONDARY_1,
     alignItems: 'stretch',
     justifyContent: 'center',
-    height: '9%',
-    top: '82%',
-    backgroundColor: SECONDARY_1,
     iconSize: 20,
   }
 })
 
 export const HistoryRecordStyles = StyleSheet.create({
   container: {
+    // flex: 1,
+    width: '100%', // out of width range of listItem ???
+    minHeight: 30,
+    maxHeight: 80,
     // ...border,
     marginVertical: 2,
-    marginHorizontal: '2%',
+    // marginHorizontal: '2%',
     flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    minHeight: 40,
+    // alignItems: "center",
+    // justifyContent: 'space-between',
   },
-  text: {
-    width: '74%',
+  textContainer: {
+    flexDirection: "row",
+    width: '88%', // default width; no longer resizing text field
     height: '100%',
-    fontSize: 22,
-    paddingLeft: '1%',
+    // paddingLeft: '1%',
     // ...border,
     justifyContent: 'center',
   },
-  buttonGroup: {
-    width: '25%',
-    height: '80%',
+  textWrapper: {
+    width: '100%', 
+    height: '100%',
     // ...border,
-    // marginRight: '2%',
-    flexDirection: 'row',
-    justifyContent: 'space-around',
+  },
+  text: {
+    fontSize: 18,
+    // ...border,
+  },
+  buttonGroup: {
+    width: '7%',
+    marginHorizontal: '4%',
+    // ...border,
+    justifyContent: 'center',
     alignItems: 'center',
   },
   button: {
     width: 36,
     height: 36,
+    // ...border,
     // borderWidth: 2,
     // borderColor: 'black',
-    borderRadius: 8,
+    // borderRadius: 8,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: PRIMARY_1,
+    // backgroundColor: PRIMARY_1,
     iconSize: 25,
   },
-  checkboxButton: {
-    marginRight: '2%',
+  listItem: {
+    width: '100%',
+  },
+  singleDeleteButton: {
+    minHeight: '100%', 
+    backgroundColor: 'rgb(255, 0, 0)',
+    // paddingLeft: 200,
+    // flexWrap: 'wrap',
+    // justifyContent: 'flex-end',
+    // width: 200,
   },
 })
 
@@ -148,6 +182,7 @@ export const SavedRecordStyles = StyleSheet.create({
     justifyContent: "space-between",
     textAlign: "center",
     height: 40,
+    iconSize: 25,
   },
   text: {
     fontSize: 18,
@@ -159,5 +194,4 @@ export const SavedRecordStyles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-around",
   },
-  iconSize: 25,
 });

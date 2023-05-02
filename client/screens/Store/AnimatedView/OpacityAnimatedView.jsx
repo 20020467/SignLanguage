@@ -44,7 +44,7 @@ const OpacityAnimatedView = forwardRef((props, ref) => {
       Animated.timing(opacityValue, {
         toValue: value,
         duration: dr,
-        useNativeDriver: false,
+        useNativeDriver: true,
       }).start(callback)
     } catch (err) {
       console.error(err)

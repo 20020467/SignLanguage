@@ -12,7 +12,7 @@ const Tab = createMaterialTopTabNavigator()
  * History & saved item list screen
  */
 const StoreScreen = () => {
-  const insets = useSafeAreaInsets()
+  const insets = useSafeAreaInsets() // apply to the main screen in near future update
 
   return (
     <View
@@ -31,6 +31,7 @@ const StoreScreen = () => {
           tabBarInactiveTintColor: SECONDARY_2,
           tabBarLabelStyle: styles.topTabBarLabel,
           tabBarStyle: styles.topTabBar,
+          swipeEnabled: false,
         }}
         // backBehavior="none"
       >

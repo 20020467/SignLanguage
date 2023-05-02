@@ -4,8 +4,8 @@ import { Alert, BackHandler, FlatList, Pressable, RefreshControl, Text, Touchabl
 import { Divider } from 'react-native-elements'
 import Icon from 'react-native-vector-icons/FontAwesome5'
 import HistoryRecord from './HistoryRecord'
-import { MovableAnimatedView, initializePosition } from './AnimatedView'
-import { ResizableAnimatedView, initializeSize } from './AnimatedView'
+import MovableAnimatedView, { initializePosition } from './AnimatedView'
+import ResizableAnimatedView, { initializeSize } from './AnimatedView'
 import { HistoryTabStyles as styles } from './style'
 
 // Store 2 main states of components: before and after changed
@@ -14,44 +14,36 @@ function stateInfo(before, after) {
   return { before, after }
 }
 
-/** Following constants are only called once while starting UI  */
-// before-after position or size
 const deleteNavBarState = stateInfo(-16, 0) // y
-const listState = stateInfo(0, 9) // y
-const listSizeState = stateInfo(100, 83) // height
-const deleteButtonState = stateInfo(91, 82) // y; doesn't really move down after closing deletion mode ?
+const listState = stateInfo(0.2, 9) // y
+const listSizeState = stateInfo(100, 83.5) // height
+const deleteButtonState = stateInfo(95, 82.5) // y
 
+// Used only at the fisrt time of instantiating element; consider to convert to inline
 // { x, y }
 const deleteNavBarPosition = initializePosition(0, deleteNavBarState.before)
 const listPosition = initializePosition(0, listState.before)
 const deleteButtonPosition = initializePosition(0, deleteButtonState.before)
 // { width, height }
-const listSize = initializeSize(100, listSizeState.before)
+const listSize = initializeSize(100, deleteButtonState.before)
 
-/**
- * Displays translated texts of user in the past.
- * 
- * Maintains 2 states which are normal (before) and deletion (after) mode
- * where deletion mode allows user to delete search results in bulk.
- * @param {object} props 
- * @returns 
- */
-const HistoryTab = (props) => {
+const HistoryTab = () => {
   const [dataset, setDataset] = useState([])
   const [resfreshing, setResfreshing] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false) // deletion mode
   const [allChecked, setAllChecked] = useState(false)
   const [pendingSet, setPendingSet] = useState(new Set(null))
-  const [containerSize, setContainerSize] = useState(initializeSize(0, 0))
 
   // Store ref to Animated View
   const deleteNavBar = useRef(null)
   const movableList = useRef(null)
   const resizableList = useRef(null)
   const deleteButton = useRef(null)
-  const listItems = useRef([]) // [...{id, reset}]
-  const swipedItem = useRef(null) // stores id of item being swiped
-  // const containerSize = useRef(initializeSize(0, 0))
+  /**
+   * Used to auto-scroll when changing deletion mode state; may be removed
+   */
+  const flatListRef = useRef(null)
+  const deleteNavBarLayoutPosition = useRef({ before: 0, after: 0 })
 
   /**
    * GET data from server and render on screen
@@ -78,18 +70,16 @@ const HistoryTab = (props) => {
     if (isDeleting) {
       deleteNavBar.current.verticalShift(deleteNavBarState.after)
       movableList.current.verticalShift(listState.after)
-      resizableList.current.changeHeight(listSizeState.after)
+      resizableList.current.changeHeight(listSizeState.after, null, () => console.log("resized list!"))
       deleteButton.current.verticalShift(deleteButtonState.after)
-      resetSwipedItem()
     }
   }, [isDeleting])
 
   /**
    * Display alert before deleting
    * @param {number} id record's id
-   * @param {function | undefined} cancelHandler
    */
-  const askForDeletion = (id, cancelHandler) => {
+  const askForDeletion = (id) => {
     const is_id_list = typeof id == 'undefined'
 
     const ConfirmButton = {
@@ -98,16 +88,15 @@ const HistoryTab = (props) => {
     }
 
     const CancelButton = {
-      text: "Không",
-      onPress: cancelHandler ?? undefined,
+      text: "Không"
     }
 
     Alert.alert("Bạn có muốn xóa không?", undefined, [ConfirmButton, CancelButton], { cancelable: true })
   }
 
   const deleteRecord = deletedId => {
-    // send DELETE request first
-    console.log(deletedId) // TEST
+    // send DELETE request at first
+    console.log(deletedId)
     setDataset(dataset.filter(record => record.id != deletedId))
   }
 
@@ -181,16 +170,12 @@ const HistoryTab = (props) => {
 
   const closeDeletionMode = () => {
     if (!isDeleting) return
-
-    setIsDeleting(false)
     // backward vertical shift is not shown, elements disappeared immidiately
     movableList.current.verticalShift(listState.before)
     resizableList.current.changeHeight(listSizeState.before)
-    // listItem.current.switchButtons()
     deleteNavBar.current.verticalShift(deleteNavBarState.before)
-    deleteButton.current.verticalShift(deleteButtonState.before)
-
-    resetSwipedItem()
+    deleteButton.current.verticalShift(deleteButtonState.before, null,
+      () => setIsDeleting(false))
 
     if (pendingSet.size != 0) setPendingSet(new Set())
   }
@@ -211,36 +196,6 @@ const HistoryTab = (props) => {
   // function printPending() { console.log("pending set: "); pendingSet.forEach((v) => { console.log(v) }) } // TEST
   // console.log("pendingSet.size = " + pendingSet.size) // TEST
 
-  // may refactor this
-  const resetSwipedItem = () => {
-    const items = listItems.current
-    for (i = 0; i < items.length; i++) {
-      let item = items[i]
-      if (typeof item.id == 'number' && typeof item.reset == 'function') {
-        if (item.id == swipedItem.current) {
-          item.reset()
-          console.log(item); // TEST
-          break
-        }
-      }
-    }
-  }
-
-  const replaceSwipedItem = (id) => {
-    resetSwipedItem()
-    swipedItem.current = id
-  }
-
-  const getContainerSize = (event) => {
-    const layout = event.nativeEvent.layout
-    // containerSize.current.width = event.nativeEvent.x
-    // containerSize.current.height = event.nativeEvent.y
-    setContainerSize({
-      width: layout.width,
-      height: layout.height,
-    })
-  }
-
   const separator = () => (
     <View style={styles.separator}>
       <Divider orientation="vertical" />
@@ -250,9 +205,9 @@ const HistoryTab = (props) => {
   const emptyHistoryNotification = () => (
     <Text style={{ textAlign: 'center', fontSize: 16 }}>Lịch sử trống</Text>
   )
-console.log(listItems); // TEST
+
   return (
-    <View style={styles.container} onLayout={getContainerSize}>
+    <View style={styles.container}>
       <MovableAnimatedView
         style={{
           ...styles.deleteNavigationBar,
@@ -260,8 +215,8 @@ console.log(listItems); // TEST
         }}
         initial={deleteNavBarPosition}
         byPercent={true}
-        parentSize={containerSize}
         ref={deleteNavBar}
+        onLayout={event => { console.log("deleteNavBar changed!"); console.log(event.nativeEvent.layout) }}
       >
         <View style={styles.cancelButtonView}>
           <Pressable
@@ -293,7 +248,6 @@ console.log(listItems); // TEST
         style={{ ...styles.recordListContainer }}
         initial={listPosition}
         byPercent={true}
-        parentSize={containerSize}
         ref={movableList}
       >
         <ResizableAnimatedView
@@ -306,27 +260,22 @@ console.log(listItems); // TEST
             style={styles.recordList}
             ItemSeparatorComponent={separator}
             ListEmptyComponent={emptyHistoryNotification}
+            data={dataset}
+            renderItem={({ item }) => (
+              <HistoryRecord
+                id={item.id}
+                value={item.value}
+                saved={item.saved}
+                inDeletionMode={isDeleting}
+                checked={pendingSet.has(item.id)}
+                onCheck={() => modifyPendingSet(false, item.id)}
+                onDelete={() => askForDeletion(item.id)}
+                onLongPress={() => markAndOpenDeletionMode(item.id)}
+              />
+            )}
             refreshControl={
               <RefreshControl refreshing={resfreshing} onRefresh={refreshList} />
             }
-            data={dataset}
-            renderItem={({ item, index }) => {
-              return (
-                <HistoryRecord
-                  index={index}
-                  onSwipeEnd={() => replaceSwipedItem(index)} // determining swipeEnd is based on "stop dragging" event
-                  listItems={listItems.current}
-                  data={item}
-                  // value={item.value}
-                  // saved={item.saved}
-                  inDeletionMode={isDeleting}
-                  checked={pendingSet.has(item.id)}
-                  onCheck={() => modifyPendingSet(false, item.id)}
-                  onDelete={(reset) => askForDeletion(item.id, reset)}
-                  onLongPress={() => markAndOpenDeletionMode(item.id)}
-                />
-              )
-            }}
           />
         </ResizableAnimatedView>
       </MovableAnimatedView>
@@ -334,7 +283,6 @@ console.log(listItems); // TEST
         style={{ ...styles.deleteButtonView, display: isDeleting ? 'flex' : 'none' }}
         initial={deleteButtonPosition}
         byPercent={true}
-        parentSize={containerSize}
         ref={deleteButton}
       >
         <TouchableOpacity

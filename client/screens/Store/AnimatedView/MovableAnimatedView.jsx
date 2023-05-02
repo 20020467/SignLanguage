@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types'
-import { forwardRef, useEffect, useImperativeHandle, useRef } from 'react'
+import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react'
 import { Animated } from 'react-native'
 
 /**
@@ -18,23 +18,33 @@ import { Animated } from 'react-native'
  */
 const MovableAnimatedView = forwardRef((props, ref) => {
   const duration = props.animatedDuration
+  const parentSize = useRef(props.parentSize).current
 
   const position = useRef(props.initial).current
   const animatedPosition = useRef(new Animated.ValueXY(props.initial)).current
   const inputRange = useRef(props.byPercent ?
-    [0, 5, 10, 20, 50, 100] : [0, 10, 20, 50, 100, 500, 1000, 2000, 5000])
-  const outputRange = useRef(props.byPercent ? inputRange?.current.map(value => value + '%') : inputRange.current)
+    [-100, -50, -20, 0, 5, 10, 20, 50, 100] : [0, 10, 20, 50, 100, 500, 1000, 2000, 5000])
+  // const outputRange = useRef(props.byPercent ?
+  //   inputRange?.current.map(value => value / 100)
+  //   : inputRange?.current)
 
   useEffect(() => {
     const listener = animatedPosition.addListener(value => {
       position.x = value.x
       position.y = value.y
+      if (props.name == 'delete-button') console.log(position);
     })
 
     return () => {
       animatedPosition.removeListener(listener)
     }
   }, [])
+
+  // only called in the first time of running app if container size is not changed after then
+  useEffect(() => {
+    parentSize.width = props.parentSize.width
+    parentSize.height = props.parentSize.height
+  }, [props.parentSize])
 
 
   useImperativeHandle(
@@ -63,7 +73,7 @@ const MovableAnimatedView = forwardRef((props, ref) => {
       Animated.timing(animatedPosition, {
         toValue: { x, y },
         duration: dr,
-        useNativeDriver: false,
+        useNativeDriver: true,
       }).start(callback)
 
     } catch (err) {
@@ -108,14 +118,28 @@ const MovableAnimatedView = forwardRef((props, ref) => {
       {...props}
       style={{
         ...props.style,
-        left: animatedPosition.x.interpolate({
-          inputRange: inputRange.current,
-          outputRange: outputRange.current,
-        }),
-        top: animatedPosition.y.interpolate({
-          inputRange: inputRange.current,
-          outputRange: outputRange.current,
-        }),
+        // left: animatedPosition.x.interpolate({
+        //   inputRange: inputRange.current,
+        //   outputRange: outputRange.current,
+        // }),
+        // top: animatedPosition.y.interpolate({
+        //   inputRange: inputRange.current,
+        //   outputRange: outputRange.current,
+        // }),
+        transform: [
+          {
+            translateX: animatedPosition.x.interpolate({
+              inputRange: inputRange.current,
+              outputRange: inputRange.current.map(percent => percent / 100 * parentSize.width),
+            })
+          },
+          {
+            translateY: animatedPosition.y.interpolate({
+              inputRange: inputRange.current,
+              outputRange: inputRange.current.map(percent => percent / 100 * parentSize.height),
+            })
+          }
+        ],
       }}
     >
       {props.children}
@@ -130,12 +154,20 @@ MovableAnimatedView.propTypes = {
   }),
   animatedDuration: PropTypes.number,
   byPercent: PropTypes.bool,
+  parentSize: PropTypes.exact({
+    width: PropTypes.number,
+    height: PropTypes.number,
+  })
 }
 
 MovableAnimatedView.defaultProps = {
   initial: { x: 0, y: 0 },
   animatedDuration: 300,
   byPercent: false,
+  parentSize: {
+    width: 10,
+    height: 10,
+  }
 }
 
 export default MovableAnimatedView

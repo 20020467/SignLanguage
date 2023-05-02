@@ -23,7 +23,7 @@ const SavedRecord = props => {
       <TouchableOpacity onPress={openPromt} style={styles.button}>
         <Icon
           name="bookmark"
-          size={styles.iconSize}
+          size={styles.container.iconSize}
           style={styles.saveButton}
           solid={isSaved}
         />
