@@ -18,7 +18,7 @@ export function getPercentValue(str) {
   }
 
   let result = ""
-  
+
   for (i = 0; i < str.length - 1; i++) {
     result += str[i]
   }
@@ -135,7 +135,7 @@ export const HistoryRecordStyles = StyleSheet.create({
     justifyContent: 'center',
   },
   textWrapper: {
-    width: '100%', 
+    width: '100%',
     height: '100%',
     // ...border,
   },
@@ -166,7 +166,7 @@ export const HistoryRecordStyles = StyleSheet.create({
     width: '100%',
   },
   singleDeleteButton: {
-    minHeight: '100%', 
+    minHeight: '100%',
     backgroundColor: 'rgb(255, 0, 0)',
     // paddingLeft: 200,
     // flexWrap: 'wrap',
@@ -177,12 +177,18 @@ export const HistoryRecordStyles = StyleSheet.create({
 
 export const SavedRecordStyles = StyleSheet.create({
   container: {
+    flex: 1,
+    iconSize: 25,
+  },
+  textWrapper: {
+    // flex: 1, 
+    width: '100%',
+    height: 80,
+    backgroundColor: 'rgb(240, 250, 250)',
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
     textAlign: "center",
-    height: 40,
-    iconSize: 25,
   },
   text: {
     fontSize: 18,
@@ -190,8 +196,13 @@ export const SavedRecordStyles = StyleSheet.create({
     paddingLeft: 4,
   },
   button: {
-    flex: 2,
-    flexDirection: "row",
-    justifyContent: "space-around",
+    // flex: 2,
+    // flexDirection: "row",
+    // justifyContent: "space-around",
+    width: '30%',
+    flexDirection: 'row',
+    alignItems: 'center',
+    // justifyContent: 'center',
+    backgroundColor: 'rgb(130, 240, 140)'
   },
 });
