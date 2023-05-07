@@ -7,7 +7,9 @@ import { SavedRecordStyles as styles } from './style'
 import { RectButton } from 'react-native-gesture-handler'
 import Swipeable from 'react-native-gesture-handler/Swipeable'
 
-const SavedRecord = forwardRef(({ id, value, isSaved, onUnsave, onSwipableOpen, onSwipableClose }, ref) => {
+const SavedRecord = forwardRef(({ data, onUnsave, onSwipableOpen, onSwipableClose }, ref) => {
+  const value = data.content
+
   const swipableRef = useRef(null)
 
   const navigation = useNavigation()

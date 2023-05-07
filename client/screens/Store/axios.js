@@ -18,7 +18,7 @@ export const useFetch = (resource) => {
       return {
         getHistory: async (config) => await Axios.get(`${destination}/all`, config),
         delete:  (id, config) =>  Axios.delete(`${destination}/${id}`, config),
-        save: async (id, config) => await Axios.get(`${destination}/like/${id}`, config),
+        changeSaving: async (id, config) => await Axios.get(`${destination}/like/${id}`, config),
         getSavedRecords: async (config) => await Axios.get(`${destination}/favour`, config),
       }
 

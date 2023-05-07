@@ -70,15 +70,14 @@ const HistoryRecord = forwardRef(({ index, data, inDeletionMode, checked, onChec
     // Send POST request to store in server and local
     // or store in local only
     if (!isSaved) {
-      request.save(id).then(res => {
+      request.changeSaving(data.id).then(res => {
         showToast("Đã lưu!")
         console.log(res.data)
       }).catch(msg => console.log(`Reject saving: ${msg}`))
 
     }
     else {
-      console.log(Axios.getUri())
-      request.save(id).then(res => {
+      request.changeSaving(data.id).then(res => {
         showToast("Hủy lưu!")
         console.log(res.data)
       }).catch(msg => console.log(`Reject saving: ${msg}`))

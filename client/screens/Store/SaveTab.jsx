@@ -3,6 +3,7 @@ import { Alert, FlatList, RefreshControl, View, Text } from 'react-native'
 import { Divider } from 'react-native-elements'
 import SavedRecord from './SavedRecord'
 import { HistoryTabStyles as styles } from './style'
+import { useFetch } from './axios'
 
 const SaveTab = () => {
   const [dataset, setDataset] = useState([])
@@ -12,28 +13,28 @@ const SaveTab = () => {
   const swipedItem = useRef(null) // sets new swiped item's index to this variable
   const selfClosed = useRef(true) // determine close action of an item called by itself or other item
 
+  const request = useFetch('sentence')
+
   useEffect(() => {
-    const new_dataset = [...require('./mock_dataset.json')]
-    if (new_dataset.length >= 20) new_dataset.splice(0, 18)
-    // console.log("Save tab:") // TEST
-    // console.log(new_dataset) // TEST
-    setDataset(new_dataset)
+    request.getSavedRecords().then(res => {
+      setDataset(res.data.data)
+    }).catch(msg => console.log(msg)) // TRACE
   }, [])
 
   const unsaveRecord = (index, id) => {
-    // send DELETE request and/or store in local
-    console.log("unsaving:")
-    // if (index != dataset.findIndex(item => item.id === id)) return // redundant?
-
-    setDataset(dataset.filter((item, idx) => item.id !== id))
+    // send POST request and/or store in local
+    request.changeSaving(id)
+      .then(res => {
+        console.log(res.data) // TEST
+        setDataset(dataset.filter((item, idx) => item.id !== id))
+      })
+      .catch(msg => console.log(`unsaveRecord: ${msg}`)) // TRACE
 
     // refresh ref list based on id instead of index as listItems is created
     // based on element rendering, which cannot assure the right order as in dataset
     if (swipedItem.current === id) { // may place in useEffect
       listItems.splice(listItems.findIndex((item, idx) => item.id == id), 1)
       swipedItem.current = null
-      // console.log("listItems after unsaving: ")
-      // console.log(listItems) // TEST
     }
   }
 
@@ -54,28 +55,23 @@ const SaveTab = () => {
 
   const refreshList = e => {
     setResfreshing(true)
-    try {
       // send GET request and reload the list
-      setTimeout(() => {
-        const next_id = dataset[dataset.length - 1].id
-        setDataset([...dataset, { id: next_id + 1, value: "sentence 00" + next_id, saved: false }])
+      request.getSavedRecords().then(res => {
+        setDataset(res.data.data)
         setResfreshing(false)
-      }, 1010)
-    } catch (e) {
-      console.log(e)
-      setResfreshing(false)
-    }
-    // console.log("listItems before resfreshing: ")
-    // console.log(listItems) // TEST
+      }).catch(msg => {
+        console.log(`refreshList: ${msg}`) // TRACE
+        setResfreshing(false)
+      })
   }
 
   // Sometimes next id is not set, which leads to allow 2 item to be swiped at the same time ???
   const onSwipableOpen = (id) => {
     if (typeof id !== 'number' || id < 0) throw "onSwipableOpen: Invalid passed id."
-    
+
     const current = swipedItem.current
     const hasSecondItemSwiped = typeof current == 'number' && current != id
-    
+
     // unswipe the other
     if (hasSecondItemSwiped) {
       listItems.find(item => item.id == current)?.ref.unswipe()
@@ -112,9 +108,7 @@ const SaveTab = () => {
         data={dataset}
         renderItem={({ item, index }) => (
           <SavedRecord
-            id={item.id}
-            value={item.value}
-            saved={item.saved}
+            data={item}
             onSwipableOpen={() => onSwipableOpen(item.id)}
             onSwipableClose={onSwipableClose}
             onUnsave={() => unsaveRecord(index, item.id)}
