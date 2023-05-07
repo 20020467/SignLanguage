@@ -10,19 +10,15 @@ const SaveTab = () => {
 
   const listItems = useRef([]).current // stores refs to list items; need to be refresh along with dataset
   const swipedItem = useRef(null) // sets new swiped item's index to this variable
+  const selfClosed = useRef(true) // determine close action of an item called by itself or other item
 
   useEffect(() => {
     const new_dataset = [...require('./mock_dataset.json')]
     if (new_dataset.length >= 20) new_dataset.splice(0, 18)
-    console.log("Save tab:") // TEST
+    // console.log("Save tab:") // TEST
     // console.log(new_dataset) // TEST
     setDataset(new_dataset)
   }, [])
-
-  useEffect(() => {
-    console.log("dataset after changed: ")
-    dataset.forEach(data => console.log(data.id)) // TEST
-  }, [dataset])
 
   const unsaveRecord = (index, id) => {
     // send DELETE request and/or store in local
@@ -42,7 +38,7 @@ const SaveTab = () => {
   }
 
   /**
-   * Cause new elements are created at each rerendering, we should search for item by 
+   * Cause new elements are created each rerendering, we should search for item by 
    * specified id to make sure we won't add them again to the list.
    */
   const updateRef = ({ id, ref }) => {
@@ -75,18 +71,23 @@ const SaveTab = () => {
 
   // Sometimes next id is not set, which leads to allow 2 item to be swiped at the same time ???
   const onSwipableOpen = (id) => {
-    // unswipe the other
+    if (typeof id !== 'number' || id < 0) throw "onSwipableOpen: Invalid passed id."
+    
     const current = swipedItem.current
-    if (current) {
+    const hasSecondItemSwiped = typeof current == 'number' && current != id
+    
+    // unswipe the other
+    if (hasSecondItemSwiped) {
       listItems.find(item => item.id == current)?.ref.unswipe()
+      selfClosed.current = false // indicates that the previous item is unswiped by another.
     }
 
-    console.log(`current: ${current}, next: ${id}`)
     swipedItem.current = id
   }
 
   const onSwipableClose = () => {
-    swipedItem.current = null
+    if (selfClosed.current) swipedItem.current = null
+    else selfClosed.current = true
   }
 
   const separator = () => (

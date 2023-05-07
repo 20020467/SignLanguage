@@ -49,8 +49,9 @@ const HistoryTab = (props) => {
   const movableList = useRef(null)
   const resizableList = useRef(null)
   const deleteButton = useRef(null)
-  const listItems = useRef([]) // [...{id, reset}]
+  const listItems = useRef([]).current // [...{id, reset}]
   const swipedItem = useRef(null) // stores id of item being swiped
+  const selfClosed = useRef(true) // determine close action of an item called by itself or other item
   // const containerSize = useRef(initializeSize(0, 0))
 
   /**
@@ -80,7 +81,7 @@ const HistoryTab = (props) => {
       movableList.current.verticalShift(listState.after)
       resizableList.current.changeHeight(listSizeState.after)
       deleteButton.current.verticalShift(deleteButtonState.after)
-      resetSwipedItem()
+      unswipeItem(true)
     }
   }, [isDeleting])
 
@@ -90,11 +91,11 @@ const HistoryTab = (props) => {
    * @param {function | undefined} cancelHandler
    */
   const askForDeletion = (id, cancelHandler) => {
-    const is_id_list = typeof id == 'undefined'
+    const isMultiDeletion = typeof id == 'undefined'
 
     const ConfirmButton = {
       text: "Có",
-      onPress: () => is_id_list ? deleteMultipleRecords() : deleteRecord(id),
+      onPress: () => isMultiDeletion ? deleteMultipleRecords() : deleteRecord(id),
     }
 
     const CancelButton = {
@@ -190,7 +191,7 @@ const HistoryTab = (props) => {
     deleteNavBar.current.verticalShift(deleteNavBarState.before)
     deleteButton.current.verticalShift(deleteButtonState.before)
 
-    resetSwipedItem()
+    // unswipeItem()
 
     if (pendingSet.size != 0) setPendingSet(new Set())
   }
@@ -212,23 +213,47 @@ const HistoryTab = (props) => {
   // console.log("pendingSet.size = " + pendingSet.size) // TEST
 
   // may refactor this
-  const resetSwipedItem = () => {
-    const items = listItems.current
-    for (i = 0; i < items.length; i++) {
-      let item = items[i]
-      if (typeof item.id == 'number' && typeof item.reset == 'function') {
-        if (item.id == swipedItem.current) {
-          item.reset()
-          console.log(item); // TEST
-          break
-        }
-      }
+  const unswipeItem = (setNull = false) => {
+    const current = swipedItem.current // number
+    if (typeof current == 'number' && current >= 0) {
+      listItems.find(item => item.id == current)?.ref.unswipe()
+      if (setNull) swipedItem.current = null
     }
   }
 
-  const replaceSwipedItem = (id) => {
-    resetSwipedItem()
+  /**
+   * Cause new elements are created each rerendering, we should search for item by 
+   * specified id to make sure we won't add them again to the list.
+   */
+  const updateRef = ({ id, ref }) => {
+    const current_item = listItems.find(item => item.id == id)
+    // console.log("Updating list: " + id + ref) // TEST
+    if (ref == null) {
+      listItems.splice(listItems.findIndex(item => item.id == id), 1)
+    }
+
+    if (current_item) current_item.ref = ref // only assign new ref if the item exists
+    else listItems.push({ id, ref }) // removed element is stilled added with ref is null ??
+  }
+
+  // Sometimes next id is not set, which leads to allow 2 item to be swiped at the same time ???
+  const onSwipableOpen = (id) => {
+    if (typeof id !== 'number' || id < 0) throw "onSwipableOpen: Invalid passed id."
+    
+    const hasSecondItemSwiped = typeof swipedItem.current == 'number' && swipedItem.current != id
+
+    // unswipe the other
+    if (hasSecondItemSwiped) {
+      unswipeItem() // calling with this condition allows user to swipe further without closing.
+      selfClosed.current = false // indicates that the previous item is unswiped by another.
+    }
+
     swipedItem.current = id
+  }
+
+  const onSwipableClose = () => {
+    if (selfClosed.current) swipedItem.current = null
+    else selfClosed.current = true
   }
 
   const getContainerSize = (event) => {
@@ -250,7 +275,7 @@ const HistoryTab = (props) => {
   const emptyHistoryNotification = () => (
     <Text style={{ textAlign: 'center', fontSize: 16 }}>Lịch sử trống</Text>
   )
-console.log(listItems); // TEST
+
   return (
     <View style={styles.container} onLayout={getContainerSize}>
       <MovableAnimatedView
@@ -314,17 +339,16 @@ console.log(listItems); // TEST
               return (
                 <HistoryRecord
                   index={index}
-                  onSwipeEnd={() => replaceSwipedItem(index)} // determining swipeEnd is based on "stop dragging" event
-                  listItems={listItems.current}
                   data={item}
-                  // value={item.value}
-                  // saved={item.saved}
                   inDeletionMode={isDeleting}
                   checked={pendingSet.has(item.id)}
                   onCheck={() => modifyPendingSet(false, item.id)}
                   onDelete={(reset) => askForDeletion(item.id, reset)}
                   onLongPress={() => markAndOpenDeletionMode(item.id)}
-                />
+                  onSwipableOpen={() => onSwipableOpen(item.id)}
+                  onSwipableClose={onSwipableClose}
+                  ref={ref => updateRef({ id: item.id, ref })}
+                  />
               )
             }}
           />

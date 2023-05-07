@@ -8,10 +8,6 @@ import { RectButton } from 'react-native-gesture-handler'
 import Swipeable from 'react-native-gesture-handler/Swipeable'
 
 const SavedRecord = forwardRef(({ id, value, isSaved, onUnsave, onSwipableOpen, onSwipableClose }, ref) => {
-  // const value = props.value
-  // const isSaved = props.saved
-  // const onUnsave = props.onUnsave
-
   const swipableRef = useRef(null)
 
   const navigation = useNavigation()
@@ -19,6 +15,7 @@ const SavedRecord = forwardRef(({ id, value, isSaved, onUnsave, onSwipableOpen, 
   useImperativeHandle(ref, () => ({
     unswipe
   }), [])
+
   const handlePress = () => {
     navigation.navigate("HomeTab", { storedText: value })
   }

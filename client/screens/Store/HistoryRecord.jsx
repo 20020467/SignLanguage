@@ -1,13 +1,15 @@
 import { getStateFromPath, useNavigation } from '@react-navigation/native'
 import Checkbox from 'expo-checkbox'
 import PropTypes from 'prop-types'
-import { useEffect, useRef, useState } from 'react'
-import { Pressable, Text, ToastAndroid, TouchableOpacity, View } from 'react-native'
+import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react'
+import { Animated, Pressable, Text, ToastAndroid, TouchableOpacity, View } from 'react-native'
 import Icon from 'react-native-vector-icons/FontAwesome5'
 import { OpacityAnimatedView } from './AnimatedView'
 import { getPercentValue, HistoryRecordStyles as styles } from './style'
 import { ResizableAnimatedView, initializeSize } from './AnimatedView'
-import { ListItem, Button } from '@rneui/themed'
+import Swipeable from 'react-native-gesture-handler/Swipeable'
+import { RectButton } from 'react-native-gesture-handler'
+// import { ListItem, Button } from '@rneui/themed'
 // import { Button } from 'react-native-elements'
 
 const textViewSize = initializeSize(getPercentValue(styles.textContainer.width), 100) // unused
@@ -19,18 +21,10 @@ const showToast = (message) => {
 /**
  * History record component
  */
-const HistoryRecord = (props) => {
-  const index = props.index
-  const data = props.data
-  const id = data.id
-  const value = props.data.value // translated text
-  const inDeletionMode = props.inDeletionMode
-  const checked = props.checked
-  const onDelete = props.onDelete // arrow function
-  const openDeletionMode = props.onLongPress // arrow function
-  const handleOnCheck = props.onCheck
-  const onSwipeEnd = props.onSwipeEnd
-  const listItems = props.listItems // get list items from parent to do unswipe, push
+const HistoryRecord = forwardRef(({ index, data, inDeletionMode, checked, onCheck,
+  onDelete, onLongPress, onSwipableOpen, onSwipableClose }, ref) => {
+
+  const value = data.value // translated text
 
   const [isSaved, setIsSaved] = useState(data.saved)
   const [height, setHeight] = useState(styles.container.maxHeight) // initial list item height
@@ -41,7 +35,8 @@ const HistoryRecord = (props) => {
   // const deleteButton = useRef(null)
   const checkboxButton = useRef(null)
   // const textRef = useRef(null)
-  const resetSwiping = useRef(null)
+  // const resetSwiping = useRef(null)
+  const swipableRef = useRef(null)
 
   const navigation = useNavigation()
 
@@ -60,7 +55,12 @@ const HistoryRecord = (props) => {
     }
   }, [inDeletionMode])
 
-  const navigateAndTranslate = (e) => {
+
+  useImperativeHandle(ref, () => ({
+    unswipe
+  }), [])
+
+  const handlePress = (e) => {
     navigation.navigate("HomeTab", { storedText: value })
   }
 
@@ -73,7 +73,7 @@ const HistoryRecord = (props) => {
     else showToast("Hủy lưu!")
 
     setIsSaved(!isSaved)
-    resetSwiping.current()
+    // resetSwiping.current()
   }
 
   // Set container height based on text element height at the first time of rendering
@@ -88,105 +88,148 @@ const HistoryRecord = (props) => {
     }
   }
 
-  // const leftContent = (reset, id) => {
-  //   listItems.current.push({ id, reset })
+  const unswipe = () => {
+    swipableRef.current.close()
+  }
 
-  //   return (
-  //     <Button
-  //       title="Lưu"
-  //       onPress={() => reset()}
-  //       icon={{ name: 'save', color: 'white' }}
-  //       buttonStyle={{ minHeight: '100%' }}
-  //     />
-  //   )
-  // }
+  const renderLeftActions = (progress, dragX) => {
+    const translateX = dragX.interpolate({
+      inputRange: [0, 50, 100], // convert percent to pixel
+      outputRange: [-90, -70, -40],
+    })
 
-  const hiddenContent = (reset) => {
-    // utilize this rendering function to store reset functions to listItems
-    if (!listItems.find((item, idx) => idx == index)) {
-      // need to remove items to be deleted
-      listItems.push({ id: id, reset })
-      resetSwiping.current = reset
-    }
+    const scale = dragX.interpolate({
+      inputRange: [-100, 0],
+      outputRange: [1, 0],
+      extrapolate: 'clamp'
+    })
 
     return (
-      <Button
-        title="Xóa"
-        icon={{ name: 'delete', color: 'white' }}
-        buttonStyle={{ ...styles.singleDeleteButton }}
-        onPress={() => onDelete(reset)}
-      />
+      <RectButton style={styles.deleteButton} onPress={onDelete}>
+        <Animated.View
+          style={
+            {
+              flex: 1,
+              transform: [{ translateX }],
+              fontSize: 15,
+              paddingLeft: '50%',
+              justifyContent: 'center',
+              alignItems: 'center',
+            }
+          }
+        >
+          <Icon
+            name="trash"
+            size={styles.deleteButton.iconSize}
+          />
+          <Text style={{ textAlign: 'center' }}>Xóa</Text>
+        </Animated.View>
+      </RectButton>
+    )
+  }
+  const renderRightActions = (progress, dragX) => {
+    const translateX = dragX.interpolate({
+      inputRange: [-100, -50, 0], // convert percent to pixel
+      outputRange: [0, 30, 50],
+    })
+
+    const scale = dragX.interpolate({
+      inputRange: [-100, 0],
+      outputRange: [1, 0],
+      extrapolate: 'clamp'
+    })
+
+    return (
+      <RectButton style={styles.deleteButton} onPress={onDelete}>
+        <Animated.View
+          style={
+            {
+              flex: 1,
+              transform: [{ translateX }],
+              fontSize: 15,
+              paddingLeft: '50%',
+              justifyContent: 'center',
+              alignItems: 'center',
+            }
+          }
+        >
+          <Icon
+            name="trash"
+            size={styles.deleteButton.iconSize}
+          />
+          <Text style={{ textAlign: 'center' }}>Xóa</Text>
+        </Animated.View>
+      </RectButton>
     )
   }
 
   return (
-    <ListItem.Swipeable
-      // key={index}
-      style={styles.listItem}
-      leftContent={inDeletionMode ? null : (reset) => hiddenContent(reset)}
-      rightContent={inDeletionMode ? null : (reset) => hiddenContent(reset)}
-      onSwipeEnd={onSwipeEnd} // determining swipeEnd is based on "stop dragging" event
-      animation={{type: 'timing'}}
+    <Swipeable
+      renderLeftActions={renderLeftActions}
+      renderRightActions={renderRightActions}
+      onSwipeableWillOpen={(direction) => onSwipableOpen()}
+      onSwipeableWillClose={(direction) => onSwipableClose()}
+      containerStyle={{ ...styles.container, height: height }}
+      ref={swipableRef}
     >
-      <ListItem.Content>
-        <Pressable
-          style={{ ...styles.container, height: height }}
-          android_ripple={{ color: 'grey' }}
-          onPress={handleOnCheck}
+      <Pressable
+        style={{ ...styles.mainView }}
+        // android_ripple={{ color: 'grey' }}
+        onPress={inDeletionMode ? onCheck : handlePress}
+        onLongPress={inDeletionMode ? onCheck : onLongPress}
         // onLayout={(e) => console.log(`TextContainer ${id}:`) || console.log(e.nativeEvent.layout)}
+      >
+        <ResizableAnimatedView
+          style={styles.textContainer}
+          initial={textViewSize}
+          animatedDuration={300}
+        // ref={textRef}
         >
-          <ResizableAnimatedView
-            style={styles.textContainer}
-            initial={textViewSize}
-            animatedDuration={300}
-          // ref={textRef}
+          <Pressable
+            style={styles.textWrapper}
+            // android_ripple={{ color: 'grey' }}
+            onPress={inDeletionMode ? onCheck : handlePress}
+            onLongPress={inDeletionMode ? onCheck : onLongPress}
           >
-            <Pressable
-              style={styles.textWrapper}
-              android_ripple={{ color: 'grey' }}
-              onPress={inDeletionMode ? handleOnCheck : navigateAndTranslate}
-              onLongPress={inDeletionMode ? handleOnCheck : openDeletionMode}
-            >
-              <Text onLayout={handleTextLayout} style={styles.text}>
-                {value}
-              </Text>
-            </Pressable>
-          </ResizableAnimatedView>
-          <OpacityAnimatedView
-            style={{
-              ...styles.buttonGroup,
-              display: showCheckbox ? 'flex' : 'none',
-            }}
-            animatedDuration={250}
-            ref={checkboxButton}
-          >
-            <Checkbox
-              value={checked}
-              onValueChange={handleOnCheck}
+            <Text onLayout={handleTextLayout} style={styles.text}>
+              {value}
+            </Text>
+          </Pressable>
+        </ResizableAnimatedView>
+        <OpacityAnimatedView
+          style={{
+            ...styles.buttonGroup,
+            display: showCheckbox ? 'none' : 'flex',
+          }}
+          animatedDuration={250}
+          ref={bookmarkButton}
+        >
+          <TouchableOpacity onPress={saveRecord} style={styles.button}>
+            <Icon
+              name="star"
+              size={styles.button.iconSize}
+              style={{ ...styles.saveToggle, color: isSaved ? 'rgb(191, 47, 11)' : 'black' }}
+              solid={isSaved}
             />
-          </OpacityAnimatedView>
-          <OpacityAnimatedView
-            style={{
-              ...styles.buttonGroup,
-              display: showCheckbox ? 'none' : 'flex',
-            }}
-            animatedDuration={250}
-            ref={bookmarkButton}
-          >
-            <TouchableOpacity onPress={saveRecord} style={styles.button}>
-              <Icon
-                name="star"
-                size={styles.button.iconSize}
-                style={{ ...styles.saveToggle, color: isSaved ? 'rgb(191, 47, 11)' : 'black' }}
-                solid={isSaved}
-              />
-            </TouchableOpacity>
-          </OpacityAnimatedView>
-        </Pressable >
-      </ListItem.Content>
-    </ListItem.Swipeable>
+          </TouchableOpacity>
+        </OpacityAnimatedView>
+        <OpacityAnimatedView
+          style={{
+            ...styles.buttonGroup,
+            display: showCheckbox ? 'flex' : 'none',
+          }}
+          animatedDuration={250}
+          ref={checkboxButton}
+        >
+          <Checkbox
+            value={checked}
+            onValueChange={onCheck}
+          />
+        </OpacityAnimatedView>
+      </Pressable>
+    </Swipeable>
   )
-}
+})
 
 HistoryRecord.propTypes = {
   id: PropTypes.number,

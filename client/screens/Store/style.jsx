@@ -117,20 +117,25 @@ export const HistoryRecordStyles = StyleSheet.create({
   container: {
     // flex: 1,
     width: '100%', // out of width range of listItem ???
-    minHeight: 30,
+    minHeight: 60,
     maxHeight: 80,
     // ...border,
     marginVertical: 2,
     // marginHorizontal: '2%',
+  },
+  mainView: {
+    width: '100%',
+    height: '100%',
+    backgroundColor: 'rgb(240,240, 240)',
     flexDirection: "row",
     // alignItems: "center",
-    // justifyContent: 'space-between',
+    justifyContent: 'space-around',
   },
   textContainer: {
     flexDirection: "row",
-    width: '88%', // default width; no longer resizing text field
+    width: '85%', // default width; no longer resizing text field
     height: '100%',
-    // paddingLeft: '1%',
+    // paddingLeft: '2%',
     // ...border,
     justifyContent: 'center',
   },
@@ -144,17 +149,16 @@ export const HistoryRecordStyles = StyleSheet.create({
     // ...border,
   },
   buttonGroup: {
-    width: '7%',
-    marginHorizontal: '4%',
+    width: '11%',
+    // marginHorizontal: '1%',
     // ...border,
     justifyContent: 'center',
     alignItems: 'center',
   },
   button: {
-    width: 36,
-    height: 36,
+    width: '100%',
+    height: '100%',
     // ...border,
-    // borderWidth: 2,
     // borderColor: 'black',
     // borderRadius: 8,
     alignItems: 'center',
@@ -162,16 +166,15 @@ export const HistoryRecordStyles = StyleSheet.create({
     // backgroundColor: PRIMARY_1,
     iconSize: 25,
   },
-  listItem: {
-    width: '100%',
-  },
-  singleDeleteButton: {
-    minHeight: '100%',
+  deleteButton: {
+    width: '25%',
+    height: '100%',
     backgroundColor: 'rgb(255, 0, 0)',
     // paddingLeft: 200,
     // flexWrap: 'wrap',
     // justifyContent: 'flex-end',
     // width: 200,
+    iconSize: 25,
   },
 })
 
