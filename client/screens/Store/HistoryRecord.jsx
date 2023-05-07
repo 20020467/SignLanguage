@@ -9,8 +9,7 @@ import { getPercentValue, HistoryRecordStyles as styles } from './style'
 import { ResizableAnimatedView, initializeSize } from './AnimatedView'
 import Swipeable from 'react-native-gesture-handler/Swipeable'
 import { RectButton } from 'react-native-gesture-handler'
-// import { ListItem, Button } from '@rneui/themed'
-// import { Button } from 'react-native-elements'
+import { useFetch } from './axios'
 
 const textViewSize = initializeSize(getPercentValue(styles.textContainer.width), 100) // unused
 
@@ -20,13 +19,14 @@ const showToast = (message) => {
 
 /**
  * History record component
+ *  data: { id, content, favour, viewTime }
  */
 const HistoryRecord = forwardRef(({ index, data, inDeletionMode, checked, onCheck,
   onDelete, onLongPress, onSwipableOpen, onSwipableClose }, ref) => {
 
-  const value = data.value // translated text
+  const value = data.content // translated text
 
-  const [isSaved, setIsSaved] = useState(data.saved)
+  const [isSaved, setIsSaved] = useState(data.favour)
   const [height, setHeight] = useState(styles.container.maxHeight) // initial list item height
   const [showCheckbox, setShowCheckbox] = useState(false)
   // const [textWidth, setTextWidth] = useState(getPercentValue(styles.textContainer.width))
@@ -39,6 +39,8 @@ const HistoryRecord = forwardRef(({ index, data, inDeletionMode, checked, onChec
   const swipableRef = useRef(null)
 
   const navigation = useNavigation()
+
+  const request = useFetch('sentence')
 
   // Consider to change text width and display checkbox
   useEffect(() => {
@@ -55,7 +57,7 @@ const HistoryRecord = forwardRef(({ index, data, inDeletionMode, checked, onChec
     }
   }, [inDeletionMode])
 
-
+  // Allows to call to the following functions by ref
   useImperativeHandle(ref, () => ({
     unswipe
   }), [])
@@ -68,9 +70,19 @@ const HistoryRecord = forwardRef(({ index, data, inDeletionMode, checked, onChec
     // Send POST request to store in server and local
     // or store in local only
     if (!isSaved) {
-      showToast("Đã lưu!")
+      request.save(id).then(res => {
+        showToast("Đã lưu!")
+        console.log(res.data)
+      }).catch(msg => console.log(`Reject saving: ${msg}`))
+
     }
-    else showToast("Hủy lưu!")
+    else {
+      console.log(Axios.getUri())
+      request.save(id).then(res => {
+        showToast("Hủy lưu!")
+        console.log(res.data)
+      }).catch(msg => console.log(`Reject saving: ${msg}`))
+    }
 
     setIsSaved(!isSaved)
     // resetSwiping.current()
@@ -177,7 +189,7 @@ const HistoryRecord = forwardRef(({ index, data, inDeletionMode, checked, onChec
         // android_ripple={{ color: 'grey' }}
         onPress={inDeletionMode ? onCheck : handlePress}
         onLongPress={inDeletionMode ? onCheck : onLongPress}
-        // onLayout={(e) => console.log(`TextContainer ${id}:`) || console.log(e.nativeEvent.layout)}
+      // onLayout={(e) => console.log(`TextContainer ${id}:`) || console.log(e.nativeEvent.layout)}
       >
         <ResizableAnimatedView
           style={styles.textContainer}

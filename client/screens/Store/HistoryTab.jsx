@@ -3,10 +3,12 @@ import { useEffect, useRef, useState } from 'react'
 import { Alert, BackHandler, FlatList, Pressable, RefreshControl, Text, TouchableOpacity, View } from 'react-native'
 import { Divider } from 'react-native-elements'
 import Icon from 'react-native-vector-icons/FontAwesome5'
+import { LoadingModal } from 'react-native-loading-modal'
 import HistoryRecord from './HistoryRecord'
 import { MovableAnimatedView, initializePosition } from './AnimatedView'
 import { ResizableAnimatedView, initializeSize } from './AnimatedView'
 import { HistoryTabStyles as styles } from './style'
+import { useFetch } from './axios'
 
 // Store 2 main states of components: before and after changed
 // Created by practical purpose in this component and only used here
@@ -37,9 +39,10 @@ const listSize = initializeSize(100, listSizeState.before)
  * @returns 
  */
 const HistoryTab = (props) => {
-  const [dataset, setDataset] = useState([])
+  const [dataset, setDataset] = useState([]) // [...{ id, content, favour, viewTime }]
   const [resfreshing, setResfreshing] = useState(false)
-  const [isDeleting, setIsDeleting] = useState(false) // deletion mode
+  const [inDeletionMode, setInDeletionMode] = useState(false) // deletion mode
+  const [isDeleting, setIsDeleting] = useState(false) // determine to open loading modal
   const [allChecked, setAllChecked] = useState(false)
   const [pendingSet, setPendingSet] = useState(new Set(null))
   const [containerSize, setContainerSize] = useState(initializeSize(0, 0))
@@ -54,16 +57,22 @@ const HistoryTab = (props) => {
   const selfClosed = useRef(true) // determine close action of an item called by itself or other item
   // const containerSize = useRef(initializeSize(0, 0))
 
+  const request = useFetch('sentence')
+
   /**
    * GET data from server and render on screen
    */
   useEffect(() => {
-    setDataset(require('./mock_dataset.json'))
+    request.getHistory().then(res => {
+      setDataset(res.data.data)
+    }).catch(msg => console.log(`Get history records: ${msg}`)) // TRACE
+
     resizableList.current.changeHeight(listSizeState.before)
+
     // handle back gesture; not worked
-    BackHandler.addEventListener("hardwareBackPress", () => {
-      if (isDeleting) closeDeletionMode()
-    })
+    // BackHandler.addEventListener("hardwareBackPress", () => {
+    //   if (inDeletionMode) closeDeletionMode()
+    // })
   }, [])
 
   useEffect(() => {
@@ -76,14 +85,14 @@ const HistoryTab = (props) => {
    * Open deletion mode
    */
   useEffect(() => {
-    if (isDeleting) {
+    if (inDeletionMode) {
       deleteNavBar.current.verticalShift(deleteNavBarState.after)
       movableList.current.verticalShift(listState.after)
       resizableList.current.changeHeight(listSizeState.after)
       deleteButton.current.verticalShift(deleteButtonState.after)
       unswipeItem(true)
     }
-  }, [isDeleting])
+  }, [inDeletionMode])
 
   /**
    * Display alert before deleting
@@ -106,10 +115,54 @@ const HistoryTab = (props) => {
     Alert.alert("Bạn có muốn xóa không?", undefined, [ConfirmButton, CancelButton], { cancelable: true })
   }
 
-  const deleteRecord = deletedId => {
+  const deleteRecord = (deletedId) => {
     // send DELETE request first
-    console.log(deletedId) // TEST
-    setDataset(dataset.filter(record => record.id != deletedId))
+    request.delete(deletedId).then(res => {
+      setDataset(dataset.filter(record => record.id != deletedId))
+
+      console.log(res.data) // TEST
+    }).catch(msg => console.log(`deleteRecord: ${msg}`)) // TRACE
+  }
+
+  /**
+   * Send DELETE requests first. If done, set new dataset by removing records exist in pending set,
+   * then clear the pending set and close deletion mode (together with clearing pending set).
+   * This 2 operations will run async if placing both in the same function, 
+   * so consider to put later one in useEffect() or other solutions.
+   */
+  const deleteMultipleRecords = () => {
+    setIsDeleting(true) // open loading modal
+
+    const promises = new Array()
+
+    Promise.allSettled([...pendingSet].map(id => request.delete(id)))
+      .then((results) => {
+        setIsDeleting(false) // close loading modal
+        console.log(results) // TEST
+        // create an array contains rejected results (if any). An element has form: { id, reason }
+        const reasons = new Array()
+
+        results.forEach((res, index) =>
+          res.reason ? reasons.push({ id: Array.from(pendingSet)[index], reason: res.reason }) : null)
+
+        return reasons
+      })
+      .then(reasons => {
+        // if (reasons.length == 0) { // deleting all the specified has done
+        //   setDataset(dataset.filter((record) => !pendingSet.has(record.id)))
+        // } else {
+        // keep records that cannot be removed
+        const remaining = (id) => !pendingSet.has(id) || reasons.find(value => value.id == id)
+        setDataset(dataset.filter((record) => remaining(record.id)))
+        // }
+
+        if (reasons.length == 0) { // deleting all the specified has done
+          Alert.alert("Xóa thành công")
+        } else Alert.alert("Xóa thất bại")
+
+        closeDeletionMode()
+      })
+
   }
 
   /**
@@ -117,24 +170,20 @@ const HistoryTab = (props) => {
    */
   const refreshList = () => {
     setResfreshing(true)
-    try {
-      // send GET request and reload the list
-      setTimeout(() => {
-        const next_id = dataset[dataset.length - 1].id
-        setDataset([...dataset, { id: next_id + 1, value: dataset[1].value + next_id, saved: false }])
-        if (isDeleting) closeDeletionMode()
-        setResfreshing(false)
-      }, 1010)
-    } catch (e) {
-      console.log(e)
+    // send GET request and reload the list
+    request.getHistory().then(res => {
+      setDataset(res.data.data)
       setResfreshing(false)
-    }
+    }).catch(msg => {
+      console.log(`Refresh history records: ${msg}`) // TRACE
+      setResfreshing(false)
+    })
   }
 
   const markAndOpenDeletionMode = (id) => {
     if (pendingSet.size != 0) setPendingSet(new Set())
     modifyPendingSet(false, id) // mark the record long-pressed
-    setIsDeleting(true)
+    setInDeletionMode(true)
   }
 
   /**
@@ -181,9 +230,9 @@ const HistoryTab = (props) => {
   }
 
   const closeDeletionMode = () => {
-    if (!isDeleting) return
+    if (!inDeletionMode) return
 
-    setIsDeleting(false)
+    setInDeletionMode(false)
     // backward vertical shift is not shown, elements disappeared immidiately
     movableList.current.verticalShift(listState.before)
     resizableList.current.changeHeight(listSizeState.before)
@@ -194,19 +243,6 @@ const HistoryTab = (props) => {
     // unswipeItem()
 
     if (pendingSet.size != 0) setPendingSet(new Set())
-  }
-
-  /**
-   * Set new dataset by removing records exist in pending set,
-   * then clear the pending set and close deletion mode(included clearing pending set).
-   * This 2 operations will run async if placing both in the same function, 
-   * so consider to put later one in useEffect() or other solutions.
-   */
-  const deleteMultipleRecords = () => {
-    // printPending() // TEST
-    // send DELETE request, then reset dataset and pendingSet state.
-    setDataset(dataset.filter((record) => !pendingSet.has(record.id)))
-    closeDeletionMode()
   }
 
   // function printPending() { console.log("pending set: "); pendingSet.forEach((v) => { console.log(v) }) } // TEST
@@ -239,7 +275,7 @@ const HistoryTab = (props) => {
   // Sometimes next id is not set, which leads to allow 2 item to be swiped at the same time ???
   const onSwipableOpen = (id) => {
     if (typeof id !== 'number' || id < 0) throw "onSwipableOpen: Invalid passed id."
-    
+
     const hasSecondItemSwiped = typeof swipedItem.current == 'number' && swipedItem.current != id
 
     // unswipe the other
@@ -281,7 +317,7 @@ const HistoryTab = (props) => {
       <MovableAnimatedView
         style={{
           ...styles.deleteNavigationBar,
-          display: isDeleting ? 'flex' : 'none'
+          display: inDeletionMode ? 'flex' : 'none'
         }}
         initial={deleteNavBarPosition}
         byPercent={true}
@@ -340,7 +376,7 @@ const HistoryTab = (props) => {
                 <HistoryRecord
                   index={index}
                   data={item}
-                  inDeletionMode={isDeleting}
+                  inDeletionMode={inDeletionMode}
                   checked={pendingSet.has(item.id)}
                   onCheck={() => modifyPendingSet(false, item.id)}
                   onDelete={(reset) => askForDeletion(item.id, reset)}
@@ -348,14 +384,14 @@ const HistoryTab = (props) => {
                   onSwipableOpen={() => onSwipableOpen(item.id)}
                   onSwipableClose={onSwipableClose}
                   ref={ref => updateRef({ id: item.id, ref })}
-                  />
+                />
               )
             }}
           />
         </ResizableAnimatedView>
       </MovableAnimatedView>
       <MovableAnimatedView
-        style={{ ...styles.deleteButtonView, display: isDeleting ? 'flex' : 'none' }}
+        style={{ ...styles.deleteButtonView, display: inDeletionMode ? 'flex' : 'none' }}
         initial={deleteButtonPosition}
         byPercent={true}
         parentSize={containerSize}
@@ -373,6 +409,7 @@ const HistoryTab = (props) => {
           <Text style={{ textAlign: 'center' }}>Xóa</Text>
         </TouchableOpacity>
       </MovableAnimatedView>
+      <LoadingModal modalVisible={isDeleting} task='Đang xóa...'></LoadingModal>
     </View>
   )
 }
