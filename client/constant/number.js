@@ -29,6 +29,4 @@ export default numbers = [
       {
         title: '0', key: '10', img:require("../assets/0.png")
       }
-  
-  
 ]

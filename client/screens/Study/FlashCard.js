@@ -15,14 +15,14 @@ import {Card} from 'react-native-paper';
 import {COLORS} from '../../constant'
 import alphabetdata from "../../constant/alphabetdata";
 import numbers from "../../constant/number";
-
+import IonIcon from '@expo/vector-icons/Ionicons'
 //dimention
 var height  = Dimensions.get('window').height;
 var width = Dimensions.get('window').width;
 
 //data
 const sentence = alphabetdata;
-const number = number;
+const number = numbers;
 
 //style
 const style = StyleSheet.create({
@@ -124,102 +124,12 @@ const style = StyleSheet.create({
   },
 })
 const Flashcard = ()=>{
-  //data alphabet
-  // const [sentence, setSentence] =  useState([
-  //   {
-  //     mean: 'A', key: '1', img:require("../../assets/a.jpg")
-  //   },
-  //   {
-  //     mean: 'B', key: '2',img: require("../../assets/b.jpg")
-  //   },
-  //   {
-  //     mean: 'C', key: '3',img:require("../../assets/c.jpg")
-  //   },
-  //   {
-  //     mean: 'D', key: '4',img: require("../../assets/d.jpg")
-  //   },
-  //   {
-  //     mean: 'E', key: '5',img: require("../../assets/e.jpg")
-  //   },
-  //   {
-  //     mean: 'G', key: '6',img: require("../../assets/g.jpg")
-  //   },
-  //   {
-  //     mean: 'H', key: '7',img: require("../../assets/h.jpg")
-  //   },
-  //   {
-  //     mean: 'I', key: '8',img: require("../../assets/i.jpg")
-  //   },
-  //   {
-  //     mean: 'K', key: '9',img: require("../../assets/k.jpg")
-  //   },
-  //   {
-  //     mean: 'L', key: '10',img: require("../../assets/l.jpg")
-  //   },
-  //   {
-  //     mean: 'M', key: '11',img: require("../../assets/m.jpg")
-  //   },
-  //   {
-  //     mean: 'N', key: '12',img: require("../../assets/icon.png")
-  //   },
-  //   {
-  //     mean: 'O', key: '13',img: require("../../assets/icon.png")
-  //   },
-  //   {
-  //     mean: 'P', key: '14',img: require("../../assets/icon.png")
-  //   },
-  //   {
-  //     mean: 'Q', key: '15',img: require("../../assets/icon.png")
-  //   },
-  //   {
-  //     mean: 'F', key: '16',img: require("../../assets/icon.png")
-  //   },
-  //   {
-  //     mean: 'F', key: '17',img: require("../../assets/icon.png")
-  //   }
-  // ]);
-
-  //data number
-  // const [number, setNumber] = useState([
-  //   {
-  //     title: '1', key: '1', img:require("../../assets/1.png")
-  //   },
-  //   {
-  //     title: '2', key: '2', img:require("../../assets/2.png")
-  //   },
-  //   {
-  //     title: '3', key: '3', img:require("../../assets/3.png")
-  //   },
-  //   {
-  //     title: '4', key: '4', img:require("../../assets/4.png")
-  //   },
-  //   {
-  //     title:'5', key: '5',img:require("../../assets/5.png")
-  //   },
-  //   {
-  //     title: '6', key: '6', img:require("../../assets/6.png")
-  //   },
-  //   {
-  //     title: '7', key: '7', img:require("../../assets/7.png")
-  //   },
-  //   {
-  //     title:'8', key: '8', img:require("../../assets/8.png")
-  //   },
-  //   {
-  //     title:'9', key: '9', img:require("../../assets/9.png")
-  //   },
-  //   {
-  //     title: '0', key: '10', img:require("../../assets/0.png")
-  //   }
-
-
-  // ])
   const [title, setTitle] = useState([
     {
       title: 'Chữ cái',key: '1'
     },
     {
-      title: "Số", key: '2'
+      title: "Chữ số", key: '2'
     },
     {
       title: "Dấu", key: '3'
@@ -274,13 +184,11 @@ const Flashcard = ()=>{
           onPress={() => {
             navigation.goBack();
           }}>
-          <Text  style={{
-            position: "absolute",
-            top: 0,
-            left: -150,
-          }}>
-              Back
-          </Text>
+         <IonIcon name="arrow-back-outline" size={30} style={{
+                position: "absolute",
+                top: -12,
+                left: -140,
+            }}/>
           </TouchableOpacity>
         </View>
         <View>
@@ -292,7 +200,7 @@ const Flashcard = ()=>{
 
       {/*Title*/}
       <View>
-        <Text style = {{fontSize: 19, fontWeight:'bold', marginLeft: 15, marginTop:10}}>Chọn chủ đề flashcard?</Text>
+        <Text style = {{fontSize: 18, fontWeight:'600', marginLeft: 15, marginTop:10}}>CHỌN CHỦ ĐỀ FLASHCARD</Text>
       </View>
       <View style={{flexDirection: 'row', 
                     alignContent:'center', 
@@ -364,25 +272,21 @@ const Flashcard = ()=>{
         {
           number.map((i)=>{
             return (
-              <View style = {style.container}>
+              <View style = {style.container} key={i.key}>
                   <Animated.View style = {[{transform:[{rotateY: interpolateFront}]}, style.hidden]}>
                     <TouchableOpacity onPress={handleFlip} style = {{}}>                    
-
                       <View style ={style.card}>
                         <Text style = {style.text}>
                           {i.title}
                         </Text>
                       </View>
                     </TouchableOpacity>
-
                   </Animated.View>
-
                   <Animated.View style = {[style.back, style.hidden, {transform:[{rotateY: interpolateBack}]}]}>
                     <View style ={style.cardback}>
                     <TouchableOpacity onPress={handleFlip} style = {{}}>                    
                     <Image style = {style.img}source = {i.img}/>
                     </TouchableOpacity>
-
                     </View>
                   </Animated.View>
                 <Text>
@@ -413,11 +317,9 @@ const Flashcard = ()=>{
                       </TouchableOpacity>
                     </View>
                   </Animated.View>
-
                   <Animated.View style = {[style.back, style.hidden, {transform:[{rotateY: interpolateBack}]}]}>
                     <View style ={style.cardback}>
                     <TouchableOpacity activeOpacity={0.8} onPress={handleFlip} style = {{}}>                    
-
                     <Image style = {style.img}source = {i.img}/>
                     </TouchableOpacity>
                     </View>
@@ -435,8 +337,8 @@ const Flashcard = ()=>{
 
       {/* Expand*/}
       <View>
-        <Text style = {{fontSize: 19, fontWeight:'bold', marginLeft: 15, marginTop:20}}>
-          Có thể bạn thích?
+        <Text style = {{fontSize: 18, fontWeight:'600', marginLeft: 15, marginTop:20}}>
+          CÓ THỂ BẠN THÍCH?
         </Text>
       </View>
       <View style ={{marginLeft: width/15, 
@@ -452,23 +354,6 @@ const Flashcard = ()=>{
 
           </Card>
 
-        {/* <Modal visible = {modalOpen}  animationType="slide">
-          <View style=  {{
-                          backgroundColor:'green', 
-                          justifyContent:'center', 
-                          alignItems:'center',
-                          
-                          borderColor:"green"}}>
-            <View style = {{width:'90%'}}>
-            <Image source={require('../../assets/alphabet.jpg')}></Image>
-          <TouchableOpacity onPress={()=>setModalOpen(false)}>
-            <Icon name="close">
-            </Icon>
-          </TouchableOpacity>
-            </View>
-          
-          </View>  
-        </Modal>      */}
          <Modal
                animationType="slide"
                transparent={true}
@@ -488,7 +373,7 @@ const Flashcard = ()=>{
                            padding: 20,
                            alignItems: 'center'
                        }}>
-                          <Text style ={{fontSize:30}}> Bảng chữ cái</Text>
+                          <Text style ={{fontSize:20}}> BẢNG CHỮ CÁI</Text>
                         <Image source={require('../../assets/alphabet.jpg')} style = {{padding:0,resizeMode:'contain', width: '100%'}}/>
 
                            <View style={{
@@ -510,7 +395,7 @@ const Flashcard = ()=>{
                            }}>
                                <Text style={{
                                    textAlign: 'center', color: COLORS.white, fontSize: 20
-                               }}>Close</Text>
+                               }}>Đóng</Text>
                            </TouchableOpacity>
 
                            </View>
