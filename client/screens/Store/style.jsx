@@ -110,6 +110,11 @@ export const HistoryTabStyles = StyleSheet.create({
     alignItems: 'stretch',
     justifyContent: 'center',
     iconSize: 20,
+  },
+  emptyNotification: {
+    textAlign: 'center',
+    fontSize: 16,
+    paddingTop: '5%',
   }
 })
 

@@ -1,5 +1,6 @@
+import { useFocusEffect } from '@react-navigation/native'
 import Checkbox from 'expo-checkbox'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useContext, useEffect, useRef, useState } from 'react'
 import { Alert, FlatList, Pressable, RefreshControl, Text, ToastAndroid, TouchableOpacity, View } from 'react-native'
 import { Divider } from 'react-native-elements'
 import { LoadingModal } from 'react-native-loading-modal'
@@ -8,6 +9,7 @@ import { useFetch } from '../../server_connector'
 import { MovableAnimatedView, ResizableAnimatedView, initializePosition, initializeSize } from './AnimatedView'
 import HistoryRecord from './HistoryRecord'
 import { HistoryTabStyles as styles } from './style'
+import { StoreContext } from './StoreScreen'
 
 // Store 2 main states of components: before and after changed
 // Created by practical purpose in this component and only used here
@@ -37,7 +39,7 @@ const listSize = initializeSize(100, listSizeState.before)
  * @param {object} props 
  * @returns 
  */
-const HistoryTab = () => {
+const HistoryTab = ({ route }) => {
   const [dataset, setDataset] = useState([]) // [...{ id, content, favour, viewTime }]
   const [resfreshing, setResfreshing] = useState(false)
   const [inDeletionMode, setInDeletionMode] = useState(false) // deletion mode
@@ -56,7 +58,31 @@ const HistoryTab = () => {
   const selfClosed = useRef(true) // determine close action of an item called by itself or other item
   // const containerSize = useRef(initializeSize(0, 0))
 
+  const { focused, setFocused, dataChanged, setDataChanged } = useContext(StoreContext)
+
   const request = useFetch('sentence')
+
+  useFocusEffect(
+    useCallback(() => {
+      let willReload = false
+      // console.log(focused)
+
+      if (focused) {
+        setFocused(false)
+        willReload = true
+        closeDeletionMode()
+        unswipeItem()
+      }
+
+      if (willReload || dataChanged) {
+        setDataChanged(false)
+
+        request.getHistory().then(res => {
+          setDataset(res.data.data)
+        }).catch(msg => console.log(`Get history records: ${msg}`)) // TRACE
+      }
+    }, [])
+  )
 
   /**
    * GET data from server and render on screen
@@ -125,6 +151,7 @@ const HistoryTab = () => {
 
       console.log(res.data) // TEST
     }).catch(msg => {
+      setDataChanged(true)
       unswipeItem(true)
       console.log(`deleteRecord: ${msg}`) // TRACE
     })
@@ -158,12 +185,17 @@ const HistoryTab = () => {
 
         if (reasons.length == 0) { // deleting all the specified has done
           ToastAndroid.show("Xóa thành công", ToastAndroid.SHORT)
+
+          setDataChanged(true)
+          closeDeletionMode()
         } else if (reasons.length < pendingSet.size) {
           Alert.alert("Xóa thất bại", "Một số bản ghi chưa được xóa. Vui lòng kiểm tra kết nôi và thử lại")
+
+          setDataChanged(true)
+          closeDeletionMode()
         } else {
           Alert.alert("Xóa thất bại", "Vui lòng kiểm tra kết nôi và thử lại")
         }
-        closeDeletionMode()
       })
   }
 
@@ -200,9 +232,9 @@ const HistoryTab = () => {
    * This operation includes putting/removing all items into/from pending set
    * and set 'all' checkbox to true.
    */
-  const checkAll = useCallback(() => {
+  const checkAll = () => {
     inDeletionMode ? modifyPendingSet() : null
-  }, [inDeletionMode])
+  }
 
   /**
    * The main function which is responsible for checking/unchecking records while in deletion mode
@@ -307,7 +339,7 @@ const HistoryTab = () => {
   )
 
   const emptyHistoryNotification = () => (
-    <Text style={{ textAlign: 'center', fontSize: 16, paddingTop: '5%', paddingBottom: '50%' }}>Lịch sử trống</Text>
+    <Text style={styles.emptyNotification}>Lịch sử trống</Text>
   )
 
   return (
@@ -381,6 +413,7 @@ const HistoryTab = () => {
                   onLongPress={markAndOpenDeletionMode}
                   onSwipableOpen={onSwipableOpen}
                   onSwipableClose={onSwipableClose}
+                  setDataChanged={setDataChanged}
                   ref={ref => updateRef({ id: item.id, ref })}
                 />
               )

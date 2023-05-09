@@ -21,7 +21,7 @@ const showToast = (message) => {
  *  data: { id, content, favour, viewTime }
  */
 const HistoryRecord = forwardRef(({ index, data, inDeletionMode, checked, onCheck,
-  onDelete, onLongPress, onSwipableOpen, onSwipableClose }, ref) => {
+  onDelete, onLongPress, onSwipableOpen, onSwipableClose, setDataChanged }, ref) => {
 
   const value = data.content // translated text
 
@@ -72,19 +72,29 @@ const HistoryRecord = forwardRef(({ index, data, inDeletionMode, checked, onChec
 
   const saveRecord = (e) => {
     // Send POST request to store in server and/or local
-    if (!isSaved) {
-      request.changeSaving(data.id).then(res => {
-        showToast("Đã lưu!")
-        console.log(res.data)
-      }).catch(msg => console.log(`Reject saving: ${msg}`))
+    // if (!isSaved) {
+    //   request.changeSaving(data.id).then(res => {
+    //     showToast("Đã lưu!")
+    //     setDataChanged(true)
+    //   }).catch(msg => console.log(`Reject saving: ${msg}`))
 
-    }
-    else {
-      request.changeSaving(data.id).then(res => {
+    // }
+    // else {
+    //   request.changeSaving(data.id).then(res => {      
+    //     showToast("Hủy lưu!")
+    //     setDataChanged(true)
+    //   }).catch(msg => console.log(`Reject saving: ${msg}`))
+    // }
+    request.changeSaving(data.id).then(res => {      
+      setDataChanged(true)
+
+      // check by response
+      if (res.data.data.favor) {
+        showToast("Đã lưu!")
+      } else {
         showToast("Hủy lưu!")
-        console.log(res.data)
-      }).catch(msg => console.log(`Reject saving: ${msg}`))
-    }
+      }
+    }).catch(msg => console.log(`Reject saving: ${msg}`))
 
     setIsSaved(!isSaved)
     // resetSwiping.current()

@@ -1,11 +1,13 @@
-import { useEffect, useRef, useState } from 'react'
-import { Alert, FlatList, RefreshControl, View, Text } from 'react-native'
+import { useFocusEffect } from '@react-navigation/native'
+import { useCallback, useContext, useEffect, useRef, useState } from 'react'
+import { FlatList, RefreshControl, Text, View } from 'react-native'
 import { Divider } from 'react-native-elements'
+import { useFetch } from '../../server_connector'
 import SavedRecord from './SavedRecord'
 import { HistoryTabStyles as styles } from './style'
-import { useFetch } from '../../server_connector'
+import { StoreContext } from './StoreScreen'
 
-const SaveTab = () => {
+const SaveTab = ({ route }) => {
   const [dataset, setDataset] = useState([])
   const [resfreshing, setResfreshing] = useState(false)
 
@@ -13,23 +15,46 @@ const SaveTab = () => {
   const swipedItem = useRef(null) // sets new swiped item's index to this variable
   const selfClosed = useRef(true) // determine close action of an item called by itself or other item
 
+  const { focused, setFocused, dataChanged, setDataChanged } = useContext(StoreContext)
+
   const request = useFetch('sentence')
+
+  useFocusEffect(
+    useCallback(() => {
+      let willReload = false
+      console.log(dataChanged)
+
+      if (focused) {
+        setFocused(false)
+        willReload = true
+      }
+
+      if (willReload || dataChanged) {
+        setDataChanged(false)
+
+        request.getSavedRecords().then(res => {
+          setDataset(res.data.data)
+        }).catch(msg => console.log(`Get saved records: ${msg}`)) // TRACE
+      }
+    }, [])
+  )
 
   useEffect(() => {
     request.getSavedRecords().then(res => {
       setDataset(res.data.data)
-    }).catch(msg => console.log(msg)) // TRACE
+    }).catch(msg => console.log(`Get saved records: ${msg}`)) // TRACE
   }, [])
 
   const unsaveRecord = (id) => {
     // send POST request and/or store in local
     request.changeSaving(id)
       .then(res => {
+        setDataChanged(true) // 
         setDataset(dataset.filter((item, idx) => item.id !== id))
       })
       .catch(msg => console.log(`unsaveRecord: ${msg}`)) // TRACE
 
-      if (swipedItem.current === id) { // may place in useEffect
+    if (swipedItem.current === id) { // may place in useEffect
       listItems.splice(listItems.findIndex((item, idx) => item.id == id), 1)
       swipedItem.current = null
     }
@@ -91,11 +116,11 @@ const SaveTab = () => {
   )
 
   const emptyHistoryNotification = () => (
-    <Text style={{ textAlign: 'center', fontSize: 16, paddingTop: '5%', paddingBottom: '50%' }}>Danh sách trống</Text>
+    <Text style={styles.emptyNotification}>Danh sách trống</Text>
   )
 
   return (
-    <View>
+    <View style={{ flex: 1 }}>
       <FlatList
         style={styles.recordList}
         ItemSeparatorComponent={separator}

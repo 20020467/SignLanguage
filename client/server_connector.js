@@ -2,10 +2,11 @@ import axios from 'axios'
 import { API_HOST, API_TOKEN } from '@env'
 
 // axios.CancelToken ?
-export const Axios = axios.create({
+
+const Axios = axios.create({
   baseURL: `${API_HOST}`,
   headers: { Authorization: `Bearer ${API_TOKEN}` },
-  timeout: 1500,
+  timeout: 10000,
   timeoutErrorMessage: "timeout"
 })
 
@@ -16,9 +17,9 @@ export const useFetch = (resource) => {
   switch (resource) {
     case 'sentence':
       return {
-        getHistory:  (config) =>  Axios.get(`${destination}/all`, config),
-        delete:  (id, config) =>  Axios.delete(`${destination}/${id}`, config),
-        changeSaving:  (id, config) =>  Axios.get(`${destination}/like/${id}`, config),
+        getHistory: (config) => Axios.get(`${destination}/all`, config),
+        delete: (id, config) => Axios.delete(`${destination}/${id}`, config),
+        changeSaving: (id, config) => Axios.get(`${destination}/like/${id}`, config),
         getSavedRecords: async (config) => await Axios.get(`${destination}/favour`, config),
       }
 
