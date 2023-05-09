@@ -47,9 +47,9 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     flexWrap: "wrap-reverse",
 
-    gap: 10,
+    gap: 15,
+    marginLeft: 15,
     marginBottom: 10,
-    marginLeft: 5,
     marginTop: 10,
   },
   imgWrapItem: {
@@ -58,12 +58,12 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   img: {
-    width: 105,
-    height: 105,
+    width: 90,
+    height: 90,
     borderRadius: 10,
   },
   text: {
-    fontSize: 25,
+    fontSize: 17,
     marginTop: 9,
     marginLeft: 5,
     marginBottom: 10,

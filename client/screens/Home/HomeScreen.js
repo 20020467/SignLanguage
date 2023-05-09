@@ -13,6 +13,7 @@ import {
 } from "react-native";
 import React, { useContext, useEffect, useLayoutEffect, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
+import { useRoute } from "@react-navigation/native";
 import Header from "../../components/Header";
 import Icon from "react-native-vector-icons/FontAwesome";
 import Send from "react-native-vector-icons/Feather";
@@ -27,49 +28,24 @@ import axios from "axios";
 const HomeScreen = () => {
   const navigation = useNavigation();
   const { token, user } = useContext(AppContext);
-  // console.log(user);
-  // console.log(token);
+  const route = useRoute();
+  const item = route.params?.sentence;
 
   const axiosOptions = {
     headers: {
-      "x-access-token": token,
+      Authorization: "Bearer " + token,
     },
   };
 
   const [sentence, setSentence] = useState();
-  const [sentenceSend, setSentenceSend] = useState();
+  const [sentenceSend, setSentenceSend] = useState(item);
   const [star, setStar] = useState(false);
   const [word, setWord] = useState();
+  const [idSentence, setIdSentence] = useState();
 
   const [isRecording, setIsRecording] = useState(false);
 
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      headerShown: false,
-    });
-  }, []);
-
-  const handelSend = async () => {
-    // const data = {
-    //   sentence: sentence,
-    // };
-    // console.log(data);
-    // try {
-    //   console.log("fetch");
-    //   const res = await axios.put(
-    //     // `${API_HOST}/api/users/edit/username`,  đường dẫn api ở đây
-    //     data,
-    //     axiosOptions
-    //   );
-    //   const Response = res.data;
-    //   console.log(Response);
-    //   // alert("Thay đổi username thành công");
-    // } catch (error) {
-    //   let response = error.response.data;
-    //   console.log(response);
-    // }
-    Keyboard.dismiss();
-    setSentenceSend(sentence);
+  const splitSentence = (sentence) => {
     var arrTu = sentence?.split(" ");
     var arrKetQua = [];
     for (var i = 0; i < arrTu.length; i++) {
@@ -77,17 +53,59 @@ const HomeScreen = () => {
         arrKetQua.push(arrTu[i]);
       }
     }
-    setWord(arrKetQua);
+    return arrKetQua;
+  };
+
+  useEffect(() => {
+    if (item !== undefined) {
+      setSentenceSend(item);
+      var arrResult = splitSentence(item);
+      setWord(arrResult);
+    }
+  }, [item]);
+
+  const handelSend = async () => {
+    Keyboard.dismiss();
+    setSentenceSend(sentence);
+    var arrResult = splitSentence(sentence);
+    setWord(arrResult);
+
+    const data = {
+      content: sentence,
+    };
+    console.log(data);
+    try {
+      const res = await axios.post(
+        `${API_HOST}/api/sentence`,
+        data,
+        axiosOptions
+      );
+      console.log(res.data);
+      if (res.data.message == "true") {
+        setStar(true);
+      } else {
+        setStar(false);
+      }
+      setIdSentence(res.data.data.id);
+    } catch (error) {
+      let response = error.response.data;
+      if (response.error == "Internal Server Error") {
+        console.log("loi");
+      }
+    }
   };
 
   const handelStar = async () => {
+    console.log(idSentence);
     setStar(!star);
-
-    if (!star) {
-      const data = {
-        sentence: sentenceSend,
-      };
-      console.log(data);
+    try {
+      const res = await axios.get(
+        `${API_HOST}/api/sentence/like/` + idSentence,
+        axiosOptions
+      );
+      console.log(res.data.message);
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -146,11 +164,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#F3F2F3",
-    // backgroundColor: "white",
   },
   body: {
     flex: 1,
-    // backgroundColor: "pink",
     marginBottom: 10,
     paddingHorizontal: 13,
     paddingTop: 7,
@@ -160,8 +176,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#E7E3E3",
     borderRadius: 10,
     elevation: 5,
-    // justifyContent: "center",
-    // alignItems: "center",
     marginBottom: 10,
     display: "flex",
     flexDirection: "row",

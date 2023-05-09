@@ -9,53 +9,119 @@ import {
   TextInput,
   TouchableOpacity,
 } from "react-native";
-import React from "react";
+import React, { useCallback, useContext, useEffect } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { useState } from "react";
+import { API_HOST } from "@env";
+import axios from "axios";
+import { AppContext } from "../../context/AppContext";
+import Icon from "react-native-vector-icons/Ionicons";
 
 const ProfileScreen = () => {
   const navigation = useNavigation();
-  const user = {
-    username: "Quyet",
-    password: "123456",
-    email: "quyet@gmail.com",
-    phone: "123456789",
+  const { token } = useContext(AppContext);
+  const [user, setUser] = useState();
+  const [loading, setLoading] = useState(false);
+
+  const axiosOptions = {
+    headers: {
+      Authorization: "Bearer " + token,
+    },
   };
 
-  const [username, setUsername] = useState(user.username);
-  const [email, setEmail] = useState(user.email);
-  const [password, setPassword] = useState(user.password);
-  const [phone, setphone] = useState(user.phone);
+  const [input, setInput] = useState({
+    username: "",
+    email: "",
+    phone: "",
+  });
+  const [warning, setWarning] = useState({
+    username: "",
+    email: "",
+    phone: "",
+  });
 
-  const handleUpdateUsername = async () => {
-    if (username !== user.username) {
-      console.log(username);
+  const getUser = useCallback(async () => {
+    try {
+      const res = await axios.get(`${API_HOST}/api/auth`, axiosOptions);
+      setUser(res.data.data);
+    } catch (error) {
+      console.log(error);
+    }
+  }, []);
+
+  useEffect(() => {
+    getUser();
+  }, []);
+
+  useEffect(() => {
+    if (user) {
+      setInput({
+        username: user.username,
+        email: user.email,
+        phone: user.phone,
+      });
+    }
+  }, [user]);
+
+  const isValid = () => {
+    console.log(input);
+    let valid = true;
+    if (
+      input.username === user.username &&
+      input.email === user.email &&
+      input.phone === user.phone
+    ) {
+      alert("Thông tin chưa thay đổi");
     } else {
-      console.log("username not change");
+      if (!isValidEmail(input.email)) {
+        setWarning((prevState) => ({
+          ...prevState,
+          email: "Email khong hop le",
+        }));
+        valid = false;
+      }
+      if (!isPhone(input.phone)) {
+        setWarning((prevState) => ({
+          ...prevState,
+          phone: "Số điện thoại không đúng định dạng",
+        }));
+        valid = false;
+      }
+
+      if (valid) {
+        handelSave();
+      }
     }
   };
 
-  const handleUpdateEmail = async () => {
-    if (email !== user.email) {
-      console.log(email);
-    } else {
-      alert("email not change");
-    }
-  };
+  function isValidEmail(email) {
+    const pattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return pattern.test(email);
+  }
 
-  const handleUpdatePassword = async () => {
-    if (password !== user.password) {
-      console.log(password);
-    } else {
-      alert("Password not change");
-    }
-  };
+  function isPhone(phone) {
+    const pattern = /((09|03|07|08|05)+([0-9]{8})\b)/g;
+    return pattern.test(phone);
+  }
 
-  const handleUpdatePhone = async () => {
-    if (phone !== user.phone) {
-      console.log(phone);
-    } else {
-      alert("phone not change");
+  const handelSave = async () => {
+    setLoading(true);
+    try {
+      const res = await axios.put(
+        `${API_HOST}/api/auth/update`,
+        input,
+        axiosOptions
+      );
+      if (res.data.status == "OK") {
+        setLoading(false);
+        alert("Thay đổi thông tin thành công!");
+      } else {
+        alert("Thay đổi thông tin không thành công!");
+      }
+    } catch (error) {
+      console.log(error);
+      setLoading(false);
+      alert("Thay đổi thông tin không thành công!");
     }
   };
 
@@ -64,91 +130,117 @@ const ProfileScreen = () => {
       <View>
         <ScrollView>
           <View style={styles.header}>
+            <TouchableOpacity style={styles.back}>
+              <Icon
+                style={{ fontSize: 28 }}
+                name="arrow-back"
+                onPress={() => {
+                  navigation.goBack();
+                }}
+              />
+            </TouchableOpacity>
             <Image
               style={styles.img}
-              source={require("../../assets/img/icon.png")}
+              source={require("../../assets/img/cat.jpg")}
             ></Image>
-            <TouchableOpacity>
-              <Text style={{ color: "#0C8CE9", marginTop: 10 }}>
-                Change profile photo
-              </Text>
-            </TouchableOpacity>
+            {loading ? (
+              <Image
+                style={styles.loading}
+                source={require("../../assets/img/Spinner-1s-200pxNew.gif")}
+              />
+            ) : (
+              <TouchableOpacity style={styles.save} onPress={isValid}>
+                <Text style={{ fontSize: 18, fontFamily: "Poppins-Regular" }}>
+                  Lưu
+                </Text>
+              </TouchableOpacity>
+            )}
           </View>
 
           <View style={styles.body}>
             <View style={styles.item}>
-              <Text style={styles.text}>Username</Text>
+              <Text style={styles.text}>Tên đăng nhập</Text>
               <TextInput
-                onChangeText={(text) => setUsername(text)}
-                placeholder="Username"
-                defaultValue={user.username}
+                placeholder="Tên đăng nhập"
+                defaultValue={user?.username}
                 style={styles.inputText}
+                onFocus={() =>
+                  setWarning((prevState) => ({ ...prevState, username: "" }))
+                }
+                onChangeText={(val) =>
+                  setInput((prevState) => ({ ...prevState, username: val }))
+                }
               />
-              <TouchableOpacity onPress={handleUpdateUsername}>
-                <Text style={styles.update}>Update</Text>
-              </TouchableOpacity>
+              <Text style={styles.warning}>{warning.username}</Text>
             </View>
 
             <View style={styles.item}>
               <Text style={styles.text}>Email</Text>
               <TextInput
-                onChangeText={(text) => setEmail(text)}
                 placeholder="Email"
-                defaultValue={user.email}
+                defaultValue={user?.email}
                 style={styles.inputText}
                 keyboardType="email-address"
+                onFocus={() =>
+                  setWarning((prevState) => ({ ...prevState, email: "" }))
+                }
+                onChangeText={(val) =>
+                  setInput((prevState) => ({ ...prevState, email: val }))
+                }
               />
-              <TouchableOpacity onPress={handleUpdateEmail}>
-                <Text style={styles.update}>Update</Text>
-              </TouchableOpacity>
+              <Text style={styles.warning}>{warning.email}</Text>
             </View>
 
             <View style={styles.item}>
-              <Text style={styles.text}>Password</Text>
+              <Text style={styles.text}>Mật khẩu</Text>
               <TextInput
-                onChangeText={(text) => setPassword(text)}
-                placeholder="Password"
-                defaultValue={user.password}
+                placeholder="Mật khẩu"
+                defaultValue={"123456"}
                 style={styles.inputText}
-                // keyboardType="visible-password"assads
                 secureTextEntry={true}
+                editable={false}
               />
-              <TouchableOpacity onPress={handleUpdatePassword}>
-                <Text style={styles.update}>Update</Text>
-              </TouchableOpacity>
+              <Text style={styles.warning}></Text>
             </View>
 
             <View style={styles.item}>
-              <Text style={styles.text}>Phone</Text>
+              <Text style={styles.text}>Số điện thoại</Text>
               <TextInput
-                onChangeText={(text) => setphone(text)}
-                placeholder="Phone"
-                defaultValue={user.phone}
+                placeholder="Số điện thoại"
+                defaultValue={user?.phone}
                 style={styles.inputText}
                 keyboardType="number-pad"
+                onFocus={() =>
+                  setWarning((prevState) => ({ ...prevState, phone: "" }))
+                }
+                onChangeText={(val) =>
+                  setInput((prevState) => ({ ...prevState, phone: val }))
+                }
               />
-              <TouchableOpacity onPress={handleUpdatePhone}>
-                <Text style={styles.update}>Update</Text>
-              </TouchableOpacity>
+              <Text style={styles.warning}>{warning.phone}</Text>
             </View>
           </View>
+
           <TouchableOpacity
+            style={styles.ChangePassword}
             onPress={() => {
-              console.log("bakc");
-              navigation.goBack();
-            }}
-            style={{
-              position: "absolute",
-              top: 40,
-              left: 20,
+              navigation.navigate("ChangePassword");
             }}
           >
-            <Text>Back</Text>
+            <Text style={{ fontSize: 20, fontFamily: "Poppins-Regular" }}>
+              Thay đổi mật khẩu
+            </Text>
           </TouchableOpacity>
-
-          <Button title="logout" onPress={() => navigation.navigate("SignIn")}>
-            Log out
-          </Button>
+          <TouchableOpacity
+            style={styles.logoutButton}
+            onPress={() => {
+              navigation.navigate("SignIn");
+            }}
+          >
+            <Text style={{ fontSize: 20, fontFamily: "Poppins-Regular" }}>
+              Đăng xuất
+            </Text>
+          </TouchableOpacity>
         </ScrollView>
       </View>
     </SafeAreaView>
@@ -161,37 +253,77 @@ const styles = StyleSheet.create({
   background: {
     flex: 1,
   },
+
   header: {
-    marginTop: 40,
     justifyContent: "center",
     alignItems: "center",
+    marginTop: 40,
   },
-  body: {
-    marginBottom: 40,
-    padding: 15,
+  back: {
+    position: "absolute",
+    top: 5,
+    left: 20,
   },
   img: {
     width: 80,
     height: 80,
     borderRadius: 50,
   },
+  save: {
+    position: "absolute",
+    right: 20,
+    top: 5,
+  },
+  loading: {
+    width: 50,
+    height: 50,
+    position: "absolute",
+    right: 15,
+    top: 0,
+  },
+  body: {
+    marginBottom: 40,
+    padding: 20,
+  },
   item: {
     marginVertical: 10,
   },
+
   text: {
-    opacity: 0.5,
     marginBottom: 5,
+    fontFamily: "Poppins-Regular",
+    fontSize: 16,
   },
   inputText: {
-    fontSize: 16,
+    fontSize: 14,
     borderBottomWidth: 1,
     borderColor: "#607D8B",
     marginBottom: 10,
+    // opacity: 0.5,
+    fontFamily: "Poppins-Regular",
   },
-  update: {
-    position: "absolute",
-    right: 0,
-    top: -50,
-    opacity: 0.5,
+  warning: {
+    color: "red",
+    marginTop: -10,
+    fontFamily: "Poppins-Regular",
+  },
+  ChangePassword: {
+    marginHorizontal: 50,
+    marginBottom: 10,
+    height: 50,
+    backgroundColor: "#9FD0E6",
+    borderRadius: 8,
+    justifyContent: "center",
+    alignItems: "center",
+    // elevation: 2,
+  },
+  logoutButton: {
+    marginHorizontal: 50,
+    height: 50,
+    backgroundColor: "#9FD0E6",
+    borderRadius: 8,
+    justifyContent: "center",
+    alignItems: "center",
+    elevation: 2,
   },
 });

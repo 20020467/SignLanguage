@@ -4,12 +4,12 @@
     "slug": "ProjectTest",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/img/icon.png",
+    "icon": "./assets/img/cat.jpg",
     "userInterfaceStyle": "light",
     "splash": {
       "image": "./assets/img/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#000000"
     },
     "assetBundlePatterns": [
       "**/*"
@@ -30,8 +30,8 @@
       [
         "@react-native-voice/voice",
         {
-          "microphonePermission": "Allow Voice to Text Tutorial to access the microphone",
-          "speechRecognitionPermission": "Allow Voice to Text Tutorial to securely recognize user speech"
+          "microphonePermission": "Allow Voice to SignLanuage to access the microphone",
+          "speechRecognitionPermission": "Allow Voice to SignLanuage to securely recognize user speech"
         }
       ]
     ]
