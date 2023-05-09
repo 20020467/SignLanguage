@@ -1,14 +1,13 @@
 import Checkbox from 'expo-checkbox'
-import { useEffect, useRef, useState } from 'react'
-import { Alert, BackHandler, FlatList, Pressable, RefreshControl, Text, TouchableOpacity, View } from 'react-native'
+import { useCallback, useEffect, useRef, useState } from 'react'
+import { Alert, FlatList, Pressable, RefreshControl, Text, ToastAndroid, TouchableOpacity, View } from 'react-native'
 import { Divider } from 'react-native-elements'
-import Icon from 'react-native-vector-icons/FontAwesome5'
 import { LoadingModal } from 'react-native-loading-modal'
+import Icon from 'react-native-vector-icons/FontAwesome5'
+import { useFetch } from '../../server_connector'
+import { MovableAnimatedView, ResizableAnimatedView, initializePosition, initializeSize } from './AnimatedView'
 import HistoryRecord from './HistoryRecord'
-import { MovableAnimatedView, initializePosition } from './AnimatedView'
-import { ResizableAnimatedView, initializeSize } from './AnimatedView'
 import { HistoryTabStyles as styles } from './style'
-import { useFetch } from './axios'
 
 // Store 2 main states of components: before and after changed
 // Created by practical purpose in this component and only used here
@@ -38,7 +37,7 @@ const listSize = initializeSize(100, listSizeState.before)
  * @param {object} props 
  * @returns 
  */
-const HistoryTab = (props) => {
+const HistoryTab = () => {
   const [dataset, setDataset] = useState([]) // [...{ id, content, favour, viewTime }]
   const [resfreshing, setResfreshing] = useState(false)
   const [inDeletionMode, setInDeletionMode] = useState(false) // deletion mode
@@ -77,8 +76,11 @@ const HistoryTab = (props) => {
 
   useEffect(() => {
     // Set 'all' checkbox value
-    if (pendingSet.size == dataset.length) setAllChecked(true) // may happen due to async executing
-    else setAllChecked(false)
+    if (inDeletionMode) {
+      // console.log(`(after) pendingSet size: ${pendingSet.size}, dataset size: ${dataset.length}`) // TEST
+      if (pendingSet.size == dataset.length) setAllChecked(true) // may happen due to async executing
+      else setAllChecked(false)
+    }
   }, [pendingSet, dataset]) // run mainly based on pendingSet
 
   /**
@@ -96,6 +98,7 @@ const HistoryTab = (props) => {
 
   /**
    * Display alert before deleting
+   * Cannot persist by useCallback
    * @param {number} id record's id
    * @param {function | undefined} cancelHandler
    */
@@ -109,7 +112,7 @@ const HistoryTab = (props) => {
 
     const CancelButton = {
       text: "Không",
-      onPress: cancelHandler ?? undefined,
+      // onPress: cancelHandler,
     }
 
     Alert.alert("Bạn có muốn xóa không?", undefined, [ConfirmButton, CancelButton], { cancelable: true })
@@ -121,15 +124,12 @@ const HistoryTab = (props) => {
       setDataset(dataset.filter(record => record.id != deletedId))
 
       console.log(res.data) // TEST
-    }).catch(msg => console.log(`deleteRecord: ${msg}`)) // TRACE
+    }).catch(msg => {
+      unswipeItem(true)
+      console.log(`deleteRecord: ${msg}`) // TRACE
+    })
   }
 
-  /**
-   * Send DELETE requests first. If done, set new dataset by removing records exist in pending set,
-   * then clear the pending set and close deletion mode (together with clearing pending set).
-   * This 2 operations will run async if placing both in the same function, 
-   * so consider to put later one in useEffect() or other solutions.
-   */
   const deleteMultipleRecords = () => {
     setIsDeleting(true) // open loading modal
 
@@ -138,7 +138,7 @@ const HistoryTab = (props) => {
     Promise.allSettled([...pendingSet].map(id => request.delete(id)))
       .then((results) => {
         setIsDeleting(false) // close loading modal
-        console.log(results) // TEST
+        // console.log(results) // TEST
         // create an array contains rejected results (if any). An element has form: { id, reason }
         const reasons = new Array()
 
@@ -157,77 +157,73 @@ const HistoryTab = (props) => {
         // }
 
         if (reasons.length == 0) { // deleting all the specified has done
-          Alert.alert("Xóa thành công")
-        } else Alert.alert("Xóa thất bại")
-
+          ToastAndroid.show("Xóa thành công", ToastAndroid.SHORT)
+        } else if (reasons.length < pendingSet.size) {
+          Alert.alert("Xóa thất bại", "Một số bản ghi chưa được xóa. Vui lòng kiểm tra kết nôi và thử lại")
+        } else {
+          Alert.alert("Xóa thất bại", "Vui lòng kiểm tra kết nôi và thử lại")
+        }
         closeDeletionMode()
       })
-
   }
 
   /**
    * Pull down to refresh data
    */
-  const refreshList = () => {
+  const refreshList = useCallback(() => {
+    unswipeItem(true)
     setResfreshing(true)
-    // send GET request and reload the list
-    request.getHistory().then(res => {
-      setDataset(res.data.data)
-      setResfreshing(false)
-    }).catch(msg => {
-      console.log(`Refresh history records: ${msg}`) // TRACE
-      setResfreshing(false)
-    })
-  }
 
-  const markAndOpenDeletionMode = (id) => {
-    if (pendingSet.size != 0) setPendingSet(new Set())
-    modifyPendingSet(false, id) // mark the record long-pressed
+    // send GET request and reload the list
+    request.getHistory()
+      .then(res => {
+        setDataset(res.data.data)
+      })
+      .catch(msg => {
+        console.log(`Refresh history records: ${msg}`) // TRACE
+        ToastAndroid.show('Không thể cập nhật. Vui lòng kiểm tra kết nối.', ToastAndroid.SHORT)
+      })
+      .finally(() => {
+        setResfreshing(false)
+        closeDeletionMode()
+      })
+  }, [])
+
+  const markAndOpenDeletionMode = useCallback((id) => {
+    setPendingSet(new Set().add(id))
     setInDeletionMode(true)
-  }
+    unswipeItem(true)
+  }, [])
 
   /**
    * Mark/Unmark all items in list.
    * This operation includes putting/removing all items into/from pending set
    * and set 'all' checkbox to true.
    */
-  const checkAll = () => {
-    let new_pending_set = new Set(pendingSet)
-
-    // triggered by user (when mark full of list)
-    if (!allChecked) {
-      dataset.forEach(record => new_pending_set.add(record.id)) // user case
-    } else new_pending_set = new Set() // user case; lack of auto case
-
-    setPendingSet(new_pending_set)
-    setAllChecked(!allChecked)
-  }
+  const checkAll = useCallback(() => {
+    inDeletionMode ? modifyPendingSet() : null
+  }, [inDeletionMode])
 
   /**
-   * Consider contains_all first, then get value of specific_id if contains_all is false.
-   * @param {boolean} contains_all mostly not used
-   * @param {number | undefined} specific_id
-   * @param {boolean | undefined} is_added not used
+   * The main function which is responsible for checking/unchecking records while in deletion mode
+   * @param {number | undefined} id
    */
-  const modifyPendingSet = (contains_all = false, specific_id = undefined) => {
-    if (!contains_all && typeof specific_id !== 'number') throw (`Invalid arguments. 'specific_id' must be a number.`)
-
-    // console.log(`modifyPendingSet(): contains_all: ${contains_all}, specific_id: ${specific_id}.`)
-
+  const modifyPendingSet = useCallback((id = undefined) => {
     let new_pending_set = new Set(pendingSet)
 
-    if (!contains_all) {
-      if (new_pending_set.has(specific_id)) {
-        new_pending_set.delete(specific_id)
-
-      }
-      else {
-        new_pending_set.add(specific_id)
-      }
+    if (typeof id == 'number') { // choose/remove specific item
+      new_pending_set.has(id) ?
+        new_pending_set.delete(id)
+        :
+        new_pending_set.add(id)
+    } else { // check/uncheck all
+      if (pendingSet.size !== dataset.length) {
+        dataset.forEach(record => new_pending_set.add(record.id))
+      } else new_pending_set = new Set()
     }
 
     setPendingSet(new_pending_set)
-  }
+  }, [pendingSet, dataset])
 
   const closeDeletionMode = () => {
     if (!inDeletionMode) return
@@ -242,7 +238,7 @@ const HistoryTab = (props) => {
 
     // unswipeItem()
 
-    if (pendingSet.size != 0) setPendingSet(new Set())
+    pendingSet.size !== 0 ? setPendingSet(new Set()) : null
   }
 
   // function printPending() { console.log("pending set: "); pendingSet.forEach((v) => { console.log(v) }) } // TEST
@@ -251,11 +247,32 @@ const HistoryTab = (props) => {
   // may refactor this
   const unswipeItem = (setNull = false) => {
     const current = swipedItem.current // number
+
     if (typeof current == 'number' && current >= 0) {
       listItems.find(item => item.id == current)?.ref.unswipe()
       if (setNull) swipedItem.current = null
     }
   }
+
+  // Sometimes next id is not set, which leads to allow 2 item to be swiped at the same time ???
+  const onSwipableOpen = useCallback((id) => {
+    if (typeof id !== 'number' || id < 0) throw "onSwipableOpen: Invalid passed id."
+
+    const hasSecondItemSwiped = typeof swipedItem.current == 'number' && swipedItem.current != id
+
+    // unswipe the other
+    if (hasSecondItemSwiped) {
+      unswipeItem() // calling with this condition allows user to swipe further without closing.
+      selfClosed.current = false // indicates that the previous item is unswiped by another.
+    }
+
+    swipedItem.current = id
+  })
+
+  const onSwipableClose = useCallback(() => {
+    if (selfClosed.current) swipedItem.current = null
+    else selfClosed.current = true
+  })
 
   /**
    * Cause new elements are created each rerendering, we should search for item by 
@@ -272,27 +289,8 @@ const HistoryTab = (props) => {
     else listItems.push({ id, ref }) // removed element is stilled added with ref is null ??
   }
 
-  // Sometimes next id is not set, which leads to allow 2 item to be swiped at the same time ???
-  const onSwipableOpen = (id) => {
-    if (typeof id !== 'number' || id < 0) throw "onSwipableOpen: Invalid passed id."
-
-    const hasSecondItemSwiped = typeof swipedItem.current == 'number' && swipedItem.current != id
-
-    // unswipe the other
-    if (hasSecondItemSwiped) {
-      unswipeItem() // calling with this condition allows user to swipe further without closing.
-      selfClosed.current = false // indicates that the previous item is unswiped by another.
-    }
-
-    swipedItem.current = id
-  }
-
-  const onSwipableClose = () => {
-    if (selfClosed.current) swipedItem.current = null
-    else selfClosed.current = true
-  }
-
-  const getContainerSize = (event) => {
+  // used to resizing list items
+  const getContainerSize = useCallback((event) => {
     const layout = event.nativeEvent.layout
     // containerSize.current.width = event.nativeEvent.x
     // containerSize.current.height = event.nativeEvent.y
@@ -300,7 +298,7 @@ const HistoryTab = (props) => {
       width: layout.width,
       height: layout.height,
     })
-  }
+  })
 
   const separator = () => (
     <View style={styles.separator}>
@@ -309,7 +307,7 @@ const HistoryTab = (props) => {
   )
 
   const emptyHistoryNotification = () => (
-    <Text style={{ textAlign: 'center', fontSize: 16 }}>Lịch sử trống</Text>
+    <Text style={{ textAlign: 'center', fontSize: 16, paddingTop: '5%', paddingBottom: '50%' }}>Lịch sử trống</Text>
   )
 
   return (
@@ -378,10 +376,10 @@ const HistoryTab = (props) => {
                   data={item}
                   inDeletionMode={inDeletionMode}
                   checked={pendingSet.has(item.id)}
-                  onCheck={() => modifyPendingSet(false, item.id)}
-                  onDelete={(reset) => askForDeletion(item.id, reset)}
-                  onLongPress={() => markAndOpenDeletionMode(item.id)}
-                  onSwipableOpen={() => onSwipableOpen(item.id)}
+                  onCheck={modifyPendingSet}
+                  onDelete={askForDeletion}
+                  onLongPress={markAndOpenDeletionMode}
+                  onSwipableOpen={onSwipableOpen}
                   onSwipableClose={onSwipableClose}
                   ref={ref => updateRef({ id: item.id, ref })}
                 />

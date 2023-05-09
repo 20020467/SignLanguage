@@ -3,7 +3,7 @@ import { Alert, FlatList, RefreshControl, View, Text } from 'react-native'
 import { Divider } from 'react-native-elements'
 import SavedRecord from './SavedRecord'
 import { HistoryTabStyles as styles } from './style'
-import { useFetch } from './axios'
+import { useFetch } from '../../server_connector'
 
 const SaveTab = () => {
   const [dataset, setDataset] = useState([])
@@ -21,18 +21,15 @@ const SaveTab = () => {
     }).catch(msg => console.log(msg)) // TRACE
   }, [])
 
-  const unsaveRecord = (index, id) => {
+  const unsaveRecord = (id) => {
     // send POST request and/or store in local
     request.changeSaving(id)
       .then(res => {
-        console.log(res.data) // TEST
         setDataset(dataset.filter((item, idx) => item.id !== id))
       })
       .catch(msg => console.log(`unsaveRecord: ${msg}`)) // TRACE
 
-    // refresh ref list based on id instead of index as listItems is created
-    // based on element rendering, which cannot assure the right order as in dataset
-    if (swipedItem.current === id) { // may place in useEffect
+      if (swipedItem.current === id) { // may place in useEffect
       listItems.splice(listItems.findIndex((item, idx) => item.id == id), 1)
       swipedItem.current = null
     }
@@ -55,14 +52,15 @@ const SaveTab = () => {
 
   const refreshList = e => {
     setResfreshing(true)
-      // send GET request and reload the list
-      request.getSavedRecords().then(res => {
+    // send GET request and reload the list
+    request.getSavedRecords()
+      .then(res => {
         setDataset(res.data.data)
-        setResfreshing(false)
-      }).catch(msg => {
-        console.log(`refreshList: ${msg}`) // TRACE
-        setResfreshing(false)
       })
+      .catch(msg => {
+        console.log(`refreshList: ${msg}`) // TRACE
+      })
+      .finally(() => setResfreshing(false))
   }
 
   // Sometimes next id is not set, which leads to allow 2 item to be swiped at the same time ???
@@ -93,7 +91,7 @@ const SaveTab = () => {
   )
 
   const emptyHistoryNotification = () => (
-    <Text style={{ textAlign: 'center', fontSize: 16 }}>Danh sách trống</Text>
+    <Text style={{ textAlign: 'center', fontSize: 16, paddingTop: '5%', paddingBottom: '50%' }}>Danh sách trống</Text>
   )
 
   return (
@@ -111,7 +109,7 @@ const SaveTab = () => {
             data={item}
             onSwipableOpen={() => onSwipableOpen(item.id)}
             onSwipableClose={onSwipableClose}
-            onUnsave={() => unsaveRecord(index, item.id)}
+            onUnsave={() => unsaveRecord(item.id)}
             ref={ref => updateRef({ id: item.id, ref })}
           />
         )}

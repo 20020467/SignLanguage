@@ -1,11 +1,11 @@
 import { useNavigation } from '@react-navigation/core'
 import PropTypes from 'prop-types'
-import { forwardRef, useImperativeHandle, useRef } from 'react'
+import { forwardRef, memo, useImperativeHandle, useRef } from 'react'
 import { Text, TouchableHighlight, TouchableOpacity, Animated } from 'react-native'
 import Icon from 'react-native-vector-icons/FontAwesome5'
-import { SavedRecordStyles as styles } from './style'
 import { RectButton } from 'react-native-gesture-handler'
 import Swipeable from 'react-native-gesture-handler/Swipeable'
+import { SavedRecordStyles as styles } from './style'
 
 const SavedRecord = forwardRef(({ data, onUnsave, onSwipableOpen, onSwipableClose }, ref) => {
   const value = data.content
@@ -86,9 +86,16 @@ const SavedRecord = forwardRef(({ data, onUnsave, onSwipableOpen, onSwipableClos
 })
 
 SavedRecord.propTypes = {
-  key: PropTypes.number,
-  data: PropTypes.string,
-  saved: PropTypes.bool,
+  // based on data from server
+  data: PropTypes.exact({
+    id: PropTypes.number,
+    content: PropTypes.string,
+    favor: PropTypes.bool,
+    viewTime: PropTypes.string,
+  }),
+  onUnsave: PropTypes.func,
+  onSwipableOpen: PropTypes.func,
+  onSwipableClose: PropTypes.func,
 }
 
-export default SavedRecord
+export default memo(SavedRecord)

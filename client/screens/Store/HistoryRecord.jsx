@@ -1,15 +1,14 @@
-import { getStateFromPath, useNavigation } from '@react-navigation/native'
+import { useNavigation } from '@react-navigation/native'
 import Checkbox from 'expo-checkbox'
 import PropTypes from 'prop-types'
-import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react'
-import { Animated, Pressable, Text, ToastAndroid, TouchableOpacity, View } from 'react-native'
-import Icon from 'react-native-vector-icons/FontAwesome5'
-import { OpacityAnimatedView } from './AnimatedView'
-import { getPercentValue, HistoryRecordStyles as styles } from './style'
-import { ResizableAnimatedView, initializeSize } from './AnimatedView'
-import Swipeable from 'react-native-gesture-handler/Swipeable'
+import { forwardRef, memo, useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react'
+import { Animated, Pressable, Text, ToastAndroid, TouchableOpacity } from 'react-native'
 import { RectButton } from 'react-native-gesture-handler'
-import { useFetch } from './axios'
+import Swipeable from 'react-native-gesture-handler/Swipeable'
+import Icon from 'react-native-vector-icons/FontAwesome5'
+import { useFetch } from '../../server_connector'
+import { OpacityAnimatedView, ResizableAnimatedView, initializeSize } from './AnimatedView'
+import { getPercentValue, HistoryRecordStyles as styles } from './style'
 
 const textViewSize = initializeSize(getPercentValue(styles.textContainer.width), 100) // unused
 
@@ -26,7 +25,8 @@ const HistoryRecord = forwardRef(({ index, data, inDeletionMode, checked, onChec
 
   const value = data.content // translated text
 
-  const [isSaved, setIsSaved] = useState(data.favour)
+  const [isSaved, setIsSaved] = useState(data.favor)
+  // should use Animated
   const [height, setHeight] = useState(styles.container.maxHeight) // initial list item height
   const [showCheckbox, setShowCheckbox] = useState(false)
   // const [textWidth, setTextWidth] = useState(getPercentValue(styles.textContainer.width))
@@ -41,6 +41,10 @@ const HistoryRecord = forwardRef(({ index, data, inDeletionMode, checked, onChec
   const navigation = useNavigation()
 
   const request = useFetch('sentence')
+
+  useEffect(() => {
+    setIsSaved(data.favor)
+  }, [data]) // data always is changed
 
   // Consider to change text width and display checkbox
   useEffect(() => {
@@ -62,13 +66,12 @@ const HistoryRecord = forwardRef(({ index, data, inDeletionMode, checked, onChec
     unswipe
   }), [])
 
-  const handlePress = (e) => {
+  const navigateAndTranslate = (e) => {
     navigation.navigate("HomeTab", { storedText: value })
   }
 
   const saveRecord = (e) => {
-    // Send POST request to store in server and local
-    // or store in local only
+    // Send POST request to store in server and/or local
     if (!isSaved) {
       request.changeSaving(data.id).then(res => {
         showToast("Đã lưu!")
@@ -87,8 +90,21 @@ const HistoryRecord = forwardRef(({ index, data, inDeletionMode, checked, onChec
     // resetSwiping.current()
   }
 
+  const onCheckHandler = useCallback(() => {
+    onCheck(data.id)
+  }, [onCheck])
+  const onDeleteHandler = useCallback(() => {
+    onDelete(data.id)
+  }, [onDelete])
+  const onLongPressHandler = useCallback(() => {
+    onLongPress(data.id)
+  }, [onLongPress])
+  const onSwipableOpenHandler = useCallback(() => {
+    onSwipableOpen(data.id)
+  }, [onSwipableOpen])
+
   // Set container height based on text element height at the first time of rendering
-  const handleTextLayout = (event) => {
+  const handleTextLayout = useCallback((event) => {
     const layout = event.nativeEvent.layout // text layout
     // 4: magic number
     if (layout.height < height - 4) {
@@ -97,13 +113,13 @@ const HistoryRecord = forwardRef(({ index, data, inDeletionMode, checked, onChec
         setHeight(styles.container.minHeight)
       } else setHeight(layout.height + 4)
     }
-  }
+  }, [height, styles.container.minHeight])
 
-  const unswipe = () => {
+  const unswipe = useCallback(() => {
     swipableRef.current.close()
-  }
+  }, [swipableRef])
 
-  const renderLeftActions = (progress, dragX) => {
+  const renderLeftActions = useCallback((progress, dragX) => {
     const translateX = dragX.interpolate({
       inputRange: [0, 50, 100], // convert percent to pixel
       outputRange: [-90, -70, -40],
@@ -116,7 +132,7 @@ const HistoryRecord = forwardRef(({ index, data, inDeletionMode, checked, onChec
     })
 
     return (
-      <RectButton style={styles.deleteButton} onPress={onDelete}>
+      <RectButton style={styles.deleteButton} onPress={onDeleteHandler}>
         <Animated.View
           style={
             {
@@ -137,7 +153,8 @@ const HistoryRecord = forwardRef(({ index, data, inDeletionMode, checked, onChec
         </Animated.View>
       </RectButton>
     )
-  }
+  }, [onDeleteHandler])
+
   const renderRightActions = (progress, dragX) => {
     const translateX = dragX.interpolate({
       inputRange: [-100, -50, 0], // convert percent to pixel
@@ -151,7 +168,7 @@ const HistoryRecord = forwardRef(({ index, data, inDeletionMode, checked, onChec
     })
 
     return (
-      <RectButton style={styles.deleteButton} onPress={onDelete}>
+      <RectButton style={styles.deleteButton} onPress={onDeleteHandler}>
         <Animated.View
           style={
             {
@@ -172,22 +189,20 @@ const HistoryRecord = forwardRef(({ index, data, inDeletionMode, checked, onChec
         </Animated.View>
       </RectButton>
     )
-  }
+  }//, [onDeleteHandler])
 
   return (
     <Swipeable
-      renderLeftActions={renderLeftActions}
-      renderRightActions={renderRightActions}
-      onSwipeableWillOpen={(direction) => onSwipableOpen()}
-      onSwipeableWillClose={(direction) => onSwipableClose()}
-      containerStyle={{ ...styles.container, height: height }}
+      renderLeftActions={inDeletionMode ? (() => null) : renderLeftActions}
+      renderRightActions={inDeletionMode ? (() => null) : renderRightActions}
+      onSwipeableWillOpen={onSwipableOpenHandler}
+      onSwipeableWillClose={onSwipableClose}
+      containerStyle={[styles.container, { height: height }]}
       ref={swipableRef}
     >
-      <Pressable
-        style={{ ...styles.mainView }}
-        // android_ripple={{ color: 'grey' }}
-        onPress={inDeletionMode ? onCheck : handlePress}
-        onLongPress={inDeletionMode ? onCheck : onLongPress}
+
+      <RectButton
+        style={styles.mainView}
       // onLayout={(e) => console.log(`TextContainer ${id}:`) || console.log(e.nativeEvent.layout)}
       >
         <ResizableAnimatedView
@@ -199,8 +214,8 @@ const HistoryRecord = forwardRef(({ index, data, inDeletionMode, checked, onChec
           <Pressable
             style={styles.textWrapper}
             // android_ripple={{ color: 'grey' }}
-            onPress={inDeletionMode ? onCheck : handlePress}
-            onLongPress={inDeletionMode ? onCheck : onLongPress}
+            onPress={inDeletionMode ? onCheckHandler : navigateAndTranslate}
+            onLongPress={inDeletionMode ? onCheckHandler : onLongPressHandler}
           >
             <Text onLayout={handleTextLayout} style={styles.text}>
               {value}
@@ -234,23 +249,29 @@ const HistoryRecord = forwardRef(({ index, data, inDeletionMode, checked, onChec
         >
           <Checkbox
             value={checked}
-            onValueChange={onCheck}
+            onValueChange={onCheckHandler}
           />
         </OpacityAnimatedView>
-      </Pressable>
+      </RectButton>
     </Swipeable>
   )
 })
 
 HistoryRecord.propTypes = {
-  id: PropTypes.number,
-  value: PropTypes.string,
-  saved: PropTypes.bool,
+  // based on data from server
+  data: PropTypes.exact({
+    id: PropTypes.number,
+    content: PropTypes.string,
+    favor: PropTypes.bool,
+    viewTime: PropTypes.string,
+  }),
   inDeletionMode: PropTypes.bool,
   checked: PropTypes.bool,
   onDelete: PropTypes.func,
   onLongPress: PropTypes.func,
   onCheck: PropTypes.func,
+  onSwipableOpen: PropTypes.func,
+  onSwipableClose: PropTypes.func,
 }
 
-export default HistoryRecord
+export default memo(HistoryRecord)

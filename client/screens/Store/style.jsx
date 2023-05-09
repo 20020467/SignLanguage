@@ -100,7 +100,7 @@ export const HistoryTabStyles = StyleSheet.create({
   recordList: {
   },
   separator: {
-    minHeight: 10,
+    height: 1,
     justifyContent: 'center'
   },
   deleteButtonView: {
