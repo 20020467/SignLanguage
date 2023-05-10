@@ -8,7 +8,7 @@ import Swipeable from 'react-native-gesture-handler/Swipeable'
 import Icon from 'react-native-vector-icons/FontAwesome5'
 import { useFetch } from '../../server_connector'
 import { OpacityAnimatedView, ResizableAnimatedView, initializeSize } from './AnimatedView'
-import { getPercentValue, HistoryRecordStyles as styles } from './style'
+import { getPercentValue, HistoryRecordStyles as styles } from '../styles'
 
 const textViewSize = initializeSize(getPercentValue(styles.textContainer.width), 100) // unused
 

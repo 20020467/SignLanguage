@@ -8,7 +8,7 @@ import Icon from 'react-native-vector-icons/FontAwesome5'
 import { useFetch } from '../../server_connector'
 import { MovableAnimatedView, ResizableAnimatedView, initializePosition, initializeSize } from './AnimatedView'
 import HistoryRecord from './HistoryRecord'
-import { HistoryTabStyles as styles } from './style'
+import { HistoryTabStyles as styles } from '../styles'
 import { StoreContext } from './StoreScreen'
 
 // Store 2 main states of components: before and after changed

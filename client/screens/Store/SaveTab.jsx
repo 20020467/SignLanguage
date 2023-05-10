@@ -4,7 +4,7 @@ import { FlatList, RefreshControl, Text, View } from 'react-native'
 import { Divider } from 'react-native-elements'
 import { useFetch } from '../../server_connector'
 import SavedRecord from './SavedRecord'
-import { HistoryTabStyles as styles } from './style'
+import { HistoryTabStyles as styles } from '../styles'
 import { StoreContext } from './StoreScreen'
 
 const SaveTab = ({ route }) => {

@@ -5,7 +5,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import HistoryTab from "./HistoryTab";
 import SaveTab from "./SaveTab";
-import { SECONDARY_1, SECONDARY_2, StoreScreenStyles as styles } from "./style";
+import { SECONDARY_1, SECONDARY_2, StoreScreenStyles as styles } from "../styles";
 
 const Tab = createMaterialTopTabNavigator()
 

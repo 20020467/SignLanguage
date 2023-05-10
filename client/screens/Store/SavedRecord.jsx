@@ -5,7 +5,7 @@ import { Text, TouchableHighlight, TouchableOpacity, Animated } from 'react-nati
 import Icon from 'react-native-vector-icons/FontAwesome5'
 import { RectButton } from 'react-native-gesture-handler'
 import Swipeable from 'react-native-gesture-handler/Swipeable'
-import { SavedRecordStyles as styles } from './style'
+import { SavedRecordStyles as styles } from '../styles'
 
 const SavedRecord = forwardRef(({ data, onUnsave, onSwipableOpen, onSwipableClose }, ref) => {
   const value = data.content
