@@ -6,7 +6,7 @@ import { Animated, Pressable, Text, ToastAndroid, TouchableOpacity } from 'react
 import { RectButton } from 'react-native-gesture-handler'
 import Swipeable from 'react-native-gesture-handler/Swipeable'
 import Icon from 'react-native-vector-icons/FontAwesome5'
-import { useFetch } from '../../server_connector'
+import { useFetch, Resources } from '../../server_connector'
 import { OpacityAnimatedView, ResizableAnimatedView, initializeSize } from './AnimatedView'
 import { getPercentValue, HistoryRecordStyles as styles } from '../styles'
 
@@ -40,7 +40,7 @@ const HistoryRecord = forwardRef(({ index, data, inDeletionMode, checked, onChec
 
   const navigation = useNavigation()
 
-  const request = useFetch('sentence')
+  const request = useFetch(Resources.Sentence)
 
   useEffect(() => {
     setIsSaved(data.favor)

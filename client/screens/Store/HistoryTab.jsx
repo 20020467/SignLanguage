@@ -5,7 +5,7 @@ import { Alert, FlatList, Pressable, RefreshControl, Text, ToastAndroid, Touchab
 import { Divider } from 'react-native-elements'
 import { LoadingModal } from 'react-native-loading-modal'
 import Icon from 'react-native-vector-icons/FontAwesome5'
-import { useFetch } from '../../server_connector'
+import { useFetch, Resources } from '../../server_connector'
 import { MovableAnimatedView, ResizableAnimatedView, initializePosition, initializeSize } from './AnimatedView'
 import HistoryRecord from './HistoryRecord'
 import { HistoryTabStyles as styles } from '../styles'
@@ -60,7 +60,7 @@ const HistoryTab = ({ route }) => {
 
   const { focused, setFocused, dataChanged, setDataChanged } = useContext(StoreContext)
 
-  const request = useFetch('sentence')
+  const request = useFetch(Resources.Sentence)
 
   useFocusEffect(
     useCallback(() => {

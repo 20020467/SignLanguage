@@ -1,6 +1,7 @@
 import React from "react";
 import { Image, Text, View } from "react-native";
 import { getImage } from "../../components/getImage";
+import { ResultStyles as styles } from "../styles";
 
 const Result = (props) => {
   const word = props.word;

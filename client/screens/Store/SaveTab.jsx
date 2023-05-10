@@ -2,12 +2,12 @@ import { useFocusEffect } from '@react-navigation/native'
 import { useCallback, useContext, useEffect, useRef, useState } from 'react'
 import { FlatList, RefreshControl, Text, View } from 'react-native'
 import { Divider } from 'react-native-elements'
-import { useFetch } from '../../server_connector'
+import { useFetch, Resources } from '../../server_connector'
 import SavedRecord from './SavedRecord'
 import { HistoryTabStyles as styles } from '../styles'
 import { StoreContext } from './StoreScreen'
 
-const SaveTab = ({ route }) => {
+const SaveTab = () => {
   const [dataset, setDataset] = useState([])
   const [resfreshing, setResfreshing] = useState(false)
 
@@ -17,7 +17,7 @@ const SaveTab = ({ route }) => {
 
   const { focused, setFocused, dataChanged, setDataChanged } = useContext(StoreContext)
 
-  const request = useFetch('sentence')
+  const request = useFetch(Resources.Sentence)
 
   useFocusEffect(
     useCallback(() => {
