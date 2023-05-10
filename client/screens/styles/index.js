@@ -4,6 +4,8 @@ import { Dimensions, StyleSheet } from 'react-native';
 // var height = Dimensions.get('window').height;
 // var width = Dimensions.get('window').width;
 
+export * from './Store.styles'
+
 export * from './Study.styles'
 
 export const HomeScreenStyles = StyleSheet.create({
