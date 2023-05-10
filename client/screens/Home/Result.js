@@ -1,5 +1,5 @@
-import { View, Text, StyleSheet, Image } from "react-native";
-import React, { useEffect, useState } from "react";
+import React from "react";
+import { Image, Text, View } from "react-native";
 import { getImage } from "../../components/getImage";
 
 const Result = (props) => {
@@ -31,41 +31,3 @@ const Result = (props) => {
 };
 
 export default Result;
-
-const styles = StyleSheet.create({
-  item: {
-    flexDirection: "column",
-    backgroundColor: "pink",
-
-    padding: 10,
-    marginBottom: 10,
-    borderRadius: 10,
-    elevation: 2,
-  },
-  imgWrap: {
-    display: "flex",
-    flexDirection: "row",
-    flexWrap: "wrap-reverse",
-
-    gap: 10,
-    marginBottom: 10,
-    marginLeft: 5,
-    marginTop: 10,
-  },
-  imgWrapItem: {
-    elevation: 5,
-    backgroundColor: "white",
-    borderRadius: 10,
-  },
-  img: {
-    width: 105,
-    height: 105,
-    borderRadius: 10,
-  },
-  text: {
-    fontSize: 25,
-    marginTop: 9,
-    marginLeft: 5,
-    marginBottom: 10,
-  },
-});

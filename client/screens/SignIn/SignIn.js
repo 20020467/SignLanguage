@@ -1,19 +1,15 @@
+import { useNavigation } from "@react-navigation/native";
+import React, { useContext, useState } from "react";
 import {
-  View,
-  Text,
   Button,
-  StyleSheet,
+  Text,
   TextInput,
   TouchableOpacity,
+  View
 } from "react-native";
-import React from "react";
-import { useNavigation } from "@react-navigation/native";
-import { useContext, useState } from "react";
-import { AppContext } from "../../context/AppContext";
-import { LoginSuccess } from "../../context/AppAction";
-import { API_HOST } from "@env";
 import Icon from "react-native-vector-icons/Ionicons";
-import axios from "axios";
+import { AppContext } from "../../context";
+import { SignInStyles as styles } from "../styles";
 
 const SignIn = () => {
   const navigation = useNavigation();
@@ -103,50 +99,3 @@ const SignIn = () => {
 };
 
 export default SignIn;
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "white",
-  },
-  header: {
-    marginTop: 110,
-    marginLeft: 24,
-  },
-  login: {
-    fontSize: 28,
-    fontWeight: 400,
-  },
-  body: {
-    paddingHorizontal: 24,
-    marginVertical: 20,
-  },
-  item: {
-    display: "flex",
-    flexDirection: "column",
-    gap: 10,
-    marginBottom: 20,
-  },
-  input: {
-    paddingHorizontal: 12,
-    gap: 10,
-    height: 43,
-    borderRadius: 4,
-    borderColor: "#A2A2A6",
-    borderStyle: "solid",
-    borderWidth: 1,
-  },
-  show: {
-    position: "absolute",
-    fontSize: 25,
-    right: 15,
-    top: 37,
-  },
-  noAccount: {
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-    marginTop: 20,
-  },
-});
