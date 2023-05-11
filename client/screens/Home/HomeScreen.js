@@ -18,6 +18,8 @@ import { record } from "../../server_connector";
 import { HomeScreenStyles as styles } from "../styles";
 import Result from "./Result";
 
+// Make prompts based on translation history; mark as Saved if exists in saved list. 
+
 const HomeScreen = () => {
   const [sentence, setSentence] = useState();
   const [sentenceSend, setSentenceSend] = useState();

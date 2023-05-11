@@ -145,6 +145,10 @@ export const ProfileScreenStyles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
+  headerText: {
+    color: COLOR.Secondary,
+    marginTop: 10,
+  },
   body: {
     marginBottom: 40,
     padding: 15,

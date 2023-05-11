@@ -3,13 +3,14 @@ export default COLOR = {
     Primary_1: "#252c4a",
     Secondary_1: "#02B0F0",
     Secondary_2: '#1E90FF',
+    Secondary: "#0C8CE9",
     accent: '#3498db',
 
     Success: '#00C851',
     Error: '#ff4444',
 
-    White: "#171717",
-    Black: "#FFFFFF",
+    Black: "#171717",
+    White: "#FFFFFF",
     Gray: "#748c94",
     Background: "#F3F2F3",
 

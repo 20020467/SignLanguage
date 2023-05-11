@@ -54,53 +54,19 @@ export const useFetch = (resource: number): object | AxiosInstance => {
 
 /******/
 
-// Authentication & user information 
-
 type TLoginData = { username: string, password: string }
-
-// const login = (data: TLoginData, config: AxiosRequestConfig<TLoginData>): Promise<AxiosResponse<TLoginResponseData, TLoginData>> => (
-//   Axios.post<TLoginResponseData>(`${getResource(Resources.Auth)}/login`, data, config)
-// )
 
 type TRegisterData = { username: string; email: string; phone: string; password: string; rePassword: string }
 
-// const register = (data: TRegisterData, config: AxiosRequestConfig) => (
-//   Axios.post(`${getResource(Resources.Auth)}/register`, data, config)
-// )
-
 type TChangePasswordData = { oldPassword: string, newPassword: string, rePassword: string }
 
-// const changePassword = (data: TChangePasswordData, config: AxiosRequestConfig) => (
-//   Axios.put(`${getResource(Resources.Auth)}/change-password`, data, config)
-// )
-
-// const getUserInfo = (config: AxiosRequestConfig) => (
-//   Axios.get<TUserInfoResponseData>(`${getResource(Resources.Sentence)}`, config)
-// )
-
-// Main operations: text translation & persisting translated records
-
-// const getHistory = (config: AxiosRequestConfig) => (
-//   Axios.get(`${getResource(Resources.Sentence)}/all`, config)
-// )
-
-// const addRecord = (config: AxiosRequestConfig) => (
-//   Axios.get<TAddRecordResponseData>(`${getResource(Resources.Sentence)}`, config)
-// )
-
-// const deleteRecord = (id: number, config: AxiosRequestConfig) => (
-//   Axios.delete(`${getResource(Resources.Sentence)}/${id}`, config)
-// )
-
-// const getSavedRecords = (config: AxiosRequestConfig) => (
-//   Axios.get(`${getResource(Resources.Sentence)}/favour`, config)
-// )
-
-// const changeSaving = (id: number, config: AxiosRequestConfig) => (
-//   Axios.get(`${getResource(Resources.Sentence)}/like/${id}`, config)
-// )
+type TChangeInfoData = { username?: string, email?: string, phone?: string }
 
 /********/
+
+// consider making objects like auth, record become IIFE to set & get their own resource base path
+
+// Authentication & user information 
 
 export const auth = {
   login: (data: TLoginData, token: string, config: AxiosRequestConfig<TLoginData>) => (
@@ -127,8 +93,16 @@ export const auth = {
       },
     })
   ),
+  changeInfo: (data: TChangeInfoData, token: string, config: AxiosRequestConfig) => (
+    Axios.put(`${getResource(Resources.Auth)}/update`, data, {
+      ...config,
+      headers: {
+        Authorization: `Bearer ${token}`
+      },
+    })
+  ),
   getUserInfo: (token: string, config: AxiosRequestConfig) => (
-    Axios.get<TUserInfoResponseData>(`${getResource(Resources.Sentence)}`, {
+    Axios.get<TUserInfoResponseData>(`${getResource(Resources.Auth)}`, {
       ...config,
       headers: {
         Authorization: `Bearer ${token}`
@@ -137,6 +111,7 @@ export const auth = {
   ),
 }
 
+// Main operations: text translation & persisting translated records
 export const record = {
   getHistory: (token: string, config: AxiosRequestConfig) => (
     Axios.get(`${getResource(Resources.Sentence)}/all`, {
