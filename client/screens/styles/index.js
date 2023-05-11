@@ -21,6 +21,37 @@ export * from './Home.styles'
 
 export * from './Profile.styles'
 
+export const HeaderStyles = StyleSheet.create({
+  top: {
+    paddingTop: 20,
+    marginBottom: 5,
+    height: 85,
+    alignItems: "center",
+    justifyContent: "center",
+    flexDirection: "row",
+    backgroundColor: COLOR.Secondary_1,
+  },
+  title: {
+    marginBottom: 10,
+  },
+  imgwrap: {
+    position: "absolute",
+    top: 35,
+    right: 20,
+  },
+  img: {
+    width: 40,
+    height: 40,
+    borderRadius: 50,
+  },
+  textSmall: {
+    position: "absolute",
+    top: 25,
+    right: -20,
+    fontSize: 10,
+  },
+});
+
 export const SignInStyles = StyleSheet.create({
   container: {
     flex: 1,
