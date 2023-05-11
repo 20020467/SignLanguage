@@ -11,6 +11,7 @@ import React, { useState } from "react";
 import Header from "../../components/Header";
 import { Icon } from "react-native-elements";
 import { useNavigation } from "@react-navigation/native";
+import Ionicons from "@expo/vector-icons/Ionicons";
 
 // style
 const width = Dimensions.get("window").width;
@@ -57,7 +58,7 @@ const style = StyleSheet.create({
 });
 const StudyScreen = () => {
   const navigation = useNavigation();
-  const [type, setType] = useState("MaterialIcons");
+  const [type, setType] = useState("chevron-down-sharp");
   const [sentence, setSentence] = useState([
     {
       mean: "Chào bạn",
@@ -111,8 +112,11 @@ const StudyScreen = () => {
         <Text style={style.text}>Danh sách học phần</Text>
         <ScrollView horizontal>
           {/* Flashcard*/}
-          <TouchableOpacity onPress={() => navigation.navigate("FlashCard")}>
-            <View style={style.card}>
+          <View style={style.card}>
+            <TouchableOpacity
+              onPress={() => navigation.navigate("FlashCard")}
+              activeOpacity={0.7}
+            >
               <View style={{ marginHorizontal: 20 }}>
                 <Text style={{ fontSize: 18, fontWeight: "bold" }}>
                   Flashcard
@@ -127,11 +131,11 @@ const StudyScreen = () => {
                   style={{ height: 60, width: 100 }}
                 />
               </View>
-            </View>
-          </TouchableOpacity>
+            </TouchableOpacity>
+          </View>
           {/*Bảng chữ cái*/}
-          <TouchableOpacity>
-            <View style={style.card}>
+          <View style={style.card}>
+            <TouchableOpacity activeOpacity={0.8}>
               <View style={{ marginHorizontal: 20 }}>
                 <Text style={{ fontSize: 18, fontWeight: "bold" }}>
                   Bảng chữ cái
@@ -146,13 +150,14 @@ const StudyScreen = () => {
                   style={{ height: 60, width: 100 }}
                 />
               </View>
-            </View>
-          </TouchableOpacity>
+            </TouchableOpacity>
+          </View>
           {/*Trắc nghiệm*/}
-          <TouchableOpacity
-            onPress={() => navigation.navigate("MultipleChoice")}
-          >
-            <View style={style.card}>
+          <View style={style.card}>
+            <TouchableOpacity
+              onPress={() => navigation.navigate("MultipleChoice")}
+              activeOpacity={0.8}
+            >
               <View style={{ marginHorizontal: 20 }}>
                 <Text style={{ fontSize: 18, fontWeight: "bold" }}>
                   Trắc nghiệm
@@ -167,12 +172,12 @@ const StudyScreen = () => {
                   style={{ height: 60, width: 100 }}
                 />
               </View>
-            </View>
-          </TouchableOpacity>
+            </TouchableOpacity>
+          </View>
         </ScrollView>
       </View>
       {/*Content 2*/}
-      <View style={{ flex: 3 }}>
+      <View style={{ flex: 3, marginTop: -20 }}>
         <Text style={style.text}>Một số câu giao tiếp bằng thủ ngữ</Text>
         <ScrollView style={style.suggest}>
           {sentence.map((i) => {
@@ -189,9 +194,11 @@ const StudyScreen = () => {
                         style={{ resizeMode: "contain", height: 200 }}
                       />
                     ) : null}
-                    <Icon
-                      name="arrow-drop-down"
-                      type="MaterialIcons"
+                    <Ionicons
+                      name={
+                        shouldShow && state == i ? "chevron-up" : "chevron-down"
+                      }
+                      size={20}
                       onPress={() => {
                         setShoudShow(!shouldShow), setState(i);
                       }}
@@ -212,9 +219,11 @@ const StudyScreen = () => {
                         style={{ resizeMode: "contain", height: 200 }}
                       />
                     ) : null}
-                    <Icon
-                      name="arrow-drop-down"
-                      type={type}
+                    <Ionicons
+                      name={
+                        shouldShow && state == i ? "chevron-up" : "chevron-down"
+                      }
+                      size={20}
                       onPress={() => {
                         setShoudShow(!shouldShow), setState(i);
                       }}

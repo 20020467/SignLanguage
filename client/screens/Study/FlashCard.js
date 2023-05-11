@@ -15,10 +15,17 @@ import {
 } from "react-native";
 import { Card } from "react-native-paper";
 import { Icon } from "react-native-elements";
+import { COLORS } from "../../constant";
+import alphabetdata from "../../constant/alphabetdata";
+import numbers from "../../constant/number";
 
 //dimention
 var height = Dimensions.get("window").height;
 var width = Dimensions.get("window").width;
+
+//data
+const sentence = alphabetdata;
+const number = number;
 
 //style
 const style = StyleSheet.create({
@@ -118,147 +125,94 @@ const style = StyleSheet.create({
 });
 const Flashcard = () => {
   //data alphabet
-  const [sentence, setSentence] = useState([
-    {
-      mean: "A",
-      key: "1",
-      img: require("../../assets/img/a.jpg"),
-    },
-    {
-      mean: "B",
-      key: "2",
-      img: require("../../assets/img/b.jpg"),
-    },
-    {
-      mean: "C",
-      key: "3",
-      img: require("../../assets/img/c.jpg"),
-    },
-    {
-      mean: "D",
-      key: "4",
-      img: require("../../assets/img/d.jpg"),
-    },
-    {
-      mean: "E",
-      key: "5",
-      img: require("../../assets/img/e.jpg"),
-    },
-    {
-      mean: "G",
-      key: "6",
-      img: require("../../assets/img/g.jpg"),
-    },
-    {
-      mean: "H",
-      key: "7",
-      img: require("../../assets/img/h.jpg"),
-    },
-    {
-      mean: "I",
-      key: "8",
-      img: require("../../assets/img/i.jpg"),
-    },
-    {
-      mean: "K",
-      key: "9",
-      img: require("../../assets/img/k.jpg"),
-    },
-    {
-      mean: "L",
-      key: "10",
-      img: require("../../assets/img/l.jpg"),
-    },
-    {
-      mean: "M",
-      key: "11",
-      img: require("../../assets/img/m.jpg"),
-    },
-    {
-      mean: "N",
-      key: "12",
-      img: require("../../assets/img/icon.png"),
-    },
-    {
-      mean: "O",
-      key: "13",
-      img: require("../../assets/img/icon.png"),
-    },
-    {
-      mean: "P",
-      key: "14",
-      img: require("../../assets/img/icon.png"),
-    },
-    {
-      mean: "Q",
-      key: "15",
-      img: require("../../assets/img/icon.png"),
-    },
-    {
-      mean: "F",
-      key: "16",
-      img: require("../../assets/img/icon.png"),
-    },
-    {
-      mean: "F",
-      key: "17",
-      img: require("../../assets/img/icon.png"),
-    },
-  ]);
+  // const [sentence, setSentence] =  useState([
+  //   {
+  //     mean: 'A', key: '1', img:require("../../assets/a.jpg")
+  //   },
+  //   {
+  //     mean: 'B', key: '2',img: require("../../assets/b.jpg")
+  //   },
+  //   {
+  //     mean: 'C', key: '3',img:require("../../assets/c.jpg")
+  //   },
+  //   {
+  //     mean: 'D', key: '4',img: require("../../assets/d.jpg")
+  //   },
+  //   {
+  //     mean: 'E', key: '5',img: require("../../assets/e.jpg")
+  //   },
+  //   {
+  //     mean: 'G', key: '6',img: require("../../assets/g.jpg")
+  //   },
+  //   {
+  //     mean: 'H', key: '7',img: require("../../assets/h.jpg")
+  //   },
+  //   {
+  //     mean: 'I', key: '8',img: require("../../assets/i.jpg")
+  //   },
+  //   {
+  //     mean: 'K', key: '9',img: require("../../assets/k.jpg")
+  //   },
+  //   {
+  //     mean: 'L', key: '10',img: require("../../assets/l.jpg")
+  //   },
+  //   {
+  //     mean: 'M', key: '11',img: require("../../assets/m.jpg")
+  //   },
+  //   {
+  //     mean: 'N', key: '12',img: require("../../assets/icon.png")
+  //   },
+  //   {
+  //     mean: 'O', key: '13',img: require("../../assets/icon.png")
+  //   },
+  //   {
+  //     mean: 'P', key: '14',img: require("../../assets/icon.png")
+  //   },
+  //   {
+  //     mean: 'Q', key: '15',img: require("../../assets/icon.png")
+  //   },
+  //   {
+  //     mean: 'F', key: '16',img: require("../../assets/icon.png")
+  //   },
+  //   {
+  //     mean: 'F', key: '17',img: require("../../assets/icon.png")
+  //   }
+  // ]);
 
   //data number
-  const [number, setNumber] = useState([
-    {
-      title: "1",
-      key: "1",
-      img: require("../../assets/img/1.png"),
-    },
-    {
-      title: "2",
-      key: "2",
-      img: require("../../assets/img/2.png"),
-    },
-    {
-      title: "3",
-      key: "3",
-      img: require("../../assets/img/3.png"),
-    },
-    {
-      title: "4",
-      key: "4",
-      img: require("../../assets/img/4.png"),
-    },
-    {
-      title: "5",
-      key: "5",
-      img: require("../../assets/img/5.png"),
-    },
-    {
-      title: "6",
-      key: "6",
-      img: require("../../assets/img/6.png"),
-    },
-    {
-      title: "7",
-      key: "7",
-      img: require("../../assets/img/7.png"),
-    },
-    {
-      title: "8",
-      key: "8",
-      img: require("../../assets/img/8.png"),
-    },
-    {
-      title: "9",
-      key: "9",
-      img: require("../../assets/img/9.png"),
-    },
-    {
-      title: "0",
-      key: "10",
-      img: require("../../assets/img/0.png"),
-    },
-  ]);
+  // const [number, setNumber] = useState([
+  //   {
+  //     title: '1', key: '1', img:require("../../assets/1.png")
+  //   },
+  //   {
+  //     title: '2', key: '2', img:require("../../assets/2.png")
+  //   },
+  //   {
+  //     title: '3', key: '3', img:require("../../assets/3.png")
+  //   },
+  //   {
+  //     title: '4', key: '4', img:require("../../assets/4.png")
+  //   },
+  //   {
+  //     title:'5', key: '5',img:require("../../assets/5.png")
+  //   },
+  //   {
+  //     title: '6', key: '6', img:require("../../assets/6.png")
+  //   },
+  //   {
+  //     title: '7', key: '7', img:require("../../assets/7.png")
+  //   },
+  //   {
+  //     title:'8', key: '8', img:require("../../assets/8.png")
+  //   },
+  //   {
+  //     title:'9', key: '9', img:require("../../assets/9.png")
+  //   },
+  //   {
+  //     title: '0', key: '10', img:require("../../assets/0.png")
+  //   }
+
+  // ])
   const [title, setTitle] = useState([
     {
       title: "Chữ cái",
@@ -366,24 +320,38 @@ const Flashcard = () => {
       >
         {title.map((i) => {
           return (
-            <TouchableOpacity
-              onPress={() => {
-                setShow(i),
-                  i.key == 1 ? setDisplay(1) : setDisplay(0),
-                  i.key == 2 ? setNum(1) : setNum(0),
-                  i.key == 3 ? setPun(1) : setPun(0),
-                  console.log(i);
+            <Card
+              style={{
+                marginRight: 20,
+                backgroundColor: show == i ? "#FFFF99" : "#9FD0E6",
+                width: 80,
+                justifyContent: "center",
+                alignContent: "center",
               }}
             >
-              <Card
-                style={{
-                  marginRight: 20,
-                  backgroundColor: show == i ? "#FFFF99" : "#9FD0E6",
+              <TouchableOpacity
+                style={{ alignContent: "center", justifyContent: "center" }}
+                activeOpacity={0.8}
+                onPress={() => {
+                  setShow(i),
+                    i.key == 1 ? setDisplay(1) : setDisplay(0),
+                    i.key == 2 ? setNum(1) : setNum(0),
+                    i.key == 3 ? setPun(1) : setPun(0),
+                    console.log(i);
                 }}
               >
-                <Text style={{ padding: 10, fontSize: 15 }}>{i.title}</Text>
-              </Card>
-            </TouchableOpacity>
+                <Text
+                  style={{
+                    padding: 10,
+                    fontSize: 15,
+                    alignContent: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  {i.title}
+                </Text>
+              </TouchableOpacity>
+            </Card>
           );
         })}
       </View>
@@ -398,30 +366,32 @@ const Flashcard = () => {
           {sentence.map((i) => {
             return (
               <View key={i.key} style={style.container}>
-                <TouchableOpacity onPress={handleFlip} style={{}}>
-                  <Animated.View
-                    style={[
-                      { transform: [{ rotateY: interpolateFront }] },
-                      style.hidden,
-                    ]}
-                  >
+                <Animated.View
+                  style={[
+                    { transform: [{ rotateY: interpolateFront }] },
+                    style.hidden,
+                  ]}
+                >
+                  <TouchableOpacity onPress={handleFlip} style={{}}>
                     <View style={style.card}>
                       <Text style={style.text}>{i.mean}</Text>
                     </View>
-                  </Animated.View>
+                  </TouchableOpacity>
+                </Animated.View>
 
-                  <Animated.View
-                    style={[
-                      style.back,
-                      style.hidden,
-                      { transform: [{ rotateY: interpolateBack }] },
-                    ]}
-                  >
-                    <View style={style.cardback}>
+                <Animated.View
+                  style={[
+                    style.back,
+                    style.hidden,
+                    { transform: [{ rotateY: interpolateBack }] },
+                  ]}
+                >
+                  <View style={style.cardback}>
+                    <TouchableOpacity onPress={handleFlip} style={{}}>
                       <Image style={style.img} source={i.img} />
-                    </View>
-                  </Animated.View>
-                </TouchableOpacity>
+                    </TouchableOpacity>
+                  </View>
+                </Animated.View>
                 <Text>{i.key}/29</Text>
               </View>
             );
@@ -439,30 +409,32 @@ const Flashcard = () => {
           {number.map((i) => {
             return (
               <View style={style.container}>
-                <TouchableOpacity onPress={handleFlip} style={{}}>
-                  <Animated.View
-                    style={[
-                      { transform: [{ rotateY: interpolateFront }] },
-                      style.hidden,
-                    ]}
-                  >
+                <Animated.View
+                  style={[
+                    { transform: [{ rotateY: interpolateFront }] },
+                    style.hidden,
+                  ]}
+                >
+                  <TouchableOpacity onPress={handleFlip} style={{}}>
                     <View style={style.card}>
                       <Text style={style.text}>{i.title}</Text>
                     </View>
-                  </Animated.View>
+                  </TouchableOpacity>
+                </Animated.View>
 
-                  <Animated.View
-                    style={[
-                      style.back,
-                      style.hidden,
-                      { transform: [{ rotateY: interpolateBack }] },
-                    ]}
-                  >
-                    <View style={style.cardback}>
+                <Animated.View
+                  style={[
+                    style.back,
+                    style.hidden,
+                    { transform: [{ rotateY: interpolateBack }] },
+                  ]}
+                >
+                  <View style={style.cardback}>
+                    <TouchableOpacity onPress={handleFlip} style={{}}>
                       <Image style={style.img} source={i.img} />
-                    </View>
-                  </Animated.View>
-                </TouchableOpacity>
+                    </TouchableOpacity>
+                  </View>
+                </Animated.View>
                 <Text>{i.key}/10</Text>
               </View>
             );
@@ -480,30 +452,40 @@ const Flashcard = () => {
           {sentence.map((i) => {
             return (
               <View style={style.container}>
-                <TouchableOpacity onPress={handleFlip} style={{}}>
-                  <Animated.View
-                    style={[
-                      { transform: [{ rotateY: interpolateFront }] },
-                      style.hidden,
-                    ]}
-                  >
-                    <View style={style.card}>
+                <Animated.View
+                  style={[
+                    { transform: [{ rotateY: interpolateFront }] },
+                    style.hidden,
+                  ]}
+                >
+                  <View style={style.card}>
+                    <TouchableOpacity
+                      activeOpacity={0.8}
+                      onPress={handleFlip}
+                      style={{}}
+                    >
                       <Text style={style.text}>{i.mean}</Text>
-                    </View>
-                  </Animated.View>
+                    </TouchableOpacity>
+                  </View>
+                </Animated.View>
 
-                  <Animated.View
-                    style={[
-                      style.back,
-                      style.hidden,
-                      { transform: [{ rotateY: interpolateBack }] },
-                    ]}
-                  >
-                    <View style={style.cardback}>
+                <Animated.View
+                  style={[
+                    style.back,
+                    style.hidden,
+                    { transform: [{ rotateY: interpolateBack }] },
+                  ]}
+                >
+                  <View style={style.cardback}>
+                    <TouchableOpacity
+                      activeOpacity={0.8}
+                      onPress={handleFlip}
+                      style={{}}
+                    >
                       <Image style={style.img} source={i.img} />
-                    </View>
-                  </Animated.View>
-                </TouchableOpacity>
+                    </TouchableOpacity>
+                  </View>
+                </Animated.View>
                 <Text>{i.key}/5</Text>
               </View>
             );
@@ -525,52 +507,102 @@ const Flashcard = () => {
         </Text>
       </View>
       <View style={{ marginLeft: width / 15, marginRight: width / 15 }}>
-        <TouchableOpacity onPress={() => setModalOpen(true)}>
-          <Card
-            style={{
-              backgroundColor: "#9FD0E6",
-              alignItems: "center",
-              marginBottom: 20,
-              marginTop: 20,
-            }}
-          >
+        <Card
+          style={{
+            backgroundColor: "#9FD0E6",
+            alignItems: "center",
+            marginBottom: 20,
+            marginTop: 20,
+          }}
+        >
+          <TouchableOpacity onPress={() => setModalOpen(true)}>
             <Text style={{ padding: 10, fontSize: 15 }}>
               Xem toàn bộ bảng chữ cái
             </Text>
-          </Card>
-        </TouchableOpacity>
-        <Modal
-          visible={modalOpen}
-          style={{
-            marginTop: 90,
-            backgroundColor: "black",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-          animationType="slide"
-        >
+          </TouchableOpacity>
+        </Card>
+
+        {/* <Modal visible = {modalOpen}  animationType="slide">
+          <View style=  {{
+                          backgroundColor:'green', 
+                          justifyContent:'center', 
+                          alignItems:'center',
+                          
+                          borderColor:"green"}}>
+            <View style = {{width:'90%'}}>
+            <Image source={require('../../assets/alphabet.jpg')}></Image>
+          <TouchableOpacity onPress={()=>setModalOpen(false)}>
+            <Icon name="close">
+            </Icon>
+          </TouchableOpacity>
+            </View>
+          
+          </View>  
+        </Modal>      */}
+        <Modal animationType="slide" transparent={true} visible={modalOpen}>
           <View
             style={{
-              width: width / 2,
-              height: height / 2,
-              backgroundColor: "green",
-              marginLeft: width / 4,
-              marginTop: height / 4,
-              justifyContent: "center",
+              flex: 1,
+              backgroundColor: COLORS.black,
               alignItems: "center",
+              justifyContent: "center",
             }}
           >
-            <Image source={require("../../assets/img/alphabet.jpg")}></Image>
-            <TouchableOpacity onPress={() => setModalOpen(false)}>
-              <Icon name="close"></Icon>
-            </TouchableOpacity>
+            <View
+              style={{
+                backgroundColor: "#FFFF99",
+                width: "90%",
+                borderRadius: 20,
+                padding: 20,
+                alignItems: "center",
+              }}
+            >
+              <Text style={{ fontSize: 30 }}> Bảng chữ cái</Text>
+              <Image
+                source={require("../../assets/img/alphabet.jpg")}
+                style={{ padding: 0, resizeMode: "contain", width: "100%" }}
+              />
+
+              <View
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "flex-start",
+                  alignItems: "center",
+                  marginVertical: 20,
+                }}
+              ></View>
+              {/*Close button */}
+              <View style={{ flexDirection: "row" }}>
+                <TouchableOpacity
+                  onPress={() => setModalOpen(false)}
+                  style={{
+                    backgroundColor: "#9FD0E6",
+                    padding: 20,
+                    width: "50%",
+                    borderRadius: 20,
+                  }}
+                >
+                  <Text
+                    style={{
+                      textAlign: "center",
+                      color: COLORS.white,
+                      fontSize: 20,
+                    }}
+                  >
+                    Close
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </View>
           </View>
         </Modal>
-        <Card style={{ backgroundColor: "#9FD0E6", alignItems: "center" }}>
-          <Text style={{ padding: 10, fontSize: 15 }}>
-            Làm bài tập trắc nghiệm
-          </Text>
-        </Card>
+        <TouchableOpacity onPress={() => navigation.navigate("MultipleChoice")}>
+          <Card style={{ backgroundColor: "#9FD0E6", alignItems: "center" }}>
+            <Text style={{ padding: 10, fontSize: 15 }}>
+              Làm bài tập trắc nghiệm
+            </Text>
+          </Card>
+        </TouchableOpacity>
       </View>
     </SafeAreaView>
   );
