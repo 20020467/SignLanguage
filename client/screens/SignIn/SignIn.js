@@ -1,5 +1,5 @@
 import { useNavigation } from "@react-navigation/native";
-import React, { useContext, useState } from "react";
+import React, { useState } from "react";
 import {
   Button,
   Text,
@@ -8,7 +8,7 @@ import {
   View
 } from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
-import { useGlobalContext, LoginSuccess, LoginFailure } from "../../context";
+import { LoginSuccess, useGlobalContext } from "../../context";
 import { auth } from "../../server_connector";
 import { SignInStyles as styles } from "../styles";
 

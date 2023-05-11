@@ -86,7 +86,7 @@ type TChangePasswordData = { oldPassword: string, newPassword: string, rePasswor
 // )
 
 // const addRecord = (config: AxiosRequestConfig) => (
-//   Axios.get<TAddRecordResponseData>(`${getResource(Resources.Sentence)}/all`, config)
+//   Axios.get<TAddRecordResponseData>(`${getResource(Resources.Sentence)}`, config)
 // )
 
 // const deleteRecord = (id: number, config: AxiosRequestConfig) => (
@@ -147,13 +147,16 @@ export const record = {
       },
     })
   ),
-  addRecord: (token: string, config: AxiosRequestConfig) => (
-    Axios.get<TAddRecordResponseData>(`${getResource(Resources.Sentence)}/all`, {
-      ...config,
-      headers: {
-        Authorization: `Bearer ${token}`
-      },
-    })
+  addRecord: (data: string, token: string, config: AxiosRequestConfig) => (
+    Axios.post<TAddRecordResponseData>(`${getResource(Resources.Sentence)}`,
+      { content: data },
+      {
+        ...config,
+        headers: {
+          Authorization: `Bearer ${token}`
+        },
+      }
+    )
   ),
   delete: (id: number, token: string, config: AxiosRequestConfig) => (
     Axios.delete(`${getResource(Resources.Sentence)}/${id}`, {

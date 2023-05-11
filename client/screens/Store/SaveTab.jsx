@@ -2,9 +2,10 @@ import { useFocusEffect } from '@react-navigation/native'
 import { useCallback, useContext, useEffect, useRef, useState } from 'react'
 import { FlatList, RefreshControl, Text, View } from 'react-native'
 import { Divider } from 'react-native-elements'
-import { useFetch, Resources } from '../../server_connector'
-import SavedRecord from './SavedRecord'
+import { useGlobalContext } from '../../context'
+import { record } from '../../server_connector'
 import { HistoryTabStyles as styles } from '../styles'
+import SavedRecord from './SavedRecord'
 import { StoreContext } from './StoreScreen'
 
 const SaveTab = () => {
@@ -17,7 +18,7 @@ const SaveTab = () => {
 
   const { focused, setFocused, dataChanged, setDataChanged } = useContext(StoreContext)
 
-  const request = useFetch(Resources.Sentence)
+  const { state: globalContext, dispatch } = useGlobalContext()
 
   useFocusEffect(
     useCallback(() => {
@@ -32,7 +33,7 @@ const SaveTab = () => {
       if (willReload || dataChanged) {
         setDataChanged(false)
 
-        request.getSavedRecords().then(res => {
+        record.getSavedRecords(globalContext.token).then(res => {
           setDataset(res.data.data)
         }).catch(msg => console.log(`Get saved records: ${msg}`)) // TRACE
       }
@@ -40,14 +41,14 @@ const SaveTab = () => {
   )
 
   useEffect(() => {
-    request.getSavedRecords().then(res => {
+    record.getSavedRecords(globalContext.token).then(res => {
       setDataset(res.data.data)
     }).catch(msg => console.log(`Get saved records: ${msg}`)) // TRACE
   }, [])
 
   const unsaveRecord = (id) => {
     // send POST request and/or store in local
-    request.changeSaving(id)
+    record.changeSaving(id, globalContext.token)
       .then(res => {
         setDataChanged(true) // 
         setDataset(dataset.filter((item, idx) => item.id !== id))
@@ -78,7 +79,7 @@ const SaveTab = () => {
   const refreshList = e => {
     setResfreshing(true)
     // send GET request and reload the list
-    request.getSavedRecords()
+    record.getSavedRecords(globalContext.token)
       .then(res => {
         setDataset(res.data.data)
       })

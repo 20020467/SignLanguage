@@ -6,9 +6,10 @@ import { Animated, Pressable, Text, ToastAndroid, TouchableOpacity } from 'react
 import { RectButton } from 'react-native-gesture-handler'
 import Swipeable from 'react-native-gesture-handler/Swipeable'
 import Icon from 'react-native-vector-icons/FontAwesome5'
-import { useFetch, Resources } from '../../server_connector'
-import { OpacityAnimatedView, ResizableAnimatedView, initializeSize } from './AnimatedView'
+import { useGlobalContext } from '../../context'
+import { record } from '../../server_connector'
 import { getPercentValue, HistoryRecordStyles as styles } from '../styles'
+import { OpacityAnimatedView, ResizableAnimatedView, initializeSize } from './AnimatedView'
 
 const textViewSize = initializeSize(getPercentValue(styles.textContainer.width), 100) // unused
 
@@ -40,7 +41,7 @@ const HistoryRecord = forwardRef(({ index, data, inDeletionMode, checked, onChec
 
   const navigation = useNavigation()
 
-  const request = useFetch(Resources.Sentence)
+  const { state: globalContext, dispatch } = useGlobalContext()
 
   useEffect(() => {
     setIsSaved(data.favor)
@@ -85,7 +86,7 @@ const HistoryRecord = forwardRef(({ index, data, inDeletionMode, checked, onChec
     //     setDataChanged(true)
     //   }).catch(msg => console.log(`Reject saving: ${msg}`))
     // }
-    request.changeSaving(data.id).then(res => {      
+    record.changeSaving(data.id, globalContext.token).then(res => {
       setDataChanged(true)
 
       // check by response

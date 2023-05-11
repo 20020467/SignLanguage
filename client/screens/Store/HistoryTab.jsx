@@ -5,10 +5,11 @@ import { Alert, FlatList, Pressable, RefreshControl, Text, ToastAndroid, Touchab
 import { Divider } from 'react-native-elements'
 import { LoadingModal } from 'react-native-loading-modal'
 import Icon from 'react-native-vector-icons/FontAwesome5'
-import { useFetch, Resources } from '../../server_connector'
+import { useGlobalContext } from '../../context'
+import { record } from '../../server_connector'
+import { HistoryTabStyles as styles } from '../styles'
 import { MovableAnimatedView, ResizableAnimatedView, initializePosition, initializeSize } from './AnimatedView'
 import HistoryRecord from './HistoryRecord'
-import { HistoryTabStyles as styles } from '../styles'
 import { StoreContext } from './StoreScreen'
 
 // Store 2 main states of components: before and after changed
@@ -60,7 +61,7 @@ const HistoryTab = ({ route }) => {
 
   const { focused, setFocused, dataChanged, setDataChanged } = useContext(StoreContext)
 
-  const request = useFetch(Resources.Sentence)
+  const { state: globalContext, dispatch } = useGlobalContext()
 
   useFocusEffect(
     useCallback(() => {
@@ -77,7 +78,7 @@ const HistoryTab = ({ route }) => {
       if (willReload || dataChanged) {
         setDataChanged(false)
 
-        request.getHistory().then(res => {
+        record.getHistory(globalContext.token).then(res => {
           setDataset(res.data.data)
         }).catch(msg => console.log(`Get history records: ${msg}`)) // TRACE
       }
@@ -88,7 +89,7 @@ const HistoryTab = ({ route }) => {
    * GET data from server and render on screen
    */
   useEffect(() => {
-    request.getHistory().then(res => {
+    record.getHistory(globalContext.token).then(res => {
       setDataset(res.data.data)
     }).catch(msg => console.log(`Get history records: ${msg}`)) // TRACE
 
@@ -146,7 +147,7 @@ const HistoryTab = ({ route }) => {
 
   const deleteRecord = (deletedId) => {
     // send DELETE request first
-    request.delete(deletedId).then(res => {
+    record.delete(deletedId, globalContext.token).then(res => {
       setDataset(dataset.filter(record => record.id != deletedId))
 
       console.log(res.data) // TEST
@@ -162,7 +163,7 @@ const HistoryTab = ({ route }) => {
 
     const promises = new Array()
 
-    Promise.allSettled([...pendingSet].map(id => request.delete(id)))
+    Promise.allSettled([...pendingSet].map(id => record.delete(id, globalContext.token)))
       .then((results) => {
         setIsDeleting(false) // close loading modal
         // console.log(results) // TEST
@@ -207,7 +208,7 @@ const HistoryTab = ({ route }) => {
     setResfreshing(true)
 
     // send GET request and reload the list
-    request.getHistory()
+    record.getHistory(globalContext.token)
       .then(res => {
         setDataset(res.data.data)
       })
