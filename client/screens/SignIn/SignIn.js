@@ -8,42 +8,35 @@ import {
   View
 } from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
-import { AppContext } from "../../context";
+import { useGlobalContext, LoginSuccess, LoginFailure } from "../../context";
+import { auth } from "../../server_connector";
 import { SignInStyles as styles } from "../styles";
 
 const SignIn = () => {
   const navigation = useNavigation();
-  const { dispatch } = useContext(AppContext);
+  const { state, dispatch } = useGlobalContext();
 
   const [username, setUsername] = useState();
   const [password, setPassword] = useState();
   const [show, setShow] = useState(false);
 
-  const handleLogin = async () => {
-    // const data = {
-    //   username: username,
-    //   password: password,
-    // };
-    // console.log(data);
-
-    // try {
-    //   // console.log("fetch");
-    //   const res = await axios.post(`${API_HOST}/api/auth/login`, data);
-    //   const loginResponse = res.data;
-
-    //   const userResponse = {
-    //     username: loginResponse.data.data.username,
-    //     token: loginResponse.data.token,
-    //   };
-    //   if (loginResponse.data.data.username == username) {
-    //     dispatch(LoginSuccess(userResponse));
-    //     navigation.navigate("MainScreen");
-    //   }
-    // } catch (error) {
-    //   console.log(error, "Không fetch dc // SigninScreen");
-    //   // let response = error.response.data;
-    // }
-    navigation.navigate("MainScreen");
+  const handleLogin = () => {
+    auth.login({ username, password })
+      .then(res => {
+        const data = res.data?.data?.data
+        const token = res.data?.data?.token
+        if (res.data.data) {
+          dispatch(LoginSuccess({
+            id: data.id,
+            username: data.username,
+            token,
+          }))
+        }
+        navigation.navigate("MainScreen");
+      })
+      .catch(reason => {
+        console.log(`Login: ${reason}`)
+      })
   };
 
   return (
