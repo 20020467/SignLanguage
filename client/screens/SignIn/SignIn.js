@@ -35,7 +35,7 @@ const SignIn = () => {
         navigation.navigate("MainScreen");
       })
       .catch(reason => {
-        console.log(`Login: ${reason}`)
+        console.log(`Login: ${reason}`) // TRACE
       })
   };
 

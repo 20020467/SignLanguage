@@ -2,23 +2,6 @@ import axios, { AxiosRequestConfig, AxiosInstance, AxiosResponse } from 'axios'
 import { API_HOST } from '@env'
 
 // const API_TOKEN = 'eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJuYW1uZyIsImlhdCI6MTY4MzcwMTM0MywiZXhwIjoxNjgzNzg3NzQzfQ.jB67tVp3ibOHAvkEXHnM3sOi9Iso0ZH2hdBI09QhX133c3IRG_bmbli7OQt8_z3qGQir_fi67-ELcszD9e0oiQ'
-// "http://signlanguage:8080"
-
-const Axios = axios.create({
-  baseURL: `${API_HOST}`,
-  // headers: { Authorization: `Bearer ${API_TOKEN}` },
-  timeout: 10000,
-  timeoutErrorMessage: "timeout"
-})
-
-function getResource(resource: Resources) {
-  switch (resource) {
-    case Resources.Auth: return '/api/auth'
-    case Resources.Sentence: return '/api/sentence'
-    case Resources.QA: return '/api'
-    default: return '/api'
-  }
-}
 
 
 // May need to refactor to manage functions by resources more effectively (centralizing)
@@ -52,15 +35,6 @@ export const useFetch = (resource: number): object | AxiosInstance => {
   return Axios
 }
 
-/******/
-
-type TLoginData = { username: string, password: string }
-
-type TRegisterData = { username: string; email: string; phone: string; password: string; rePassword: string }
-
-type TChangePasswordData = { oldPassword: string, newPassword: string, rePassword: string }
-
-type TChangeInfoData = { username?: string, email?: string, phone?: string }
 
 /********/
 
@@ -114,7 +88,7 @@ export const auth = {
 // Main operations: text translation & persisting translated records
 export const record = {
   getHistory: (token: string, config: AxiosRequestConfig) => (
-    Axios.get(`${getResource(Resources.Sentence)}/all`, {
+    Axios.get<THistoryListData>(`${getResource(Resources.Sentence)}/all`, {
       ...config,
       headers: {
         Authorization: `Bearer ${token}`
@@ -160,6 +134,16 @@ export const record = {
 
 /********/
 
+// Request data types
+
+type TLoginData = { username: string, password: string }
+
+type TRegisterData = { username: string; email: string; phone: string; password: string; rePassword: string }
+
+type TChangePasswordData = { oldPassword: string, newPassword: string, rePassword: string }
+
+type TChangeInfoData = { username?: string, email?: string, phone?: string }
+
 // Response data types
 
 type TAuthorizedResponse = {
@@ -188,15 +172,6 @@ type TLoginResponseData = TAuthorizedResponse & {
   }
 }
 
-type TAddRecordResponseData = TAuthorizedResponse & {
-  data: {
-    id: number,
-    content: string,
-    viewTime: string,
-    favor: boolean,
-  }
-}
-
 type TUserInfoResponseData = TAuthorizedResponse & {
   data: {
     "id": number,
@@ -207,3 +182,35 @@ type TUserInfoResponseData = TAuthorizedResponse & {
   }
 }
 
+type THistoryRecord = TAuthorizedResponse & {
+  id: number,
+  content: string,
+  viewTime: string,
+  favor: boolean,
+}
+
+type THistoryListData = TAuthorizedResponse & {
+  data: Array<THistoryRecord>
+}
+
+type TAddRecordResponseData = TAuthorizedResponse & {
+  data: THistoryRecord
+}
+
+
+// Create axios instance 
+const Axios = axios.create({
+  baseURL: `${API_HOST}`,
+  // headers: { Authorization: `Bearer ${API_TOKEN}` },
+  timeout: 10000,
+  timeoutErrorMessage: "timeout"
+})
+
+function getResource(resource: Resources) {
+  switch (resource) {
+    case Resources.Auth: return '/api/auth'
+    case Resources.Sentence: return '/api/sentence'
+    case Resources.QA: return '/api'
+    default: return '/api'
+  }
+}

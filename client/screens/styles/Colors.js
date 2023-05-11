@@ -16,6 +16,11 @@ export default COLOR = {
 
     Header: "#9FD0E6",
     NavBarHighlight: "#e32f45",
+
+    ActiveStar: "#EFC615",
+    InactiveStar: "#171717",
+
+    disabled: "#748c9460"
 }
 
 // Another color set

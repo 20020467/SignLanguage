@@ -8,7 +8,7 @@ import Swipeable from 'react-native-gesture-handler/Swipeable'
 import Icon from 'react-native-vector-icons/FontAwesome5'
 import { useGlobalContext } from '../../context'
 import { record } from '../../server_connector'
-import { getPercentValue, HistoryRecordStyles as styles } from '../styles'
+import { COLOR, getPercentValue, HistoryRecordStyles as styles } from '../styles'
 import { OpacityAnimatedView, ResizableAnimatedView, initializeSize } from './AnimatedView'
 
 const textViewSize = initializeSize(getPercentValue(styles.textContainer.width), 100) // unused
@@ -245,7 +245,7 @@ const HistoryRecord = forwardRef(({ index, data, inDeletionMode, checked, onChec
             <Icon
               name="star"
               size={styles.button.iconSize}
-              style={{ ...styles.saveToggle, color: isSaved ? 'rgb(191, 47, 11)' : 'black' }}
+              style={{ color: isSaved ? COLOR.ActiveStar : COLOR.InactiveStar }}
               solid={isSaved}
             />
           </TouchableOpacity>

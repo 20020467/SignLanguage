@@ -1,6 +1,7 @@
 import { useNavigation } from "@react-navigation/native";
-import React, { useLayoutEffect, useRef, useState } from "react";
+import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import {
+  Alert,
   SafeAreaView,
   ScrollView,
   Text,
@@ -8,31 +9,33 @@ import {
   TouchableOpacity,
   View
 } from "react-native";
-import Star from "react-native-vector-icons/Entypo";
-import NoStar from "react-native-vector-icons/EvilIcons";
+import { LoadingModal } from 'react-native-loading-modal';
 import Send from "react-native-vector-icons/Feather";
-import Icon from "react-native-vector-icons/FontAwesome";
+import Icon from "react-native-vector-icons/FontAwesome5";
 import Header from "../../components/Header";
 import { useGlobalContext } from "../../context";
 import { record } from "../../server_connector";
-import { HomeScreenStyles as styles } from "../styles";
+import { COLOR, HomeScreenStyles as styles } from "../styles";
 import Result from "./Result";
 
 // Make prompts based on translation history; mark as Saved if exists in saved list. 
 
-const HomeScreen = () => {
+const HomeScreen = ({ route }) => {
   const [sentence, setSentence] = useState();
   const [sentenceSend, setSentenceSend] = useState();
-  const [star, setStar] = useState(false);
+  const [isSaved, setIsSaved] = useState(false);
   const [word, setWord] = useState();
   const [isRecording, setIsRecording] = useState(false);
+  const [isLoading, setIsLoading] = useState(false)
+  const [isTranslating, setIsTranslating] = useState(false)
 
   const translatedRecordID = useRef(null)
+  const history = useRef()
 
   const navigation = useNavigation();
   const { state: globalState } = useGlobalContext();
 
-  console.log(globalState.username) // TEST
+  // console.log(globalState.username) // TEST
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -40,39 +43,62 @@ const HomeScreen = () => {
     });
   }, []);
 
-  const handleSend = () => {
-    // const data = {
-    //   sentence: sentence,
-    // };
-    // console.log(data);
-    // try {
-    //   console.log("fetch");
-    //   const res = await axios.put(
-    //     // `${API_HOST}/api/users/edit/username`,  đường dẫn api ở đây
-    //     data,
-    //     axiosOptions
-    //   );
-    //   const Response = res.data;
-    //   console.log(Response);
-    //   // alert("Thay đổi username thành công");
-    // } catch (error) {
-    //   let response = error.response.data;
-    //   console.log(response);
-    // }
+  // get history list first and refresh the variable for each translation request
+  useEffect(() => {
+    fetchHistory()
+  }, [translatedRecordID.current])
 
-    // store translated text
-    if (globalState.token) {
-      record.addRecord(sentence, globalState.token)
-        .then(res => {
-          translatedRecordID.current = res.data.data.id
-          console.log(res.data.data)
-        })
-        .catch(msg => console.log(`Store translated text: ${msg}`))
+  useEffect(() => {
+    let text = route.params.storedText
+    if (text) {
+      route.params.storedText = null // may not work
+      setSentence(text)
+      setSentenceSend(text)
+      // translate()
+    }
+  }, [route.params.storedText])
 
-    } else console.log("Store translated text: Unauthorized")
+  // call to translate each time this variable is changed
+  useEffect(() => {
+    translate()
+  }, [sentenceSend])
+
+
+  const fetchHistory = async () => {
+    setIsLoading(true)
+    let response = null
+
+    try {
+      if (globalState.token) {
+        response = await record.getHistory(globalState.token)
+
+        if (response.data.data) {
+          history.current = response.data.data
+          console.log("Fetched") // TEST
+          return response.data.data
+        }
+      } else {
+        navigation.navigate("SignIn")
+      }
+    } catch (msg) {
+      console.log(`Get history records: ${msg}`)
+    } finally {
+      setIsLoading(false)
+    }
+
+    return response
+  }
+
+  const translate = async () => {
+    if (typeof sentence != 'string' || sentence.length == 0) {
+      return
+    }
+
+    setIsTranslating(true) // open loading modal
 
     // split text into characters and show result
     setSentenceSend(sentence);
+
     var arrTu = sentence?.split(" ");
     var arrKetQua = [];
     for (var i = 0; i < arrTu.length; i++) {
@@ -80,7 +106,44 @@ const HomeScreen = () => {
         arrKetQua.push(arrTu[i]);
       }
     }
+
     setWord(arrKetQua);
+
+    // check if existed in history and cancel saving to history if true
+
+    try {
+      // do not allow to save translated text if cannot fetch history
+      let data = null // mainly used to check if data is fetched
+
+      if (!history.current) {
+        data = await fetchHistory() // do assign data to history.current
+        if (!data) {
+          Alert.alert("Lỗi kết nối. Vui lòng gửi lại.")
+          throw "History data fetching got error."
+        }
+      }
+
+      for (item of history.current) {
+        if (item.content == sentence) {
+          console.log(item.content)
+          throw "Record existed"
+        }
+      }
+
+      // store translated text
+      if (globalState.token) { // check if token exists
+        let res = await record.addRecord(sentence, globalState.token)
+        translatedRecordID.current = res.data.data.id
+        console.log("Saved to history")
+        console.log(res.data.data) // TEST
+      } else {
+        navigation.navigate("SignIn")
+      }
+    } catch (error) {
+      console.log(error)
+    } finally {
+      setIsTranslating(false)
+    }
   };
 
   const save = () => {
@@ -90,7 +153,7 @@ const HomeScreen = () => {
       record.changeSaving(id, globalState.token)
         .then(res => {
           if (res.data.data.id == id) {
-            setStar(!star);
+            setIsSaved(!isSaved);
             console.log(res.data)
           } else console.log("don't match")
         })
@@ -107,15 +170,15 @@ const HomeScreen = () => {
         <View style={styles.body}>
           <View style={styles.sentence}>
             <Text style={styles.text}>{sentenceSend}</Text>
-            {star ? (
-              <Star
-                onPress={save}
+            {typeof sentenceSend == 'string' && sentenceSend.length > 0 &&
+              <Icon
                 name="star"
-                style={[styles.star, { color: "#EFC615" }]}
+                size={styles.star.iconSize}
+                style={{ ...styles.star, color: isSaved ? COLOR.ActiveStar : COLOR.InactiveStar }}
+                solid={isSaved}
+                onPress={save}
               />
-            ) : (
-              <NoStar onPress={save} name="star" style={styles.star} />
-            )}
+            }
           </View>
 
           <View>
@@ -132,7 +195,9 @@ const HomeScreen = () => {
             onChangeText={(text) => setSentence(text)}
             style={styles.input}
             placeholder="Nhập văn bản..."
-          ></TextInput>
+            defaultValue={sentence}
+          >
+          </TextInput>
 
           <TouchableOpacity onPress={() => setIsRecording(!isRecording)}>
             <Icon
@@ -140,11 +205,13 @@ const HomeScreen = () => {
               name="microphone"
             />
           </TouchableOpacity>
-          <TouchableOpacity onPress={handleSend}>
+          <TouchableOpacity onPress={() => setSentenceSend(sentence)}>
             <Send style={styles.send} name="send" />
           </TouchableOpacity>
         </View>
       </View>
+      <LoadingModal modalVisible={isLoading} task='Đang tải'></LoadingModal>
+      <LoadingModal modalVisible={isTranslating} task='Đang dịch...'></LoadingModal>
     </SafeAreaView>
   );
 };
