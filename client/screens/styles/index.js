@@ -1,8 +1,17 @@
 import { Dimensions, StyleSheet } from 'react-native';
+import COLOR from './Colors'
 
 //dimention
-// var height = Dimensions.get('window').height;
-// var width = Dimensions.get('window').width;
+var height = Dimensions.get('window').height;
+var width = Dimensions.get('window').width;
+
+export { COLOR }
+
+export const SIZES = {
+  base: 10,
+  width,
+  height,
+}
 
 export * from './Store.styles'
 
@@ -11,7 +20,7 @@ export * from './Study.styles'
 export const HomeScreenStyles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#F3F2F3",
+    backgroundColor: COLOR.Background,
     // backgroundColor: "white",
   },
   body: {
@@ -23,7 +32,7 @@ export const HomeScreenStyles = StyleSheet.create({
   },
   sentence: {
     minHeight: 70,
-    backgroundColor: "#E7E3E3",
+    backgroundColor: COLOR.Background,
     borderRadius: 10,
     elevation: 5,
     // justifyContent: "center",
@@ -58,7 +67,7 @@ export const HomeScreenStyles = StyleSheet.create({
     display: "flex",
     flexDirection: "row",
     borderBottomWidth: 0.5,
-    borderBottomColor: "grey",
+    borderBottomColor: COLOR.Gray,
   },
   input: {
     flex: 1,
@@ -73,19 +82,19 @@ export const HomeScreenStyles = StyleSheet.create({
     marginTop: 13,
     marginRight: 15,
     fontSize: 25,
-    color: "#02B0F0",
+    color: COLOR.Secondary_1,
   },
   noRecording: {
     marginTop: 13,
     marginRight: 15,
     fontSize: 25,
-    color: "#748c94",
+    color: COLOR.Grey,
   },
   send: {
     marginTop: 13,
     marginRight: 15,
     fontSize: 25,
-    color: "#02B0F0",
+    color: COLOR.Secondary_1,
   },
 });
 

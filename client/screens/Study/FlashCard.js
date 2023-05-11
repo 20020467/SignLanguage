@@ -11,7 +11,7 @@ import {
 import { ScrollView } from "react-native-gesture-handler";
 import { Card } from 'react-native-paper';
 import { SafeAreaView } from "react-navigation";
-import { COLORS } from '../../constants';
+import { COLOR } from '../styles';
 import sentence from "../../constants/alphabetdata";
 import { FlashCardStyles } from "../styles";
 
@@ -371,7 +371,7 @@ const Flashcard = () => {
 
           <View style={{
             flex: 1,
-            backgroundColor: COLORS.black,
+            backgroundColor: COLOR.Black,
             alignItems: 'center',
             justifyContent: 'center'
           }}>
@@ -403,7 +403,7 @@ const Flashcard = () => {
                     padding: 20, width: '50%', borderRadius: 20
                   }}>
                   <Text style={{
-                    textAlign: 'center', color: COLORS.white, fontSize: 20
+                    textAlign: 'center', color: COLOR.White, fontSize: 20
                   }}>Close</Text>
                 </TouchableOpacity>
 

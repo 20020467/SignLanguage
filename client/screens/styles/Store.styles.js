@@ -1,13 +1,6 @@
 import { StyleSheet } from 'react-native'
+import COLOR from './Colors'
 
-// Colors
-export const PRIMARY_0 = 'rgb(181, 178, 146)'
-export const PRIMARY_1 = 'rgb(200, 197, 172)'
-export const PRIMARY_2 = 'rgb(213, 211, 191)'
-export const PRIMARY = 'rgb(163, 159, 122)'
-export const SECONDARY_0 = 'rgb(227, 47, 2)' // rgb(191, 47, 11)
-export const SECONDARY_1 = 'rgb(191, 78, 8)'
-export const SECONDARY_2 = 'rgb(116, 140, 148)' // rgb(94, 110, 115)
 
 const border = { borderWidth: 1, borderColor: 'black' } // dev purpose
 
@@ -28,7 +21,7 @@ export function getPercentValue(str) {
 
 export const StoreScreenStyles = StyleSheet.create({
   topTabBar: {
-    backgroundColor: PRIMARY_0,
+    backgroundColor: COLOR.Header,
     height: '9%',
   },
   topTabBarButton: {
@@ -49,7 +42,7 @@ export const HistoryTabStyles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     height: '9%',
-    backgroundColor: PRIMARY_1,
+    backgroundColor: COLOR.Error,
   },
   cancelButtonView: {
     width: '12%', // replacement of flex: 1
@@ -106,7 +99,7 @@ export const HistoryTabStyles = StyleSheet.create({
   deleteButtonView: {
     height: '9%',
     // top: '91%', // gets overwritten by translateY then causes error of being disappeared
-    backgroundColor: SECONDARY_1,
+    backgroundColor: COLOR.Error,
     alignItems: 'stretch',
     justifyContent: 'center',
     iconSize: 20,
@@ -131,7 +124,7 @@ export const HistoryRecordStyles = StyleSheet.create({
   mainView: {
     width: '100%',
     height: '100%',
-    backgroundColor: 'rgb(240,240, 240)',
+    backgroundColor: COLOR.Background,
     flexDirection: "row",
     // alignItems: "center",
     justifyContent: 'space-around',
@@ -174,7 +167,7 @@ export const HistoryRecordStyles = StyleSheet.create({
   deleteButton: {
     width: '25%',
     height: '100%',
-    backgroundColor: 'rgb(255, 0, 0)',
+    backgroundColor: COLOR.Error,
     // paddingLeft: 200,
     // flexWrap: 'wrap',
     // justifyContent: 'flex-end',
@@ -192,7 +185,7 @@ export const SavedRecordStyles = StyleSheet.create({
     // flex: 1, 
     width: '100%',
     height: 80,
-    backgroundColor: 'rgb(240, 250, 250)',
+    backgroundColor: COLOR.Background,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
@@ -211,6 +204,6 @@ export const SavedRecordStyles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     // justifyContent: 'center',
-    backgroundColor: 'rgb(130, 240, 140)'
+    backgroundColor: COLOR.Gray,
   },
 });

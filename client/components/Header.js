@@ -1,6 +1,7 @@
 import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
 import React from "react";
 import { useNavigation } from "@react-navigation/native";
+import { COLOR } from "../screens/styles";
 
 const Header = () => {
   const navigation = useNavigation();
@@ -36,7 +37,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     flexDirection: "row",
-    backgroundColor: "#9FD0E6",
+    backgroundColor: COLOR.Header,
   },
   title: {
     marginBottom: 10,

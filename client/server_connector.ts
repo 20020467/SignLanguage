@@ -5,8 +5,7 @@ import { API_HOST } from '@env'
 // "http://signlanguage:8080"
 
 const Axios = axios.create({
-  baseURL: `http://192.168.0.101:8080`,
-  // baseURL: `${API_HOST}`,
+  baseURL: `${API_HOST}`,
   // headers: { Authorization: `Bearer ${API_TOKEN}` },
   timeout: 10000,
   timeoutErrorMessage: "timeout"

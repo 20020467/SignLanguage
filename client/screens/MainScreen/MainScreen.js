@@ -8,6 +8,7 @@ import Icon from "react-native-vector-icons/MaterialIcons";
 import HomeScreen from "../Home/HomeScreen";
 import StoreScreen from "../Store/StoreScreen";
 import StudyScreen from "../Study/StudyScreen";
+import { COLOR } from "../styles";
 
 const Tab = createBottomTabNavigator();
 
@@ -120,7 +121,7 @@ const styles = StyleSheet.create({
 })
 
 function highlight(focused) {
-  return focused ? "#e32f45" : "#748c94"
+  return focused ? COLOR.NavBarHighlight : COLOR.Gray
 }
 
 export default MainScreen;
