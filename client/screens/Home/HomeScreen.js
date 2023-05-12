@@ -48,15 +48,20 @@ const HomeScreen = ({ route }) => {
     fetchHistory()
   }, [translatedRecordID.current])
 
-  useEffect(() => {
+  // useEffect(() => {
+  if (typeof route.params?.storedText == 'string') {
     let text = route.params.storedText
-    if (text) {
-      route.params.storedText = null // may not work
+    route.params.storedText = null // this works
+
+    if (text.length == 0) return
+    // if (text) {
+      // route.params.storedText = null // may not work
       setSentence(text)
       setSentenceSend(text)
       // translate()
-    }
-  }, [route.params.storedText])
+    // }
+  }
+  // }, [route.params.storedText])
 
   // call to translate each time this variable is changed
   useEffect(() => {

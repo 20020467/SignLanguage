@@ -4,6 +4,7 @@ import {
   Button,
   Text,
   TextInput,
+  ToastAndroid,
   TouchableOpacity,
   View
 } from "react-native";
@@ -11,6 +12,7 @@ import Icon from "react-native-vector-icons/Ionicons";
 import { LoginSuccess, useGlobalContext } from "../../context";
 import { auth } from "../../server_connector";
 import { SignInStyles as styles } from "../styles";
+import { HttpStatusCode } from "axios";
 
 const SignIn = () => {
   const navigation = useNavigation();
@@ -35,7 +37,9 @@ const SignIn = () => {
         navigation.navigate("MainScreen");
       })
       .catch(reason => {
-        console.log(`Login: ${reason}`) // TRACE
+        if (reason.response.status == HttpStatusCode.Unauthorized) {
+          ToastAndroid.show("Sai thông tin đăng nhập, vui lòng thử lại", ToastAndroid.SHORT)
+        }
       })
   };
 
