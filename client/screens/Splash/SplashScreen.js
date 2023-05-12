@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   Image,
 } from "react-native";
-import React from 'react'
+import React from "react";
 import { useNavigation } from "@react-navigation/native";
 import CopyRight from "react-native-vector-icons/AntDesign";
 
@@ -54,33 +54,35 @@ const SplashScreen = () => {
         </TouchableOpacity>
       </View>
       <View style={styles.copyright}>
-        <CopyRight name="copyright" style={{marginRight: 2, marginBottom: 2}}/>
+        <CopyRight
+          name="copyright"
+          style={{ marginRight: 2, marginBottom: 2 }}
+        />
         <Text style={{ fontFamily: "Poppins-Regular", textAlign: "center" }}>
           2023 SignLanguage by proTeam
         </Text>
       </View>
     </SafeAreaView>
   );
-}
+};
 
-export default SplashScreen
+export default SplashScreen;
 
 const styles = StyleSheet.create({
-    body: {
-        marginTop: 20,
-        paddingHorizontal: 10,
- 
-    },
-    img: {
-        width: "100%",
-        // flex: 1
-    },
+  body: {
+    marginTop: 20,
+    paddingHorizontal: 10,
+  },
+  img: {
+    width: "100%",
+    // flex: 1
+  },
   loginButton: {
     marginTop: 20,
     marginHorizontal: 24,
     height: 50,
     // width: 80,
-    backgroundColor: "#B4AAF2",
+    backgroundColor: "#9FD0E6",
     borderRadius: 8,
     justifyContent: "center",
     alignItems: "center",
@@ -89,7 +91,7 @@ const styles = StyleSheet.create({
     marginTop: 40,
     display: "flex",
     justifyContent: "center",
-    alignItems: "center"
+    alignItems: "center",
   },
   copyright: {
     // position: "absolute",
@@ -100,6 +102,6 @@ const styles = StyleSheet.create({
     display: "flex",
     flexDirection: "row",
     justifyContent: "center",
-    alignItems: "center"
-  }
+    alignItems: "center",
+  },
 });
