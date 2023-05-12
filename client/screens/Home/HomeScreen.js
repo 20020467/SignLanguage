@@ -71,29 +71,29 @@ const HomeScreen = () => {
     var arrResult = splitSentence(sentence);
     setWord(arrResult);
 
-    // const data = {
-    //   content: sentence,
-    // };
-    // console.log(data);
-    // try {
-    //   const res = await axios.post(
-    //     `${API_HOST}/api/sentence`,
-    //     data,
-    //     axiosOptions
-    //   );
-    //   console.log(res.data);
-    //   if (res.data.message == "true") {
-    //     setStar(true);
-    //   } else {
-    //     setStar(false);
-    //   }
-    //   setIdSentence(res.data.data.id);
-    // } catch (error) {
-    //   let response = error.response.data;
-    //   if (response.error == "Internal Server Error") {
-    //     console.log("loi");
-    //   }
-    // }
+    const data = {
+      content: sentence,
+    };
+    console.log(data);
+    try {
+      const res = await axios.post(
+        `${API_HOST}/api/sentence`,
+        data,
+        axiosOptions
+      );
+      console.log(res.data);
+      if (res.data.message == "true") {
+        setStar(true);
+      } else {
+        setStar(false);
+      }
+      setIdSentence(res.data.data.id);
+    } catch (error) {
+      let response = error.response.data;
+      if (response.error == "Internal Server Error") {
+        console.log("loi");
+      }
+    }
   };
 
   const handelStar = async () => {

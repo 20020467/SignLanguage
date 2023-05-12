@@ -30,7 +30,7 @@ const SplashScreen = () => {
         </Text>
         <Image
           style={styles.img}
-          source={require("../../assets/img/test.png")}
+          source={require("../../assets/img/greeting.png")}
         ></Image>
         <View style={styles.greeting}>
           <Text

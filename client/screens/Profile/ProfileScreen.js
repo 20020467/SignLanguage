@@ -80,7 +80,16 @@ const ProfileScreen = () => {
           </View>
 
           <TouchableOpacity
-            style={[styles.footer, { marginTop: 60, paddingLeft: 30 }]}
+            style={[
+              styles.footer,
+              {
+                marginTop: 60,
+                paddingLeft: 30,
+                borderBottomWidth: 1,
+                borderTopWidth: 0.1,
+                borderColor: "grey",
+              },
+            ]}
             onPress={() => {
               navigation.navigate("EditProfile");
             }}
