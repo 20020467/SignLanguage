@@ -191,7 +191,7 @@ const ProfileScreen = () => {
               <Text style={styles.warning}>{warning.email}</Text>
             </View>
 
-            <View style={styles.item}>
+            {/* <View style={styles.item}>
               <Text style={styles.text}>Mật khẩu</Text>
               <TextInput
                 placeholder="Mật khẩu"
@@ -201,7 +201,7 @@ const ProfileScreen = () => {
                 editable={false}
               />
               <Text style={styles.warning}></Text>
-            </View>
+            </View> */}
 
             <View style={styles.item}>
               <Text style={styles.text}>Số điện thoại</Text>
@@ -221,7 +221,7 @@ const ProfileScreen = () => {
             </View>
           </View>
 
-          <TouchableOpacity
+          {/* <TouchableOpacity
             style={styles.footer}
             onPress={() => {
               navigation.navigate("ChangePassword");
@@ -237,7 +237,7 @@ const ProfileScreen = () => {
             }}
           >
             <Text style={[styles.textFooter, { color: "red" }]}>Đăng xuất</Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
 
           {/* <TouchableOpacity
             style={styles.ChangePassword}
@@ -270,7 +270,7 @@ export default ProfileScreen;
 const styles = StyleSheet.create({
   background: {
     flex: 1,
-    paddingTop: 25,
+    // paddingTop: 25,
   },
 
   header: {
@@ -302,7 +302,7 @@ const styles = StyleSheet.create({
   },
   body: {
     marginBottom: 20,
-    padding: 20,
+    padding: 30,
   },
   item: {
     marginVertical: 10,

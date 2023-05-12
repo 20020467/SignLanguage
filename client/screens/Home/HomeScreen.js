@@ -10,6 +10,7 @@ import {
   Platform,
   TouchableOpacity,
   Keyboard,
+  Image,
 } from "react-native";
 import React, { useContext, useEffect, useLayoutEffect, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
@@ -70,29 +71,29 @@ const HomeScreen = () => {
     var arrResult = splitSentence(sentence);
     setWord(arrResult);
 
-    const data = {
-      content: sentence,
-    };
-    console.log(data);
-    try {
-      const res = await axios.post(
-        `${API_HOST}/api/sentence`,
-        data,
-        axiosOptions
-      );
-      console.log(res.data);
-      if (res.data.message == "true") {
-        setStar(true);
-      } else {
-        setStar(false);
-      }
-      setIdSentence(res.data.data.id);
-    } catch (error) {
-      let response = error.response.data;
-      if (response.error == "Internal Server Error") {
-        console.log("loi");
-      }
-    }
+    // const data = {
+    //   content: sentence,
+    // };
+    // console.log(data);
+    // try {
+    //   const res = await axios.post(
+    //     `${API_HOST}/api/sentence`,
+    //     data,
+    //     axiosOptions
+    //   );
+    //   console.log(res.data);
+    //   if (res.data.message == "true") {
+    //     setStar(true);
+    //   } else {
+    //     setStar(false);
+    //   }
+    //   setIdSentence(res.data.data.id);
+    // } catch (error) {
+    //   let response = error.response.data;
+    //   if (response.error == "Internal Server Error") {
+    //     console.log("loi");
+    //   }
+    // }
   };
 
   const handelStar = async () => {
@@ -128,9 +129,33 @@ const HomeScreen = () => {
           </View>
 
           <View>
-            {word?.map((item, index) => {
-              return <Result key={index} word={item} />;
-            })}
+            {word ? (
+              <>
+                {word.length == 0 ? (
+                  <View style={styles.background}>
+                    <Image
+                      style={styles.img}
+                      source={require("../../assets/img/background.png")}
+                    ></Image>
+                  </View>
+                ) : (
+                  <>
+                    {word?.map((item, index) => {
+                      return <Result key={index} word={item} />;
+                    })}
+                  </>
+                )}
+              </>
+            ) : (
+              <>
+                <View style={styles.background}>
+                  <Image
+                    style={styles.img}
+                    source={require("../../assets/img/background.png")}
+                  ></Image>
+                </View>
+              </>
+            )}
           </View>
         </View>
       </ScrollView>
@@ -196,6 +221,16 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: 17,
     right: 10,
+  },
+  background: {
+    width: "100%",
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 40,
+  },
+  img: {
+    width: "100%",
+    height: 250,
   },
 
   test: {

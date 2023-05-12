@@ -3,19 +3,26 @@ import React, { useEffect, useState } from "react";
 import { getImage } from "../../components/getImage";
 
 const Result = (props) => {
-  const word = props.word;
-  // const path = getImage(charator);
+  const convertVietnameseString = (str) => {
+    // Chuyển đổi tiếng Việt có dấu thành không dấu
+    const noAccentStr = str
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "");
+
+    // Chuyển đổi từ viết hoa thành từ không viết hoa
+    const lowercaseStr = noAccentStr.toLowerCase();
+
+    return lowercaseStr;
+  };
+
+  const word = convertVietnameseString(props.word);
   const charactors = word.split("");
 
   return (
     <View>
       <View style={styles.item}>
-        {/* <Text style={styles.text}>{charator}</Text>
-        <View style={{ flex: 1 }}></View>
-        <View style={styles.imgWrap}>
-          <Image style={styles.img} source={path}></Image>
-        </View> */}
-        <Text style={styles.text}>{word}</Text>
+        <Text style={styles.text}>{props.word}</Text>
         <View style={styles.imgWrap}>
           {charactors.map((charactor, index) => {
             return (
@@ -45,7 +52,7 @@ const styles = StyleSheet.create({
   imgWrap: {
     display: "flex",
     flexDirection: "row",
-    flexWrap: "wrap-reverse",
+    flexWrap: "wrap",
 
     gap: 15,
     marginLeft: 15,

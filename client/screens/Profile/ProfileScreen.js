@@ -62,20 +62,20 @@ const ProfileScreen = () => {
               source={require("../../assets/img/cat.jpg")}
             ></Image>
             <View style={styles.info}>
-              <Text>{user?.username}</Text>
-              <Text>{user?.email}</Text>
+              <Text style={styles.username}>{user?.username}</Text>
+              <Text style={styles.email}>{user?.email}</Text>
             </View>
           </View>
 
           <View style={styles.body}>
             <View style={styles.item}>
-              <Icon name="email" />
-              <Text>{user?.email}</Text>
+              <Icon style={styles.icon} name="email" />
+              <Text style={styles.text}>{user?.email}</Text>
             </View>
 
             <View style={styles.item}>
-              <Icon name="phone" />
-              <Text>{user?.phone}</Text>
+              <Icon style={styles.icon} name="phone" />
+              <Text style={styles.text}>{user?.phone}</Text>
             </View>
           </View>
 
@@ -94,7 +94,7 @@ const ProfileScreen = () => {
               navigation.navigate("ChangePassword");
             }}
           >
-            <Text style={styles.textFooter}>Thay đổi mật khẩu</Text>
+            <Text style={styles.textFooter}>Đổi mật khẩu</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -148,13 +148,32 @@ const styles = StyleSheet.create({
     marginLeft: 15,
   },
 
+  username: {
+    fontSize: 20,
+    fontFamily: "Poppins-Regular",
+  },
+  email: {
+    fontFamily: "Poppins-Regular",
+    fontSize: 16,
+  },
+
   body: {
     paddingHorizontal: 30,
     marginTop: 20,
   },
+  text: {
+    fontSize: 16,
+    fontFamily: "Poppins-Regular",
+  },
   item: {
     display: "flex",
     flexDirection: "row",
+    marginBottom: 10,
+  },
+  icon: {
+    color: "#9FD0E6",
+    fontSize: 20,
+    marginRight: 10,
   },
 
   footer: {
