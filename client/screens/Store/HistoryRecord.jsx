@@ -24,7 +24,7 @@ const showToast = (message) => {
 const HistoryRecord = forwardRef(({ index, data, inDeletionMode, checked, onCheck,
   onDelete, onLongPress, onSwipableOpen, onSwipableClose, setDataChanged }, ref) => {
 
-  const value = data.content // translated text
+  const translatedText = data.content // translated text
 
   const [isSaved, setIsSaved] = useState(data.favor)
   // should use Animated
@@ -68,7 +68,7 @@ const HistoryRecord = forwardRef(({ index, data, inDeletionMode, checked, onChec
   }), [])
 
   const navigateAndTranslate = (e) => {
-    navigation.navigate("HomeTab", { storedText: value })
+    navigation.navigate("HomeTab", { storedText: translatedText })
   }
 
   const saveRecord = (e) => {
@@ -87,7 +87,7 @@ const HistoryRecord = forwardRef(({ index, data, inDeletionMode, checked, onChec
     //   }).catch(msg => console.log(`Reject saving: ${msg}`))
     // }
     record.changeSaving(data.id, globalContext.token).then(res => {
-      setDataChanged(true)
+      // setDataChanged(true)
 
       // check by response
       if (res.data.data.favor) {
@@ -229,7 +229,7 @@ const HistoryRecord = forwardRef(({ index, data, inDeletionMode, checked, onChec
             onLongPress={inDeletionMode ? onCheckHandler : onLongPressHandler}
           >
             <Text onLayout={handleTextLayout} style={styles.text}>
-              {value}
+              {translatedText}
             </Text>
           </Pressable>
         </ResizableAnimatedView>

@@ -21,7 +21,7 @@ export function getPercentValue(str) {
 
 export const StoreScreenStyles = StyleSheet.create({
   topTabBar: {
-    backgroundColor: COLOR.Header,
+    backgroundColor: COLOR.Secondary_1,
     height: '9%',
   },
   topTabBarButton: {
@@ -42,7 +42,7 @@ export const HistoryTabStyles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     height: '9%',
-    backgroundColor: COLOR.Error,
+    backgroundColor: COLOR.accent,
   },
   cancelButtonView: {
     width: '12%', // replacement of flex: 1
@@ -99,7 +99,7 @@ export const HistoryTabStyles = StyleSheet.create({
   deleteButtonView: {
     height: '9%',
     // top: '91%', // gets overwritten by translateY then causes error of being disappeared
-    backgroundColor: COLOR.Error,
+    backgroundColor: "rgb(240, 60, 70)",
     alignItems: 'stretch',
     justifyContent: 'center',
     iconSize: 20,
@@ -140,6 +140,7 @@ export const HistoryRecordStyles = StyleSheet.create({
   textWrapper: {
     width: '100%',
     height: '100%',
+    justifyContent: 'center',
     // ...border,
   },
   text: {

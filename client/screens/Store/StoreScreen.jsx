@@ -16,29 +16,29 @@ const StoreContext = createContext()
  */
 const StoreScreen = ({ navigation }) => {
   // set true only if switching from other screens to this
-  const [focused, setFocused] = useState(false)
+  // const [focused, setFocused] = useState(false)
   // may create another context (or use this context instead) wrapping the main navigator, 
   // then pass its value to this var.
   // This state var is changed when there're data changes from other tabs.
-  const [dataChanged, setDataChanged] = useState(false)
+  // const [dataChanged, setDataChanged] = useState(false)
 
   const insets = useSafeAreaInsets() // may apply to the main screen in near future update
 
   useEffect(() => {
     const unsub = navigation.addListener('focus', (e) => {
       // console.log(e)
-      setFocused(true)
+      // setFocused(true)
     })
 
     return unsub
   }, [navigation])
 
-  const contextValue = {
-    focused, setFocused, dataChanged, setDataChanged
-  }
+  // const contextValue = {
+  //   focused, setFocused, dataChanged, setDataChanged
+  // }
 
   return (
-    <StoreContext.Provider value={contextValue}>
+    // <StoreContext.Provider value={contextValue}>
       <View
         style={{
           flex: 1,
@@ -46,7 +46,7 @@ const StoreScreen = ({ navigation }) => {
           paddingBottom: insets.bottom,
           paddingLeft: insets.left,
           paddingRight: insets.right,
-          backgroundColor: COLOR.Header,
+          backgroundColor: COLOR.Secondary_1,
         }}
       >
         <Tab.Navigator
@@ -100,7 +100,7 @@ const StoreScreen = ({ navigation }) => {
           />
         </Tab.Navigator>
       </View>
-    </StoreContext.Provider>
+    // </StoreContext.Provider>
   )
 }
 

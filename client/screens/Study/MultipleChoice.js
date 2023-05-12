@@ -27,6 +27,7 @@ const Exercise = ({ navigation }) => {
     // Show Next Button
     setShowNextButton(true)
   }
+
   const handleNext = () => {
     if (currentQuestionIndex == allQuestions.length - 1) {
       // Last Question
@@ -61,38 +62,41 @@ const Exercise = ({ navigation }) => {
   }
 
 
-
   const renderQuestion = () => {
     return (
-      <View style={{
-        marginVertical: -20
-      }}>
-
-
+      <View
+        style={{
+          marginTop: '3%',
+          marginBottom: '7%'
+        }}>
         {/* Question Counter */}
         <View style={{
           flexDirection: 'row',
           alignItems: 'flex-end'
         }}>
-          <Text style={{ color: COLOR.White, fontSize: 20, opacity: 0.6, marginRight: 2 }}>{currentQuestionIndex + 1}</Text>
-          <Text style={{ color: COLOR.White, fontSize: 18, opacity: 0.6 }}>/ {allQuestions.length}</Text>
+          <Text style={{ color: COLOR.Black, fontSize: 20, marginRight: 5, fontWeight: '700' }}>{currentQuestionIndex + 1}</Text>
+          <Text style={{ color: COLOR.Black, fontSize: 18 }}>/ {allQuestions.length}</Text>
         </View>
 
         {/* Question */}
-        <Text style={{
-          color: COLOR.White,
-          fontSize: 20
-        }}>{allQuestions[currentQuestionIndex]?.question}</Text>
-        <View>
+        <Text
+          style={{
+            color: COLOR.Black,
+            fontSize: 20
+          }}
+        >
+          {allQuestions[currentQuestionIndex]?.question}
+        </Text>
+        <View style={{alignItems: 'center'}}>
           <Image source={allQuestions[currentQuestionIndex]?.image} />
         </View>
       </View>
     )
   }
+
   const renderOptions = () => {
     return (
-      <View style={{}} >
-
+      <View style={{height: '50%', justifyContent: 'space-between'}} >
         {
           allQuestions[currentQuestionIndex]?.options.map(option => (
             <TouchableOpacity
@@ -115,7 +119,7 @@ const Exercise = ({ navigation }) => {
                 flexDirection: 'row',
                 alignItems: 'center', justifyContent: 'space-between',
                 paddingHorizontal: 20,
-                marginVertical: 10
+                // marginVertical: 7
               }}
             >
 
@@ -200,17 +204,18 @@ const Exercise = ({ navigation }) => {
 
   return (
     <SafeAreaView style={{
-      flex: 1
+      // flex: 1,
+      height: '100%'
     }}>
-      <ScrollView>
-        <View style={{
+      <ScrollView style={{flex: 1, height: '100%'}}>
+        {/* <View style={{
           paddingTop: 20,
           marginBottom: 5,
           height: 65,
           alignItems: "center",
           justifyContent: "center",
           flexDirection: "row",
-          backgroundColor: "#9FD0E6",
+          // backgroundColor: "#9FD0E6",
         }}>
           <View>
             <TouchableOpacity
@@ -231,14 +236,15 @@ const Exercise = ({ navigation }) => {
               Question
             </Text>
           </View>
-        </View>
+        </View> */}
 
         <View style={{
           flex: 1,
-          paddingVertical: 40,
-          paddingHorizontal: 16,
+          height: '100%',
+          paddingVertical: '3%',
+          paddingHorizontal: '5%',
           backgroundColor: COLOR.Background,
-          position: 'relative'
+          justifyContent: 'center',
         }}>
 
           {/* ProgressBar */}
@@ -313,10 +319,7 @@ const Exercise = ({ navigation }) => {
 
                 </View>
 
-
-
               </View>
-
             </View>
           </Modal>
         </View>

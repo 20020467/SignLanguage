@@ -6,7 +6,7 @@ import { useGlobalContext } from '../../context'
 import { record } from '../../server_connector'
 import { HistoryTabStyles as styles } from '../styles'
 import SavedRecord from './SavedRecord'
-import { StoreContext } from './StoreScreen'
+// import { StoreContext } from './StoreScreen'
 
 const SaveTab = () => {
   const [dataset, setDataset] = useState([])
@@ -16,27 +16,26 @@ const SaveTab = () => {
   const swipedItem = useRef(null) // sets new swiped item's index to this variable
   const selfClosed = useRef(true) // determine close action of an item called by itself or other item
 
-  const { focused, setFocused, dataChanged, setDataChanged } = useContext(StoreContext)
+  // const { focused, setFocused, dataChanged, setDataChanged } = useContext(StoreContext)
 
   const { state: globalContext, dispatch } = useGlobalContext()
 
   useFocusEffect(
     useCallback(() => {
       let willReload = false
-      console.log(dataChanged)
 
-      if (focused) {
-        setFocused(false)
-        willReload = true
-      }
+      // if (focused) {
+        // setFocused(false)
+        // willReload = true
+      // }
 
-      if (willReload || dataChanged) {
-        setDataChanged(false)
+      // if (willReload || dataChanged) {
+      //   setDataChanged(false)
 
-        record.getSavedRecords(globalContext.token).then(res => {
-          setDataset(res.data.data)
-        }).catch(msg => console.log(`Get saved records: ${msg}`)) // TRACE
-      }
+      //   record.getSavedRecords(globalContext.token).then(res => {
+      //     setDataset(res.data.data)
+        // }).catch(msg => console.log(`Get saved records: ${msg}`)) // TRACE
+      // }
     }, [])
   )
 
@@ -50,7 +49,7 @@ const SaveTab = () => {
     // send POST request and/or store in local
     record.changeSaving(id, globalContext.token)
       .then(res => {
-        setDataChanged(true) // 
+        // setDataChanged(true) // 
         setDataset(dataset.filter((item, idx) => item.id !== id))
       })
       .catch(msg => console.log(`unsaveRecord: ${msg}`)) // TRACE

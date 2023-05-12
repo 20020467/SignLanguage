@@ -154,7 +154,7 @@ const Flashcard = () => {
     <SafeAreaView>
 
       {/*header*/}
-      <View style={{
+      {/* <View style={{
         paddingTop: 20,
         marginBottom: 5,
         height: 85,
@@ -182,7 +182,7 @@ const Flashcard = () => {
             Flashcard
           </Text>
         </View>
-      </View>
+      </View> */}
 
       {/*Title*/}
       <View>

@@ -6,6 +6,7 @@ var height = Dimensions.get('window').height;
 var width = Dimensions.get('window').width;
 
 export { COLOR }
+export * from './Colors'
 
 export const SIZES = {
   base: 10,
@@ -56,9 +57,10 @@ export const SignInStyles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "white",
+    paddingTop: '15%',
   },
   header: {
-    marginTop: 110,
+    marginTop: '15%',
     marginLeft: 24,
   },
   login: {

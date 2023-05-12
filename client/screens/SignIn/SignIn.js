@@ -46,24 +46,24 @@ const SignIn = () => {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.login}>Login</Text>
+        <Text style={styles.login}>Đăng nhập</Text>
       </View>
 
       <View style={styles.body}>
         <View style={styles.item}>
-          <Text>Username</Text>
+          <Text>Tên đăng nhập</Text>
           <TextInput
             style={styles.input}
-            placeholder="Username"
+            placeholder="username"
             onChangeText={(val) => setUsername(val)}
           ></TextInput>
         </View>
 
         <View style={styles.item}>
-          <Text>Password</Text>
+          <Text>Mật khẩu</Text>
           <TextInput
             style={[styles.input, { paddingRight: 50 }]}
-            placeholder="Password"
+            placeholder="password"
             secureTextEntry={!show}
             onChangeText={(val) => setPassword(val)}
           ></TextInput>
@@ -83,12 +83,12 @@ const SignIn = () => {
         </View>
       </View>
 
-      <Button title="Login" onPress={handleLogin}></Button>
+      <Button title="Đăng nhập" onPress={handleLogin}></Button>
 
       <View style={styles.noAccount}>
-        <Text>Don't have an account?</Text>
+        <Text>Chưa có tài khoản?</Text>
         <TouchableOpacity onPress={() => navigation.navigate("SignUp")}>
-          <Text style={{ color: "#2805FF", marginLeft: 5 }}>Sign Up</Text>
+          <Text style={{ color: "#2805FF", marginLeft: 5 }}>Đăng ký</Text>
         </TouchableOpacity>
       </View>
     </View>

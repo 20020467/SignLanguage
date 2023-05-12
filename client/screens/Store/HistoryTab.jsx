@@ -59,7 +59,7 @@ const HistoryTab = ({ route }) => {
   const selfClosed = useRef(true) // determine close action of an item called by itself or other item
   // const containerSize = useRef(initializeSize(0, 0))
 
-  const { focused, setFocused, dataChanged, setDataChanged } = useContext(StoreContext)
+  // const { focused, setFocused, dataChanged, setDataChanged } = useContext(StoreContext)
 
   const { state: globalContext, dispatch } = useGlobalContext()
 
@@ -68,20 +68,20 @@ const HistoryTab = ({ route }) => {
       let willReload = false
       // console.log(focused)
 
-      if (focused) {
-        setFocused(false)
-        willReload = true
-        closeDeletionMode()
-        unswipeItem()
-      }
+      // if (focused) {
+      //   setFocused(false)
+      //   willReload = true
+      //   closeDeletionMode()
+      //   unswipeItem()
+      // }
 
-      if (willReload || dataChanged) {
-        setDataChanged(false)
+      // if (willReload || dataChanged) {
+      //   setDataChanged(false)
 
-        record.getHistory(globalContext.token).then(res => {
-          setDataset(res.data.data)
-        }).catch(msg => console.log(`Get history records: ${msg}`)) // TRACE
-      }
+      //   record.getHistory(globalContext.token).then(res => {
+      //     setDataset(res.data.data)
+      //   }).catch(msg => console.log(`Get history records: ${msg}`)) // TRACE
+      // }
     }, [])
   )
 
@@ -152,7 +152,7 @@ const HistoryTab = ({ route }) => {
 
       console.log(res.data) // TEST
     }).catch(msg => {
-      setDataChanged(true)
+      // setDataChanged(true)
       unswipeItem(true)
       console.log(`deleteRecord: ${msg}`) // TRACE
     })
@@ -187,12 +187,12 @@ const HistoryTab = ({ route }) => {
         if (reasons.length == 0) { // deleting all the specified has done
           ToastAndroid.show("Xóa thành công", ToastAndroid.SHORT)
 
-          setDataChanged(true)
+          // setDataChanged(true)
           closeDeletionMode()
         } else if (reasons.length < pendingSet.size) {
           Alert.alert("Xóa thất bại", "Một số bản ghi chưa được xóa. Vui lòng kiểm tra kết nôi và thử lại")
 
-          setDataChanged(true)
+          // setDataChanged(true)
           closeDeletionMode()
         } else {
           Alert.alert("Xóa thất bại", "Vui lòng kiểm tra kết nôi và thử lại")
@@ -414,7 +414,7 @@ const HistoryTab = ({ route }) => {
                   onLongPress={markAndOpenDeletionMode}
                   onSwipableOpen={onSwipableOpen}
                   onSwipableClose={onSwipableClose}
-                  setDataChanged={setDataChanged}
+                  // setDataChanged={setDataChanged}
                   ref={ref => updateRef({ id: item.id, ref })}
                 />
               )
