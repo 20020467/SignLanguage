@@ -28,19 +28,6 @@ type RequestErrors = {
   message: string,
 }
 
-// function validateTokenBeforeRequest(token: string): true | RequestErrors {
-//   if (typeof token == 'undefined') return {
-//     type: ErrorTypes.TOKEN_NOT_FOUND,
-//     message: "token not found, required to login"
-//   }
-
-//   if (typeof token != 'string' || token.length == 0) return {
-//     type: ErrorTypes.INVALID_TOKEN,
-//     message: "invalid token, required to login"
-//   }
-
-//   return true
-// }
 
 /********/
 
@@ -173,7 +160,144 @@ const makeRequest = async (request: Promise<AxiosResponse>) => {
   }
 }
 
+/********/
+/** 
+ * New resource classes, which are similar to resource objs in version 1 except this is passed 
+ * with user token only once in component (if token hasn't yet change).
+ * (next update)
+ * 1. create a common errors enum like token related errors and return in redeclared async functions
+ * 2. may redeclare API based functions to async functions
+ * 3. convert resource objects to classes with a param is user token, initialized and updated with:
+ *    (1) useMemo(func, [token]) or (2) useRef and useEffect(func, [token]).
+ * 4. API consumers will only call to the classes once with token passed before using it to send reqs directly, 
+ * helps reduce passing token multiple times.
+ */
+/********/
 
+export class auth_2 {
+  private token: string
+  private path: string = getResource(Resources.Auth)
+
+  constructor(token: string) {
+    // const validationResult = validateTokenBeforeRequest(token)
+    // if (validationResult instanceof Reques)
+    this.token = token
+  }
+
+  login(data: TLoginData, config: AxiosRequestConfig<TLoginData>) {
+    return makeRequest(Axios.post<TLoginResponseData>(`${this.path}/login`, data, {
+      ...config,
+      headers: {
+        Authorization: `Bearer ${this.token}`
+      },
+    }))
+  }
+
+  register(data: TRegisterData, config: AxiosRequestConfig) {
+    return makeRequest(Axios.post(`${this.path}/register`, data, {
+      ...config,
+      headers: {
+        Authorization: `Bearer ${this.token}`
+      },
+    }))
+  }
+
+  changePassword(data: TChangePasswordData, config: AxiosRequestConfig) {
+    return makeRequest(Axios.put(`${this.path}/change-password`, data, {
+      ...config,
+      headers: {
+        Authorization: `Bearer ${this.token}`
+      },
+    }))
+  }
+
+  changeInfo(data: TChangeInfoData, config: AxiosRequestConfig) {
+    return makeRequest(Axios.put(`${this.path}/update`, data, {
+      ...config,
+      headers: {
+        Authorization: `Bearer ${this.token}`
+      },
+    }))
+  }
+
+  getUserInfo(config: AxiosRequestConfig) {
+    return makeRequest(Axios.get<TUserInfoResponseData>(`${this.path}`, {
+      ...config,
+      headers: {
+        Authorization: `Bearer ${this.token}`
+      },
+    }))
+  }
+}
+
+export class record_2 {
+  private token: string
+  private path: string = getResource(Resources.Sentence)
+
+  constructor(token: string) {
+    this.token = token
+  }
+
+  public async getHistory(config: AxiosRequestConfig) {
+    return await makeRequest(Axios.get<THistoryListData>(`${this.path}/all`, {
+      ...config,
+      headers: {
+        Authorization: `Bearer ${this.token}`
+      },
+    }))
+  }
+
+  async addRecord(data: string, config: AxiosRequestConfig) {
+    return await makeRequest(Axios.post<TAddRecordResponseData>(`${this.path}`, { content: data }, {
+      ...config,
+      headers: {
+        Authorization: `Bearer ${this.token}`
+      },
+    }))
+  }
+
+  async delete(id: number, config: AxiosRequestConfig) {
+    return await makeRequest(Axios.delete(`${this.path}/${id}`, {
+      ...config,
+      headers: {
+        Authorization: `Bearer ${this.token}`
+      },
+    }))
+  }
+
+  async getSavedRecords(config: AxiosRequestConfig) {
+    return await makeRequest(Axios.get(`${this.path}/favour`, {
+      ...config,
+      headers: {
+        Authorization: `Bearer ${this.token}`
+      },
+    }))
+  }
+
+  async changeSaving(id: number, config: AxiosRequestConfig) {
+    // await syntax is not mandatory
+    return await makeRequest(Axios.get(`${this.path}/like/${id}`, {
+      ...config,
+      headers: {
+        Authorization: `Bearer ${this.token}`
+      },
+    }))
+  }
+}
+
+// function validateTokenBeforeRequest(token: string): true | RequestErrors {
+//   if (typeof token == 'undefined') return {
+//     type: ErrorTypes.TOKEN_NOT_FOUND,
+//     message: "token not found, required to login"
+//   }
+
+//   if (typeof token != 'string' || token.length == 0) return {
+//     type: ErrorTypes.INVALID_TOKEN,
+//     message: "invalid token, required to login"
+//   }
+
+//   return true
+// }
 
 /********/
 
