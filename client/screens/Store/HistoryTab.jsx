@@ -90,7 +90,7 @@ const HistoryTab = ({ route }) => {
   useEffect(() => {
     record.getHistory(globalContext.token).then(res => {
       setDataset(res.data.data)
-    }).catch(msg => console.log(`Get history records: ${msg}`)) // TRACE
+    }).catch(error => console.log(`Get history records: ${error}`)) // TRACE
 
     resizableList.current.changeHeight(listSizeState.before)
 
