@@ -258,7 +258,7 @@ const ProfileScreen = () => {
 
           <View style={{ width: '100%', height: 180, alignItems: 'center', justifyContent: 'space-between' }}>
             <TouchableOpacity
-              style={{ marginBottom: 1, backgroundColor: infoNotChanged() ? COLOR.disabled : COLOR.Secondary, height: 45, borderRadius: 5, width: '80%', justifyContent: 'center' }}
+              style={{ marginBottom: 1, backgroundColor: infoNotChanged() ? COLOR.disabled : COLOR.Secondary_3, height: 45, borderRadius: 5, width: '80%', justifyContent: 'center' }}
               onPress={requestUpdate}
               disabled={infoNotChanged()}
             >
@@ -267,14 +267,14 @@ const ProfileScreen = () => {
             </TouchableOpacity>
 
             <TouchableOpacity
-              style={{ marginBottom: 1, backgroundColor: (password.length == 0) ? COLOR.disabled : COLOR.Secondary, height: 45, borderRadius: 5, width: '80%', justifyContent: 'center' }}
+              style={{ marginBottom: 1, backgroundColor: (password.length == 0) ? COLOR.disabled : COLOR.Secondary_3, height: 45, borderRadius: 5, width: '80%', justifyContent: 'center' }}
               onPress={handleUpdatePassword}
             >
               <Text style={{ textAlign: 'center', color: COLOR.White }}>Cập nhật mật khẩu</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
-              style={{ backgroundColor: COLOR.Secondary, height: 45, borderRadius: 5, width: '80%', justifyContent: 'center' }}
+              style={{ backgroundColor: COLOR.Secondary_3, height: 45, borderRadius: 5, width: '80%', justifyContent: 'center' }}
               onPress={logout}
             >
               <Text style={{ textAlign: 'center', color: COLOR.White }}>Đăng xuất</Text>

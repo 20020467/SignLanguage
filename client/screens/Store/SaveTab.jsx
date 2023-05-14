@@ -122,7 +122,7 @@ const SaveTab = () => {
   return (
     <View style={{ flex: 1 }}>
       <FlatList
-        style={styles.recordList}
+        // contentContainerStyle={styles.recordList}
         ItemSeparatorComponent={separator}
         ListEmptyComponent={emptyHistoryNotification}
         refreshControl={

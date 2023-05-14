@@ -1,9 +1,10 @@
 // Main color set
 export default COLOR = {
     Primary_1: "#252c4a",
+    Secondary_0: "#9FD0E6",
     Secondary_1: "#02B0F0",
     Secondary_2: '#1E90FF',
-    Secondary: "#0C8CE9",
+    Secondary_3: "#0C8CE9",
     accent: '#3498db',
 
     Success: '#00C851',

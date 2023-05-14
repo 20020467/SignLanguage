@@ -21,7 +21,7 @@ export function getPercentValue(str) {
 
 export const StoreScreenStyles = StyleSheet.create({
   topTabBar: {
-    backgroundColor: COLOR.Secondary_1,
+    backgroundColor: COLOR.Secondary_0,
     height: '9%',
   },
   topTabBarButton: {
@@ -80,21 +80,24 @@ export const HistoryTabStyles = StyleSheet.create({
     flex: 1,
     position: 'absolute',
     width: '100%',
-    height: '99%', // may create function to get this value's number part directly
+    height: '99.9%', // may create function to get this value's number part directly
     // top: '10%', // get overwritten
     // ...border,
     alignItems: 'center',
   },
   recordListView: { //resizable
     // flex: 1,
-    // ...border,
     height: '100%',
+    alignItems: 'center',
   },
   recordList: {
+    alignItems: 'center',
   },
   separator: {
     height: 1,
-    justifyContent: 'center'
+    justifyContent: 'center',
+    marginVertical: '0.5%',
+    // ...border,
   },
   deleteButtonView: {
     height: '9%',
@@ -115,15 +118,16 @@ export const HistoryRecordStyles = StyleSheet.create({
   container: {
     // flex: 1,
     width: '100%', // out of width range of listItem ???
-    minHeight: 60,
-    maxHeight: 80,
+    minHeight: 48,
+    maxHeight: 70,
+    marginVertical: '1%',
     // ...border,
-    marginVertical: 2,
-    // marginHorizontal: '2%',
+    paddingHorizontal: '2%',
   },
   mainView: {
     width: '100%',
     height: '100%',
+    // ...border,
     backgroundColor: COLOR.Background,
     flexDirection: "row",
     // alignItems: "center",
@@ -133,9 +137,7 @@ export const HistoryRecordStyles = StyleSheet.create({
     flexDirection: "row",
     width: '85%', // default width; no longer resizing text field
     height: '100%',
-    // paddingLeft: '2%',
     // ...border,
-    justifyContent: 'center',
   },
   textWrapper: {
     width: '100%',
@@ -179,23 +181,28 @@ export const HistoryRecordStyles = StyleSheet.create({
 
 export const SavedRecordStyles = StyleSheet.create({
   container: {
-    flex: 1,
+    // flex: 1,
+    width: '100%',
+    minHeight: 52,
+    maxHeight: 70,
     iconSize: 25,
   },
-  textWrapper: {
-    // flex: 1, 
+  textContainer: {
     width: '100%',
-    height: 80,
+    height: '100%',
+    flexDirection: 'row',
+    justifyContent: "center",
+  },
+  textWrapper: {
+    width: '100%',
+    height: '100%',
+    paddingHorizontal: '2%',
     backgroundColor: COLOR.Background,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    textAlign: "center",
+    justifyContent: "center",
   },
   text: {
     fontSize: 18,
-    flex: 7,
-    paddingLeft: 4,
+    // paddingLeft: 4,
   },
   button: {
     // flex: 2,

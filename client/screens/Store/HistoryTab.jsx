@@ -10,7 +10,6 @@ import { record } from '../../server_connector'
 import { HistoryTabStyles as styles } from '../styles'
 import { MovableAnimatedView, ResizableAnimatedView, initializePosition, initializeSize } from './AnimatedView'
 import HistoryRecord from './HistoryRecord'
-import { StoreContext } from './StoreScreen'
 
 // Store 2 main states of components: before and after changed
 // Created by practical purpose in this component and only used here
@@ -395,7 +394,8 @@ const HistoryTab = ({ route }) => {
           ref={resizableList}
         >
           <FlatList
-            style={styles.recordList}
+            // style={}
+            // contentContainerStyle={styles.recordList}
             ItemSeparatorComponent={separator}
             ListEmptyComponent={emptyHistoryNotification}
             refreshControl={

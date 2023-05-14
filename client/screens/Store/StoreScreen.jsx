@@ -46,7 +46,7 @@ const StoreScreen = ({ navigation }) => {
           paddingBottom: insets.bottom,
           paddingLeft: insets.left,
           paddingRight: insets.right,
-          backgroundColor: COLOR.Secondary_1,
+          backgroundColor: COLOR.Secondary_0,
         }}
       >
         <Tab.Navigator

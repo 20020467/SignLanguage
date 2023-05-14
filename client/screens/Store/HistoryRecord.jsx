@@ -2,7 +2,7 @@ import { useNavigation } from '@react-navigation/native'
 import Checkbox from 'expo-checkbox'
 import PropTypes from 'prop-types'
 import { forwardRef, memo, useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react'
-import { Animated, Pressable, Text, ToastAndroid, TouchableOpacity } from 'react-native'
+import { Animated, Pressable, Text, ToastAndroid, TouchableOpacity, View } from 'react-native'
 import { RectButton } from 'react-native-gesture-handler'
 import Swipeable from 'react-native-gesture-handler/Swipeable'
 import Icon from 'react-native-vector-icons/FontAwesome5'
@@ -72,32 +72,24 @@ const HistoryRecord = forwardRef(({ index, data, inDeletionMode, checked, onChec
   }
 
   const saveRecord = (e) => {
-    // Send POST request to store in server and/or local
-    // if (!isSaved) {
-    //   request.changeSaving(data.id).then(res => {
-    //     showToast("Đã lưu!")
-    //     setDataChanged(true)
-    //   }).catch(msg => console.log(`Reject saving: ${msg}`))
+    record.changeSaving(data.id, globalContext.token)
+      .then(res => {
+        if (!res?.data) throw res // forward error to catch()
 
-    // }
-    // else {
-    //   request.changeSaving(data.id).then(res => {      
-    //     showToast("Hủy lưu!")
-    //     setDataChanged(true)
-    //   }).catch(msg => console.log(`Reject saving: ${msg}`))
-    // }
-    record.changeSaving(data.id, globalContext.token).then(res => {
-      // setDataChanged(true)
+        const saved = res.data.data.favor
+        // check by response
+        if (saved) {
+          showToast("Đã lưu!")
+        } else {
+          showToast("Hủy lưu!")
+        }
 
-      // check by response
-      if (res.data.data.favor) {
-        showToast("Đã lưu!")
-      } else {
-        showToast("Hủy lưu!")
-      }
-    }).catch(msg => console.log(`Reject saving: ${msg}`))
-
-    setIsSaved(!isSaved)
+        setIsSaved(!isSaved)
+      })
+      .catch(err => {
+        console.log(`Reject saving: ${err}`) // TRACE
+        // console.log(Object.keys(err)) // TRACE
+      })
     // resetSwiping.current()
   }
 
@@ -115,16 +107,23 @@ const HistoryRecord = forwardRef(({ index, data, inDeletionMode, checked, onChec
   }, [onSwipableOpen])
 
   // Set container height based on text element height at the first time of rendering
-  const handleTextLayout = useCallback((event) => {
-    const layout = event.nativeEvent.layout // text layout
-    // 4: magic number
-    if (layout.height < height - 4) {
-      // console.log(`Text ${id}:`) || console.log(layout) // TEST
-      if ((layout.height + 4) < styles.container.minHeight) {
-        setHeight(styles.container.minHeight)
-      } else setHeight(layout.height + 4)
+  const handleTextLayout = (event) => {
+    const lines = event.nativeEvent.lines
+    let textHeight = 0
+    
+    if (lines) {
+      textHeight = lines.reduce((accumulative, current) => accumulative + current.height, 0)
     }
-  }, [height, styles.container.minHeight])
+    
+    // 4 is total added vertical padding
+    if (textHeight < height - 4) {
+      // console.log(`Text ${id}:`) || console.log(textHeight) // TEST
+      if ((textHeight + 4) < styles.container.minHeight) {
+        setHeight(styles.container.minHeight)
+      } else setHeight(textHeight + 4)
+    }
+  }
+    // }, [height, styles.container.minHeight, styles.container.maxHeight])
 
   const unswipe = useCallback(() => {
     swipableRef.current.close()
@@ -211,15 +210,14 @@ const HistoryRecord = forwardRef(({ index, data, inDeletionMode, checked, onChec
       containerStyle={[styles.container, { height: height }]}
       ref={swipableRef}
     >
-
-      <RectButton
+      <View
         style={styles.mainView}
       // onLayout={(e) => console.log(`TextContainer ${id}:`) || console.log(e.nativeEvent.layout)}
       >
-        <ResizableAnimatedView
+        <View
           style={styles.textContainer}
-          initial={textViewSize}
-          animatedDuration={300}
+        // initial={textViewSize}
+        // animatedDuration={300}
         // ref={textRef}
         >
           <Pressable
@@ -228,11 +226,14 @@ const HistoryRecord = forwardRef(({ index, data, inDeletionMode, checked, onChec
             onPress={inDeletionMode ? onCheckHandler : navigateAndTranslate}
             onLongPress={inDeletionMode ? onCheckHandler : onLongPressHandler}
           >
-            <Text onLayout={handleTextLayout} style={styles.text}>
+            <Text
+              numberOfLines={3}
+              onTextLayout={handleTextLayout}
+              style={styles.text}>
               {translatedText}
             </Text>
           </Pressable>
-        </ResizableAnimatedView>
+        </View>
         <OpacityAnimatedView
           style={{
             ...styles.buttonGroup,
@@ -263,7 +264,7 @@ const HistoryRecord = forwardRef(({ index, data, inDeletionMode, checked, onChec
             onValueChange={onCheckHandler}
           />
         </OpacityAnimatedView>
-      </RectButton>
+      </View>
     </Swipeable>
   )
 })

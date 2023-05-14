@@ -1,6 +1,8 @@
 import { StyleSheet } from "react-native";
 import COLOR from './Colors';
 
+export const iconSize = 25
+
 export const HomeScreenStyles = StyleSheet.create({
   container: {
     flex: 1,
@@ -41,7 +43,6 @@ export const HomeScreenStyles = StyleSheet.create({
     position: "absolute",
     top: 17,
     right: 10,
-    iconSize: 25,
   },
   test: {
     elevation: 20,

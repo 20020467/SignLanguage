@@ -11,7 +11,7 @@ export const ProfileScreenStyles = StyleSheet.create({
 		alignItems: "center",
 	},
 	headerText: {
-		color: COLOR.Secondary,
+		color: COLOR.Secondary_3,
 		marginTop: 10,
 	},
 	body: {

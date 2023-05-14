@@ -36,8 +36,8 @@ const SignIn = () => {
         }
         navigation.navigate("MainScreen");
       })
-      .catch(reason => {
-        if (reason.response.status == HttpStatusCode.Unauthorized) {
+      .catch(error => {
+        if (error?.response?.status == HttpStatusCode.Unauthorized) {
           ToastAndroid.show("Sai thông tin đăng nhập, vui lòng thử lại", ToastAndroid.SHORT)
         }
       })

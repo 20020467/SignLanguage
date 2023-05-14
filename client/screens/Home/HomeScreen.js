@@ -6,6 +6,7 @@ import {
   ScrollView,
   Text,
   TextInput,
+  ToastAndroid,
   TouchableOpacity,
   View
 } from "react-native";
@@ -15,7 +16,7 @@ import Icon from "react-native-vector-icons/FontAwesome5";
 import Header from "../../components/Header";
 import { useGlobalContext } from "../../context";
 import { record } from "../../server_connector";
-import { COLOR, HomeScreenStyles as styles } from "../styles";
+import { COLOR, HomeScreenStyles as styles, iconSize } from "../styles";
 import Result from "./Result";
 
 // Make prompts based on translation history; mark as Saved if exists in saved list. 
@@ -85,13 +86,12 @@ const HomeScreen = ({ route }) => {
       } else {
         navigation.navigate("SignIn")
       }
-    } catch (msg) {
-      console.log(`Get history records: ${msg}`)
+    } catch (error) {
+      console.log(`Get history records: ${error}`)
+      throw error
     } finally {
       setIsLoading(false)
     }
-
-    return response
   }
 
   const translate = async () => {
@@ -130,7 +130,10 @@ const HomeScreen = ({ route }) => {
 
       for (item of history.current) {
         if (item.content == sentence) {
-          console.log(item.content)
+          translatedRecordID.current = item.id
+          setIsSaved(item.favor)
+          
+          console.log(item.content) // TEST
           throw "Record existed"
         }
       }
@@ -139,13 +142,13 @@ const HomeScreen = ({ route }) => {
       if (globalState.token) { // check if token exists
         let res = await record.addRecord(sentence, globalState.token)
         translatedRecordID.current = res.data.data.id
-        console.log("Saved to history")
+        console.log("Saved to history") // TEST
         console.log(res.data.data) // TEST
       } else {
         navigation.navigate("SignIn")
       }
     } catch (error) {
-      console.log(error)
+      console.log(`translate: ${error}`)
     } finally {
       setIsTranslating(false)
     }
@@ -156,10 +159,13 @@ const HomeScreen = ({ route }) => {
 
     if (typeof id == 'number') {
       record.changeSaving(id, globalState.token)
-        .then(res => {
-          if (res.data.data.id == id) {
-            setIsSaved(!isSaved);
-            console.log(res.data)
+        .then(response => {
+          let res_saved = response.data.data.favor
+
+          if (response.data.data.id == id) {
+            setIsSaved(res_saved)
+            ToastAndroid.show(res_saved ? "Đã lưu" : "Hủy lưu", ToastAndroid.SHORT)
+            console.log(response.data)
           } else console.log("don't match")
         })
         .catch(msg => console.log(msg))
@@ -178,7 +184,7 @@ const HomeScreen = ({ route }) => {
             {typeof sentenceSend == 'string' && sentenceSend.length > 0 &&
               <Icon
                 name="star"
-                size={styles.star.iconSize}
+                size={iconSize}
                 style={{ ...styles.star, color: isSaved ? COLOR.ActiveStar : COLOR.InactiveStar }}
                 solid={isSaved}
                 onPress={save}
