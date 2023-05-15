@@ -1,7 +1,7 @@
 import { useFocusEffect } from '@react-navigation/native'
 import Checkbox from 'expo-checkbox'
-import { useCallback, useContext, useEffect, useRef, useState } from 'react'
-import { Alert, FlatList, Pressable, RefreshControl, Text, ToastAndroid, TouchableOpacity, View } from 'react-native'
+import { useCallback, useEffect, useRef, useState } from 'react'
+import { Alert, BackHandler, FlatList, Pressable, RefreshControl, Text, ToastAndroid, TouchableOpacity, View } from 'react-native'
 import { Divider } from 'react-native-elements'
 import { LoadingModal } from 'react-native-loading-modal'
 import Icon from 'react-native-vector-icons/FontAwesome5'
@@ -64,26 +64,20 @@ const HistoryTab = () => {
 
   useFocusEffect(
     useCallback(() => {
-      let willReload = false
-      // console.log(focused)
+      const onBackPress = () => {
+        if (inDeletionMode) {
+          closeDeletionMode()
+          return true
+        } else {
+          return false
+        }
+      };
 
-      // if (focused) {
-      //   setFocused(false)
-      //   willReload = true
-      //   closeDeletionMode()
-      //   unswipeItem()
-      // }
+      const subscription = BackHandler.addEventListener('hardwareBackPress', onBackPress)
 
-      // if (willReload || dataChanged) {
-      //   setDataChanged(false)
-
-      //   record.getHistory(globalContext.token).then(res => {
-      //     setDataset(res.data.data)
-      //   }).catch(msg => console.log(`Get history records: ${msg}`)) // TRACE
-      // }
-    }, [])
+      return () => subscription.remove()
+    }, [inDeletionMode, closeDeletionMode])
   )
-
   /**
    * GET data from server and render on screen
    */
@@ -113,13 +107,12 @@ const HistoryTab = () => {
    * Open deletion mode
    */
   useEffect(() => {
-    if (inDeletionMode) {
-      deleteNavBar.current.verticalShift(deleteNavBarState.after)
-      movableList.current.verticalShift(listState.after)
-      resizableList.current.changeHeight(listSizeState.after)
-      deleteButton.current.verticalShift(deleteButtonState.after)
-      unswipeItem(true)
-    }
+    // if (inDeletionMode) {
+    //   deleteNavBar.current.verticalShift(deleteNavBarState.after)
+    //   movableList.current.verticalShift(listState.after)
+    //   resizableList.current.changeHeight(listSizeState.after)
+    //   deleteButton.current.verticalShift(deleteButtonState.after)
+    // }
   }, [inDeletionMode])
 
   /**
@@ -225,6 +218,11 @@ const HistoryTab = () => {
     setPendingSet(new Set().add(id))
     setInDeletionMode(true)
     unswipeItem(true)
+
+    deleteNavBar.current.verticalShift(deleteNavBarState.after)
+    movableList.current.verticalShift(listState.after)
+    resizableList.current.changeHeight(listSizeState.after)
+    deleteButton.current.verticalShift(deleteButtonState.after)
   }, [])
 
   /**

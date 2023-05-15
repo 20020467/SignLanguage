@@ -1,10 +1,11 @@
 import { API_HOST } from "@env";
 import Voice from "@react-native-voice/voice";
-import { useNavigation, useRoute } from "@react-navigation/native";
+import { useFocusEffect, useNavigation, useRoute } from "@react-navigation/native";
 import axios from "axios";
-import { useContext, useEffect, useRef, useState } from "react";
+import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import {
   Alert,
+  BackHandler,
   Image,
   Keyboard,
   SafeAreaView,
@@ -32,12 +33,6 @@ const HomeScreen = () => {
   const route = useRoute();
   // const item = route.params?.sentence;
 
-  const axiosOptions = {
-    headers: {
-      Authorization: "Bearer " + globalState.token,
-    },
-  };
-
   const [sentence, setSentence] = useState('');
   const [sentenceSend, setSentenceSend] = useState('');
   const [isSaved, setIsSaved] = useState(false);
@@ -49,6 +44,35 @@ const HomeScreen = () => {
 
   const translatedRecordID = useRef(null)
   const history = useRef()
+  const pressBackCounter = useRef(0)
+
+  useFocusEffect(
+    // handle back button
+    useCallback(() => {
+      const onBackPress = () => {
+        if (globalState.token) {
+          switch (pressBackCounter.current) {
+            case 0:
+              ToastAndroid.show("Trở về lần nữa để thoát", ToastAndroid.SHORT)
+              pressBackCounter.current = 1
+              break
+            case 1:
+              pressBackCounter.current = 0
+              BackHandler.exitApp()
+          }
+
+          return true
+        } else {
+          pressBackCounter.current = 0
+          navigation.navigate("SignIn")
+        }
+      };
+
+      const subscription = BackHandler.addEventListener('hardwareBackPress', onBackPress);
+
+      return () => subscription.remove();
+    }, [globalState.token, pressBackCounter.current])
+  )
 
   // get history list first and refresh the variable for each translation request
   useEffect(() => {
@@ -112,13 +136,15 @@ const HomeScreen = () => {
   };
 
   const onTranslate = async () => {
+    var arrResult = splitSentence(sentence);
+    // stop exec if input is blank
+    if (arrResult.length == 0) {
+      return
+    } else setWord(arrResult);
+
     Keyboard.dismiss();
     setSentenceSend(sentence);
     // setIsTranslating(true) // open loading modal
-
-    var arrResult = splitSentence(sentence);
-    if (arrResult.length == 0) setSentence('')
-    else setWord(arrResult);
 
     try {
       // do not allow to save translated text if cannot fetch history
@@ -127,7 +153,7 @@ const HomeScreen = () => {
       if (!history.current) {
         data = await fetchHistory() // do assign data to history.current
         if (!data) {
-          Alert.alert("Lỗi kết nối. Vui lòng gửi lại.")
+          Alert.alert("Lỗi kết nối. Không thể lưu vào lịch sử.")
           throw "History data fetching got error."
         }
       }
@@ -138,7 +164,7 @@ const HomeScreen = () => {
           setIsSaved(item.favor) // change isSaved state if existed
 
           console.log(item.content) // TEST
-          throw "Record existed"
+          return // if existed in history
         }
       }
 
