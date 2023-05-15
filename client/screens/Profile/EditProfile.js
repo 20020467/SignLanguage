@@ -1,33 +1,26 @@
+import { useNavigation } from "@react-navigation/native";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import {
+  Alert,
+  Image,
   SafeAreaView,
   ScrollView,
   StyleSheet,
   Text,
-  Button,
-  View,
-  Image,
   TextInput,
   TouchableOpacity,
+  View
 } from "react-native";
-import React, { useCallback, useContext, useEffect } from "react";
-import { useNavigation } from "@react-navigation/native";
-import { useState } from "react";
-import { API_HOST } from "@env";
-import axios from "axios";
-import { AppContext } from "../../context";
 import Icon from "react-native-vector-icons/Ionicons";
+import { AppContext } from "../../context";
+import { auth } from "../../server_connector";
+import { AxiosError, HttpStatusCode } from "axios";
 
 const ProfileScreen = () => {
   const navigation = useNavigation();
   const { state: globalState } = useContext(AppContext);
   const [user, setUser] = useState();
   const [loading, setLoading] = useState(false);
-
-  const axiosOptions = {
-    headers: {
-      Authorization: "Bearer " + globalState.token,
-    },
-  };
 
   const [input, setInput] = useState({
     username: "",
@@ -40,14 +33,26 @@ const ProfileScreen = () => {
     phone: "",
   });
 
-  const getUser = useCallback(async () => {
-    try {
-      const res = await axios.get(`${API_HOST}/api/auth`, axiosOptions);
-      setUser(res.data.data);
-    } catch (error) {
-      console.log(error);
-    }
-  }, []);
+  useEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <View>
+          {loading ? (
+            <Image
+              style={{ width: 50, height: 50 }}
+              source={require("../../assets/img/Spinner-1s-200pxNew.gif")}
+            />
+          ) : (
+            <TouchableOpacity style={{}} onPress={onSave}>
+              <Text style={{ fontSize: 18, fontFamily: "Poppins-Regular" }}>
+                Lưu
+              </Text>
+            </TouchableOpacity>
+          )}
+        </View>
+      )
+    })
+  }, [navigation, loading])
 
   useEffect(() => {
     getUser();
@@ -63,9 +68,18 @@ const ProfileScreen = () => {
     }
   }, [user]);
 
-  const isValid = () => {
-    console.log(input);
+  const getUser = useCallback(async () => {
+    try {
+      const res = await auth.getUserInfo(globalState.token);
+      setUser(res.data?.data);
+    } catch (error) {
+      console.log(error); // TRACE
+    }
+  }, []);
+
+  const inputIsValid = () => {
     let valid = true;
+
     if (
       input.username === user.username &&
       input.email === user.email &&
@@ -76,21 +90,48 @@ const ProfileScreen = () => {
       if (!isValidEmail(input.email)) {
         setWarning((prevState) => ({
           ...prevState,
-          email: "Email khong hop le",
+          email: "Email không hợp lệ",
         }));
+
         valid = false;
       }
-      if (!isPhone(input.phone)) {
+      if (!isValidPhone(input.phone)) {
         setWarning((prevState) => ({
           ...prevState,
           phone: "Số điện thoại không đúng định dạng",
         }));
+
         valid = false;
       }
 
-      if (valid) {
-        handelSave();
+      // if (valid) {
+      //   onSave();
+      // }
+    }
+
+    return valid
+  };
+
+  const onSave = async () => {
+    if (!inputIsValid()) return
+    setLoading(true);
+
+    try {
+      const { username, email, phone } = input
+      const res = await auth.changeInfo({ username, email, phone }, globalState.token)
+
+      if (res.data.status == "OK") {
+        Alert.alert("Thay đổi thông tin thành công!");
+      } else {
+        Alert.alert("Thay đổi thông tin không thành công!");
       }
+    } catch (error) {
+      console.log(error.response.data); // TRACE
+      if (error instanceof AxiosError && error.response.status == HttpStatusCode.BadRequest)
+        Alert.alert("Thay đổi thông tin không thành công!");
+
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -99,62 +140,41 @@ const ProfileScreen = () => {
     return pattern.test(email);
   }
 
-  function isPhone(phone) {
+  function isValidPhone(phone) {
     const pattern = /((09|03|07|08|05)+([0-9]{8})\b)/g;
     return pattern.test(phone);
   }
 
-  const handelSave = async () => {
-    setLoading(true);
-    try {
-      const res = await axios.put(
-        `${API_HOST}/api/auth/update`,
-        input,
-        axiosOptions
-      );
-      if (res.data.status == "OK") {
-        setLoading(false);
-        alert("Thay đổi thông tin thành công!");
-      } else {
-        alert("Thay đổi thông tin không thành công!");
-      }
-    } catch (error) {
-      console.log(error);
-      setLoading(false);
-      alert("Thay đổi thông tin không thành công!");
-    }
-  };
-
   return (
     <SafeAreaView style={styles.background}>
       <View>
-        <ScrollView>
+        <ScrollView contentContainerStyle={styles.container}>
           <View style={styles.header}>
             <TouchableOpacity style={styles.back}>
-              <Icon
+              {/* <Icon
                 style={{ fontSize: 28 }}
                 name="arrow-back"
                 onPress={() => {
                   navigation.goBack();
                 }}
-              />
+              /> */}
             </TouchableOpacity>
             <Image
               style={styles.img}
               source={require("../../assets/img/cat.jpg")}
-            ></Image>
-            {loading ? (
+            />
+            {/* {loading ? (
               <Image
                 style={styles.loading}
                 source={require("../../assets/img/Spinner-1s-200pxNew.gif")}
               />
             ) : (
-              <TouchableOpacity style={styles.save} onPress={isValid}>
+              <TouchableOpacity style={styles.save} onPress={validate}>
                 <Text style={{ fontSize: 18, fontFamily: "Poppins-Regular" }}>
                   Lưu
                 </Text>
               </TouchableOpacity>
-            )}
+            )} */}
           </View>
 
           <View style={styles.body}>
@@ -177,7 +197,7 @@ const ProfileScreen = () => {
             <View style={styles.item}>
               <Text style={styles.text}>Email</Text>
               <TextInput
-                placeholder="Email"
+                placeholder="name@mail.com"
                 defaultValue={user?.email}
                 style={styles.inputText}
                 keyboardType="email-address"
@@ -206,7 +226,7 @@ const ProfileScreen = () => {
             <View style={styles.item}>
               <Text style={styles.text}>Số điện thoại</Text>
               <TextInput
-                placeholder="Số điện thoại"
+                placeholder="0987654321"
                 defaultValue={user?.phone}
                 style={styles.inputText}
                 keyboardType="number-pad"
@@ -267,12 +287,19 @@ const ProfileScreen = () => {
 
 export default ProfileScreen;
 
+export const SaveButton = (props) => (
+  <TouchableOpacity {...props} >
+    <Text style={{ fontSize: 18, fontFamily: "Poppins-Regular" }}>
+      Lưu
+    </Text>
+  </TouchableOpacity>
+)
+
 const styles = StyleSheet.create({
   background: {
     flex: 1,
     // paddingTop: 25,
   },
-
   header: {
     justifyContent: "center",
     alignItems: "center",
@@ -287,6 +314,7 @@ const styles = StyleSheet.create({
     width: 80,
     height: 80,
     borderRadius: 50,
+    alignSelf: 'center',
   },
   save: {
     position: "absolute",

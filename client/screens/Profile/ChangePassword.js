@@ -1,29 +1,25 @@
+import { useNavigation } from "@react-navigation/native";
+import { HttpStatusCode } from "axios";
+import React, { useState } from "react";
 import {
-  StyleSheet,
-  Text,
-  View,
-  SafeAreaView,
-  TouchableOpacity,
-  TextInput,
   Alert,
   Image,
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from "react-native";
-import React, { useCallback, useContext, useEffect, useState } from "react";
-import { AppContext } from "../../context/AppContext";
-import Icon from "react-native-vector-icons/Ionicons";
 import Lock from "react-native-vector-icons/EvilIcons";
-import { useNavigation } from "@react-navigation/native";
-import { API_HOST } from "@env";
-import axios from "axios";
+import Icon from "react-native-vector-icons/Ionicons";
+import { useGlobalContext } from "../../context/AppContext";
+import { auth } from "../../server_connector";
 
 const ChangePassword = () => {
   const navigation = useNavigation();
-  const { token } = useContext(AppContext);
-  const axiosOptions = {
-    headers: {
-      Authorization: "Bearer " + token,
-    },
-  };
+  const { state: globalState } = useGlobalContext();
+
   const [loading, setLoading] = useState(false);
   const [input, setInput] = useState({
     newPassword: "",
@@ -35,8 +31,11 @@ const ChangePassword = () => {
     rePassword: "",
     oldPassword: "",
   });
+  const [oldPasswordIsShown, setOldPasswordIsShown] = useState(true)
+  const [newPasswordIsShown, setNewPasswordIsShown] = useState(true)
+  const [rePasswordIsShown, setRePasswordIsShown] = useState(true)
 
-  const handelUpdate = async () => {
+  const onUpdate = async () => {
     if (
       input.oldPassword == "" ||
       input.newPassword == "" ||
@@ -79,30 +78,23 @@ const ChangePassword = () => {
 
     try {
       setLoading(true);
-      const res = await axios.put(
-        `${API_HOST}/api/auth/change-password`,
-        input,
-        axiosOptions
-      );
-      if (res.data.message == "Password changed successfully") {
-        setLoading(false);
+      const response = await auth.changePassword({
+        oldPassword: input.oldPassword,
+        newPassword: input.newPassword,
+        rePassword: input.rePassword,
+      }, globalState.token)
+
+      if (response.status == HttpStatusCode.Ok) {
         const ConfirmButton = {
           text: "Đồng ý",
           onPress: () => navigation.navigate("Profile"),
         };
 
-        Alert.alert(
-          "Thay đổi mật khẩu thành công!",
-          undefined,
-          [ConfirmButton],
-          {
-            cancelable: true,
-          }
-        );
+        Alert.alert("Thay đổi mật khẩu thành công!", null, [ConfirmButton], { cancelable: true });
       }
     } catch (error) {
-      setLoading(false);
       let response = error.response.data;
+
       if (response.message === "Incorrect old password") {
         setWarning((prevState) => ({
           ...prevState,
@@ -112,12 +104,14 @@ const ChangePassword = () => {
         console.log(error);
         alert("Hệ thống đang lỗi");
       }
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <SafeAreaView style={styles.background}>
-      <View style={styles.header}>
+      {/* <View style={styles.header}>
         <TouchableOpacity style={styles.back}>
           <Icon
             style={{ fontSize: 28 }}
@@ -136,7 +130,7 @@ const ChangePassword = () => {
         >
           Đổi mật khẩu
         </Text>
-      </View>
+      </View> */}
 
       <View style={styles.body}>
         <View style={styles.item}>
@@ -150,7 +144,14 @@ const ChangePassword = () => {
             onChangeText={(val) =>
               setInput((prevState) => ({ ...prevState, oldPassword: val }))
             }
+            secureTextEntry={oldPasswordIsShown}
           />
+          <Icon
+            name={oldPasswordIsShown ? "ios-eye-off-outline" : "ios-eye-outline"}
+            style={styles.show}
+            onPress={() => setOldPasswordIsShown(!oldPasswordIsShown)}
+          />
+
           <Text style={styles.warning}>{warning.oldPassword}</Text>
         </View>
         <View style={styles.item}>
@@ -164,7 +165,14 @@ const ChangePassword = () => {
             onChangeText={(val) =>
               setInput((prevState) => ({ ...prevState, newPassword: val }))
             }
+            secureTextEntry={newPasswordIsShown}
           />
+          <Icon
+            name={newPasswordIsShown ? "ios-eye-off-outline" : "ios-eye-outline"}
+            style={styles.show}
+            onPress={() => setNewPasswordIsShown(!newPasswordIsShown)}
+          />
+
           <Text style={styles.warning}>{warning.newPassword}</Text>
         </View>
         <View style={styles.item}>
@@ -178,12 +186,19 @@ const ChangePassword = () => {
             onChangeText={(val) =>
               setInput((prevState) => ({ ...prevState, rePassword: val }))
             }
+            secureTextEntry={rePasswordIsShown}
           />
+          <Icon
+            name={rePasswordIsShown ? "ios-eye-off-outline" : "ios-eye-outline"}
+            style={styles.show}
+            onPress={() => setRePasswordIsShown(!rePasswordIsShown)}
+          />
+
           <Text style={styles.warning}>{warning.rePassword}</Text>
         </View>
       </View>
       <View style={styles.updateWrap}>
-        <TouchableOpacity style={styles.update} onPress={handelUpdate}>
+        <TouchableOpacity style={styles.update} onPress={onUpdate}>
           {loading ? (
             <Image
               style={styles.loading}
@@ -243,6 +258,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: "Poppins-Regular",
     paddingBottom: 5,
+  },
+  show: {
+    fontSize: 20,
   },
   warning: {
     position: "absolute",

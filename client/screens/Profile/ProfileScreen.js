@@ -1,52 +1,73 @@
+import { useNavigation } from "@react-navigation/native";
+import React, { useEffect, useState } from "react";
 import {
+  Alert,
+  Image,
   SafeAreaView,
   ScrollView,
   StyleSheet,
   Text,
-  Button,
-  View,
-  Image,
-  TextInput,
   TouchableOpacity,
+  View
 } from "react-native";
-import React, { useCallback, useContext, useEffect } from "react";
-import { useNavigation } from "@react-navigation/native";
-import { useState } from "react";
-import { API_HOST } from "@env";
-import axios from "axios";
-import { AppContext } from "../../context/AppContext";
+import { auth } from "../../server_connector";
+import { AxiosError, HttpStatusCode } from "axios";
 import Back from "react-native-vector-icons/Ionicons";
 import Icon from "react-native-vector-icons/MaterialIcons";
+import { LogOut, useGlobalContext } from "../../context";
 
 const ProfileScreen = () => {
   const navigation = useNavigation();
-  const { token } = useContext(AppContext);
+  const { state: globalState, dispatch } = useGlobalContext();
+
   const [user, setUser] = useState();
 
-  const axiosOptions = {
-    headers: {
-      Authorization: "Bearer " + token,
-    },
-  };
-
-  const getUser = useCallback(async () => {
-    try {
-      const res = await axios.get(`${API_HOST}/api/auth`, axiosOptions);
-      setUser(res.data.data);
-    } catch (error) {
-      console.log(error);
+  useEffect(() => {
+    if (globalState.token) {
+      auth.getUserInfo(globalState.token)
+        .then(response => {
+          if (response.status == HttpStatusCode.Ok) {
+            updateInfo(response.data.data)
+          }
+        })
+        .catch(error => {
+          console.log(error) // TRACE
+          if (error instanceof AxiosError && error.response.status == HttpStatusCode.Unauthorized) {
+            Alert.alert('Đã hết hạn đăng nhập, vui lòng đăng nhập lại', null, [
+              { text: 'Đồng ý', onPress: () => navigation.navigate("SignIn") }
+            ])
+          } else Alert.alert('Dữ liệu chưa được cập nhật, vui lòng tải lại.', null, null, { cancelable: true })
+        })
+    } else {
+      Alert.alert('Đã hết hạn đăng nhập, vui lòng đăng nhập lại', null, [
+        { text: 'Đồng ý', onPress: () => navigation.navigate("SignIn") }
+      ])
     }
   }, []);
 
-  useEffect(() => {
-    getUser();
-  }, []);
+  const updateInfo = ({ username, email, phone }) => {
+    setUser({ username, email, phone })
+  }
+
+  const logout = () => {
+    Alert.alert("Bạn có chắc muốn đăng xuất không?", null, [
+      {
+        text: "Đồng ý", onPress: () => {
+          dispatch(LogOut())
+          navigation.navigate("SignIn")
+        }
+      },
+      {
+        text: "Hủy"
+      }
+    ], { cancelable: true })
+  }
 
   return (
     <SafeAreaView style={styles.background}>
-      <View>
+      <View style={{ height: '100%' }}>
         <ScrollView>
-          <TouchableOpacity style={styles.back}>
+          {/* <TouchableOpacity style={styles.back}>
             <Back
               style={{ fontSize: 28 }}
               name="arrow-back"
@@ -54,7 +75,7 @@ const ProfileScreen = () => {
                 navigation.goBack();
               }}
             />
-          </TouchableOpacity>
+          </TouchableOpacity> */}
 
           <View style={styles.header}>
             <Image
@@ -83,7 +104,7 @@ const ProfileScreen = () => {
             style={[
               styles.footer,
               {
-                marginTop: 60,
+                marginTop: '12%',
                 paddingLeft: 30,
                 borderBottomWidth: 1,
                 borderTopWidth: 0.1,
@@ -114,13 +135,14 @@ const ProfileScreen = () => {
                 marginTop: 80,
                 justifyContent: "center",
                 alignItems: "center",
+                top: '9%',
               },
             ]}
             onPress={() => {
               navigation.navigate("SignIn");
             }}
           >
-            <Text style={[styles.textFooter, { color: "red" }]}>Đăng xuất</Text>
+            <Text style={[styles.textFooter, { color: "red" }]} onPress={logout}>Đăng xuất</Text>
           </TouchableOpacity>
         </ScrollView>
       </View>
@@ -142,7 +164,7 @@ const styles = StyleSheet.create({
     left: 20,
   },
   header: {
-    marginTop: 50,
+    // marginTop: 50,
     marginLeft: 30,
     display: "flex",
     flexDirection: "row",
