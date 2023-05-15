@@ -96,7 +96,7 @@ export const HistoryTabStyles = StyleSheet.create({
   separator: {
     height: 1,
     justifyContent: 'center',
-    marginVertical: '0.5%',
+    // marginVertical: '0.5%',
     // ...border,
   },
   deleteButtonView: {
@@ -120,7 +120,7 @@ export const HistoryRecordStyles = StyleSheet.create({
     width: '100%', // out of width range of listItem ???
     minHeight: 48,
     maxHeight: 70,
-    marginVertical: '1%',
+    // marginVertical: '1%',
     // ...border,
     paddingHorizontal: '2%',
   },
@@ -196,7 +196,7 @@ export const SavedRecordStyles = StyleSheet.create({
   textWrapper: {
     width: '100%',
     height: '100%',
-    paddingHorizontal: '2%',
+    paddingHorizontal: '3%',
     backgroundColor: COLOR.Background,
     justifyContent: "center",
   },

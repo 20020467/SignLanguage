@@ -46,32 +46,29 @@ const HomeScreen = ({ route }) => {
 
   // get history list first and refresh the variable for each translation request
   useEffect(() => {
-    fetchHistory()
+    setIsLoading(true)
+    fetchHistory().then(() => setIsLoading(false))
   }, [translatedRecordID.current])
 
-  // useEffect(() => {
   if (typeof route.params?.storedText == 'string') {
     let text = route.params.storedText
     route.params.storedText = null // this works
-
     if (text.length == 0) return
-    // if (text) {
-      // route.params.storedText = null // may not work
-      setSentence(text)
-      setSentenceSend(text)
-      // translate()
-    // }
+
+    setSentence(text)
+    setSentenceSend(text)
   }
-  // }, [route.params.storedText])
 
   // call to translate each time this variable is changed
   useEffect(() => {
     translate()
   }, [sentenceSend])
 
+  useEffect(() => {
+    console.log("data changed")
+  }, [history.current])
 
   const fetchHistory = async () => {
-    setIsLoading(true)
     let response = null
 
     try {
@@ -80,18 +77,17 @@ const HomeScreen = ({ route }) => {
 
         if (response.data.data) {
           history.current = response.data.data
-          console.log("Fetched") // TEST
+          console.log(history.current) // TEST
           return response.data.data
         }
       } else {
-        navigation.navigate("SignIn")
+        navigation.navigate("SignIn") // may prompt user with an alert before navigating
       }
     } catch (error) {
-      console.log(`Get history records: ${error}`)
-      throw error
-    } finally {
-      setIsLoading(false)
+      console.log(`Get history records: ${error}`) // TEST
     }
+
+    return 
   }
 
   const translate = async () => {
@@ -131,8 +127,8 @@ const HomeScreen = ({ route }) => {
       for (item of history.current) {
         if (item.content == sentence) {
           translatedRecordID.current = item.id
-          setIsSaved(item.favor)
-          
+          setIsSaved(item.favor) // change isSaved state if existed
+
           console.log(item.content) // TEST
           throw "Record existed"
         }

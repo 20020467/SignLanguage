@@ -39,7 +39,7 @@ const listSize = initializeSize(100, listSizeState.before)
  * @param {object} props 
  * @returns 
  */
-const HistoryTab = ({ route }) => {
+const HistoryTab = () => {
   const [dataset, setDataset] = useState([]) // [...{ id, content, favour, viewTime }]
   const [resfreshing, setResfreshing] = useState(false)
   const [inDeletionMode, setInDeletionMode] = useState(false) // deletion mode
@@ -53,7 +53,7 @@ const HistoryTab = ({ route }) => {
   const movableList = useRef(null)
   const resizableList = useRef(null)
   const deleteButton = useRef(null)
-  const listItems = useRef([]).current // [...{id, reset}]
+  const itemRefList = useRef([]).current // [...{id, ref}]
   const swipedItem = useRef(null) // stores id of item being swiped
   const selfClosed = useRef(true) // determine close action of an item called by itself or other item
   // const containerSize = useRef(initializeSize(0, 0))
@@ -281,7 +281,7 @@ const HistoryTab = ({ route }) => {
     const current = swipedItem.current // number
 
     if (typeof current == 'number' && current >= 0) {
-      listItems.find(item => item.id == current)?.ref.unswipe()
+      itemRefList.find(item => item.id == current)?.ref.unswipe()
       if (setNull) swipedItem.current = null
     }
   }
@@ -311,14 +311,14 @@ const HistoryTab = ({ route }) => {
    * specified id to make sure we won't add them again to the list.
    */
   const updateRef = ({ id, ref }) => {
-    const current_item = listItems.find(item => item.id == id)
+    const current_item = itemRefList.find(item => item.id == id)
     // console.log("Updating list: " + id + ref) // TEST
     if (ref == null) {
-      listItems.splice(listItems.findIndex(item => item.id == id), 1)
+      itemRefList.splice(itemRefList.findIndex(item => item.id == id), 1)
     }
 
     if (current_item) current_item.ref = ref // only assign new ref if the item exists
-    else listItems.push({ id, ref }) // removed element is stilled added with ref is null ??
+    else itemRefList.push({ id, ref }) // removed element is stilled added with ref is null ??
   }
 
   // used to resizing list items
