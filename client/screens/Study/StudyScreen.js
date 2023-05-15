@@ -66,19 +66,19 @@ const StudyScreen = () => {
   const [type, setType] = useState("chevron-down-sharp");
   const [sentence, setSentence] =  useState([
     {
-      mean: 'Chào bạn', key: '1', img:require("../../assets/hi.png")
+      mean: 'Chào bạn', key: '1', img:require("../../assets/hello.jpg")
     },
     {
-      mean: 'Tôi khỏe', key: '2',img:require("../../assets/toikhoe.png")
+      mean: 'Tôi khỏe', key: '2',img:require("../../assets/health.jpg")
     },
     {
-      mean: 'Tạm biệt', key: '5',img: require("../../assets/tambiet.png")
+      mean: 'Tạm biệt', key: '5',img: require("../../assets/bye.jpg")
     },
     {
-      mean: 'Cảm ơn', key: '4',img: require("../../assets/camon.png")
+      mean: 'Cảm ơn', key: '4',img: require("../../assets/thanks.jpg")
     },
     {
-      mean: 'Bạn khỏe không', key: '3',img: require("../../assets/ques_health.png")
+      mean: 'Bạn khỏe không', key: '3',img: require("../../assets/healthasw.jpg")
     },
   ]);
   const [shouldShow,setShoudShow] = useState(false);

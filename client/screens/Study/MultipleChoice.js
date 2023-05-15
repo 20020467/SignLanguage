@@ -93,8 +93,7 @@ const Exercise = ({navigation}) =>{
     }
     const renderOptions = () => {
         return (
-            <View style = {{}} >
-                
+            <View style = {{}} > 
                 {
                     allQuestions[currentQuestionIndex]?.options.map(option => (
                         <TouchableOpacity 
@@ -149,7 +148,6 @@ const Exercise = ({navigation}) =>{
                                     </View>
                                 ) : null
                             }
-
                         </TouchableOpacity>
                     ))
                 }
@@ -171,15 +169,11 @@ const Exercise = ({navigation}) =>{
             return null
         }
     }
-
-
     const [progress, setProgress] = useState(new Animated.Value(0));
     const progressAnim = progress.interpolate({
         inputRange: [0, allQuestions.length],
         outputRange: ['0%','100%']
     })
-
-
     return (
        <SafeAreaView style={{
            flex: 1
@@ -291,11 +285,7 @@ const Exercise = ({navigation}) =>{
                            </TouchableOpacity>
 
                            </View>
-                         
-                           
-
-                       </View>
-
+                    </View>
                    </View>
                </Modal>
            </View>
@@ -303,6 +293,4 @@ const Exercise = ({navigation}) =>{
        </SafeAreaView>
     )
 }
-
-
 export default Exercise
