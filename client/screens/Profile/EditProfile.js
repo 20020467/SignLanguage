@@ -14,18 +14,18 @@ import { useNavigation } from "@react-navigation/native";
 import { useState } from "react";
 import { API_HOST } from "@env";
 import axios from "axios";
-import { AppContext } from "../../context/AppContext";
+import { AppContext } from "../../context";
 import Icon from "react-native-vector-icons/Ionicons";
 
 const ProfileScreen = () => {
   const navigation = useNavigation();
-  const { token } = useContext(AppContext);
+  const { state: globalState } = useContext(AppContext);
   const [user, setUser] = useState();
   const [loading, setLoading] = useState(false);
 
   const axiosOptions = {
     headers: {
-      Authorization: "Bearer " + token,
+      Authorization: "Bearer " + globalState.token,
     },
   };
 

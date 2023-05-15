@@ -1,46 +1,141 @@
-import { useEffect, useState } from 'react'
-import { FlatList, View, Alert } from 'react-native'
+import { useFocusEffect } from '@react-navigation/native'
+import { useCallback, useContext, useEffect, useRef, useState } from 'react'
+import { FlatList, RefreshControl, Text, View } from 'react-native'
+import { Divider } from 'react-native-elements'
+import { useGlobalContext } from '../../context'
+import { record } from '../../server_connector'
+import { HistoryTabStyles as styles } from '../styles'
 import SavedRecord from './SavedRecord'
+// import { StoreContext } from './StoreScreen'
 
 const SaveTab = () => {
-  let [dataset, setDataset] = useState([])
+  const [dataset, setDataset] = useState([])
+  const [resfreshing, setResfreshing] = useState(false)
+
+  const listItems = useRef([]).current // stores refs to list items; need to be refresh along with dataset
+  const swipedItem = useRef(null) // sets new swiped item's index to this variable
+  const selfClosed = useRef(true) // determine close action of an item called by itself or other item
+
+  // const { focused, setFocused, dataChanged, setDataChanged } = useContext(StoreContext)
+
+  const { state: globalContext, dispatch } = useGlobalContext()
+
+  useFocusEffect(
+    useCallback(() => {
+      let willReload = false
+
+      // if (focused) {
+        // setFocused(false)
+        // willReload = true
+      // }
+
+      // if (willReload || dataChanged) {
+      //   setDataChanged(false)
+
+      //   record.getSavedRecords(globalContext.token).then(res => {
+      //     setDataset(res.data.data)
+        // }).catch(msg => console.log(`Get saved records: ${msg}`)) // TRACE
+      // }
+    }, [])
+  )
 
   useEffect(() => {
-    setDataset([
-      { id: 0, value: "Leonardo", saved: true },
-      { id: 1, value: "Degea", saved: true }
-    ])
+    record.getSavedRecords(globalContext.token).then(res => {
+      setDataset(res.data.data)
+    }).catch(msg => console.log(`Get saved records: ${msg}`)) // TRACE
   }, [])
 
-  const askForDeletion = (e, id) => {
-    const ConfirmButton = {
-      text: "Có",
-      onPress: () => deleteRecord(id),
-    }
+  const unsaveRecord = (id) => {
+    // send POST request and/or store in local
+    record.changeSaving(id, globalContext.token)
+      .then(res => {
+        // setDataChanged(true) // 
+        setDataset(dataset.filter((item, idx) => item.id !== id))
+      })
+      .catch(msg => console.log(`unsaveRecord: ${msg}`)) // TRACE
 
-    const CancelButton = {
-      text: "Không"
+    if (swipedItem.current === id) { // may place in useEffect
+      listItems.splice(listItems.findIndex((item, idx) => item.id == id), 1)
+      swipedItem.current = null
     }
-
-    Alert.alert("Bạn có muốn xóa không?", undefined, [ConfirmButton, CancelButton], { cancelable: true })
   }
 
-  const deleteRecord = deletedId => {
-    // send DELETE request and/or store in local
-    console.log(deletedId)
-    setDataset(dataset.filter(record => record.id != deletedId))
+  /**
+   * Cause new elements are created each rerendering, we should search for item by 
+   * specified id to make sure we won't add them again to the list.
+   */
+  const updateRef = ({ id, ref }) => {
+    const current_item = listItems.find(item => item.id == id)
+    // console.log("Updating list: " + id + ref) // TEST
+    if (ref == null) {
+      listItems.splice(listItems.findIndex(item => item.id == id), 1)
+    }
+
+    if (current_item) current_item.ref = ref // only assign new ref if the item exists
+    else listItems.push({ id, ref }) // removed element is stilled added with ref is null ??
   }
+
+  const refreshList = e => {
+    setResfreshing(true)
+    // send GET request and reload the list
+    record.getSavedRecords(globalContext.token)
+      .then(res => {
+        setDataset(res.data.data)
+      })
+      .catch(msg => {
+        console.log(`refreshList: ${msg}`) // TRACE
+      })
+      .finally(() => setResfreshing(false))
+  }
+
+  // Sometimes next id is not set, which leads to allow 2 item to be swiped at the same time ???
+  const onSwipableOpen = (id) => {
+    if (typeof id !== 'number' || id < 0) throw "onSwipableOpen: Invalid passed id."
+
+    const current = swipedItem.current
+    const hasSecondItemSwiped = typeof current == 'number' && current != id
+
+    // unswipe the other
+    if (hasSecondItemSwiped) {
+      listItems.find(item => item.id == current)?.ref.unswipe()
+      selfClosed.current = false // indicates that the previous item is unswiped by another.
+    }
+
+    swipedItem.current = id
+  }
+
+  const onSwipableClose = () => {
+    if (selfClosed.current) swipedItem.current = null
+    else selfClosed.current = true
+  }
+
+  const separator = () => (
+    <View style={styles.separator}>
+      <Divider orientation="vertical" />
+    </View>
+  )
+
+  const emptyHistoryNotification = () => (
+    <Text style={styles.emptyNotification}>Danh sách trống</Text>
+  )
 
   return (
-    <View>
+    <View style={{ flex: 1 }}>
       <FlatList
+        // contentContainerStyle={styles.recordList}
+        ItemSeparatorComponent={separator}
+        ListEmptyComponent={emptyHistoryNotification}
+        refreshControl={
+          <RefreshControl refreshing={resfreshing} onRefresh={refreshList} />
+        }
         data={dataset}
-        renderItem={({ item }) => (
-          <SavedRecord 
-            key={item.id} 
-            value={item.value} 
-            saved={item.saved}
-            onDelete={ e => askForDeletion(e, item.id)}
+        renderItem={({ item, index }) => (
+          <SavedRecord
+            data={item}
+            onSwipableOpen={() => onSwipableOpen(item.id)}
+            onSwipableClose={onSwipableClose}
+            onUnsave={() => unsaveRecord(item.id)}
+            ref={ref => updateRef({ id: item.id, ref })}
           />
         )}
       />

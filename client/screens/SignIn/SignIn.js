@@ -1,30 +1,24 @@
+import { API_HOST } from "@env";
+import { useNavigation } from "@react-navigation/native";
+import axios from "axios";
+import React, { useContext, useState } from "react";
 import {
-  View,
-  Text,
-  Button,
+  Image,
+  KeyboardAvoidingView,
   StyleSheet,
+  Text,
   TextInput,
   TouchableOpacity,
-  StatusBar,
-  TouchableWithoutFeedback,
-  Keyboard,
-  Image,
+  View
 } from "react-native";
-import React from "react";
-import { useNavigation } from "@react-navigation/native";
-import { useContext, useState } from "react";
-import { AppContext } from "../../context/AppContext";
-import { LoginSuccess } from "../../context/AppAction";
-import { API_HOST } from "@env";
-import Icon from "react-native-vector-icons/Ionicons";
-import axios from "axios";
-import { KeyboardAvoidingView } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 import { ScrollView } from "react-native-gesture-handler";
+import { SafeAreaView } from "react-native-safe-area-context";
+import Icon from "react-native-vector-icons/Ionicons";
+import { AppContext, LoginSuccess } from "../../context";
 
 const SignIn = () => {
   const navigation = useNavigation();
-  const { dispatch, user } = useContext(AppContext);
+  const { dispatch } = useContext(AppContext);
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");

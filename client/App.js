@@ -2,6 +2,7 @@ import React from "react";
 import StackNavigator from "./StackNavigator";
 import { NavigationContainer } from "@react-navigation/native";
 import { AppContextProvider } from "./context/AppContext";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import * as SplashScreen from "expo-splash-screen";
 import { useCallback } from "react";
@@ -26,12 +27,14 @@ export default function App() {
   }
 
   return (
-    <AppContextProvider>
-      <SafeAreaProvider>
-        <NavigationContainer>
-          <StackNavigator />
-        </NavigationContainer>
-      </SafeAreaProvider>
-    </AppContextProvider>
+    <SafeAreaProvider>
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <AppContextProvider>
+          <NavigationContainer>
+            <StackNavigator />
+          </NavigationContainer>
+        </AppContextProvider>
+      </GestureHandlerRootView>
+    </SafeAreaProvider>
   );
 }

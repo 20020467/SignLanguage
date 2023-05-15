@@ -1,61 +1,126 @@
-import PropTypes from 'prop-types'
-import { Alert, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import { useNavigation } from '@react-navigation/core'
-import Icon from 'react-native-vector-icons/FontAwesome5'
+import PropTypes from 'prop-types'
+import { forwardRef, memo, useImperativeHandle, useRef, useState } from 'react'
+import { Animated, Text, View } from 'react-native'
+import { RectButton } from 'react-native-gesture-handler'
+import Swipeable from 'react-native-gesture-handler/Swipeable'
+import { SavedRecordStyles as styles } from '../styles'
 
-const styles = StyleSheet.create({
-  container: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    textAlign: "center",
-    height: 40,
-  },
-  text: {
-    fontSize: 18,
-    flex: 7,
-    paddingLeft: 4,
-  },
-  button: {
-    flex: 2,
-    flexDirection: "row",
-    justifyContent: "space-around",
-  },
-  iconSize: 25,
-});
+const SavedRecord = forwardRef(({ data, onUnsave, onSwipableOpen, onSwipableClose }, ref) => {
+  const translatedText = data.content
 
-const SavedRecord = props => {
-  const value = props.value
-  const isSaved = props.saved
-  const openPromt = props.onDelete
+  const [height, setHeight] = useState(styles.container.maxHeight) // initial list item height
+
+  const swipableRef = useRef(null)
 
   const navigation = useNavigation()
 
+  useImperativeHandle(ref, () => ({
+    unswipe
+  }), [])
+
   const handlePress = () => {
-    navigation.navigate("HomeTab", { sentence: value })
+    navigation.navigate("HomeTab", { storedText: translatedText })
+  }
+
+  const unswipe = () => {
+    swipableRef.current.close()
+  }
+
+  const handleTextLayout = (event) => {
+    const lines = event.nativeEvent.lines
+    let textHeight = 0
+
+    if (lines) {
+      textHeight = lines.reduce((accumulative, current) => accumulative + current.height, 0)
+      // console.log(textHeight)
+    }
+
+    // 4 is total added vertical padding
+    if (textHeight < height - 4) {
+      // console.log(`Text ${id}:`) || console.log(layout) // TEST
+      if ((textHeight + 4) < styles.container.minHeight) {
+        setHeight(styles.container.minHeight)
+      } else setHeight(textHeight + 4)
+    }
+  }
+
+  const renderRightActions = (progress, dragX) => {
+    const onLayoutChange = (event) => {
+    }
+
+    const translateX = dragX.interpolate({
+      inputRange: [-100, -50, 0], // convert percent to pixel
+      outputRange: [0, 0, 40],
+    })
+
+    const scale = dragX.interpolate({
+      inputRange: [-100, 0],
+      outputRange: [1, 0],
+      extrapolate: 'clamp'
+    })
+
+    return (
+      <RectButton style={styles.button} onPress={onUnsave}>
+        <Animated.Text
+          onLayout={onLayoutChange}
+          style={
+            {
+              flex: 1,
+              transform: [{ translateX }],
+              fontSize: 15,
+              paddingLeft: '50%',
+            }
+          }
+        >
+          Xóa
+        </Animated.Text>
+      </RectButton>
+    )
   }
 
   return (
-      <TouchableOpacity onPress={handlePress} style={styles.container} >
-        <Text style={styles.text}>
-          {value}
+    <Swipeable
+      renderRightActions={renderRightActions}
+      onSwipeableWillOpen={(direction) => onSwipableOpen()}
+      onSwipeableWillClose={(direction) => onSwipableClose()}
+      containerStyle={[styles.container, {height}]}
+      ref={swipableRef}
+    >
+      <RectButton onPress={handlePress} style={styles.textContainer} >
+      <View style={styles.textWrapper}>
+        <Text
+          numberOfLines={3}
+          onTextLayout={handleTextLayout}
+          style={styles.text}
+        >
+          {translatedText}
         </Text>
-        <TouchableOpacity onPress={openPromt} style={styles.button}>
-            <Icon
-              name="bookmark"
-              size={styles.iconSize}
-              style={styles.saveButton}
-              solid={isSaved}
-            />
-        </TouchableOpacity>
-      </TouchableOpacity>
+        {/* <TouchableOpacity onPress={onUnsave} style={styles.button}>
+        <Icon
+          name="bookmark"
+          size={styles.container.iconSize}
+          style={styles.saveButton}
+          solid={isSaved}
+        />
+      </TouchableOpacity> */}
+      </View>
+      </RectButton>
+    </Swipeable>
   )
+})
+
+SavedRecord.propTypes = {
+  // based on data from server
+  data: PropTypes.exact({
+    id: PropTypes.number,
+    content: PropTypes.string,
+    favor: PropTypes.bool,
+    viewTime: PropTypes.string,
+  }),
+  onUnsave: PropTypes.func,
+  onSwipableOpen: PropTypes.func,
+  onSwipableClose: PropTypes.func,
 }
 
-SavedRecord.propTypes = {  
-  key: PropTypes.number,
-  data: PropTypes.string,
-  saved: PropTypes.bool,
-}
-
-export default SavedRecord
+export default memo(SavedRecord)
