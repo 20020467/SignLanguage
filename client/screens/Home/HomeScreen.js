@@ -37,7 +37,7 @@ const HomeScreen = () => {
   const [sentenceSend, setSentenceSend] = useState('');
   const [isSaved, setIsSaved] = useState(false);
   const [word, setWord] = useState();
-  const [focusTextInput, setFocusTextInput] = useState(true);
+  const [focusTextInput, setFocusTextInput] = useState(false);
   // const [isLoading, setIsLoading] = useState(false) // show/hide loading modal
   // const [isTranslating, setIsTranslating] = useState(false) // show/hide loading modal
   const [isRecording, setIsRecording] = useState(false);
@@ -54,6 +54,7 @@ const HomeScreen = () => {
           switch (pressBackCounter.current) {
             case 0:
               ToastAndroid.show("Trở về lần nữa để thoát", ToastAndroid.SHORT)
+              setTimeout(() => {pressBackCounter.current = 0}, 1500)
               pressBackCounter.current = 1
               break
             case 1:
@@ -91,6 +92,14 @@ const HomeScreen = () => {
     setSentence(text)
     setSentenceSend(text)
   }
+
+  useEffect(() => {
+    const sub = Keyboard.addListener('keyboardDidHide', (event) => {
+      console.log("hide")
+      setFocusTextInput(false)
+    })
+    return () => sub.remove()
+  }, [])
 
   // call to translate each time this variable is changed
   useEffect(() => {
@@ -159,12 +168,13 @@ const HomeScreen = () => {
       }
 
       for (item of history.current) {
+        // if existed in history
         if (item.content == sentence) {
           translatedRecordID.current = item.id
           setIsSaved(item.favor) // change isSaved state if existed
 
           console.log(item.content) // TEST
-          return // if existed in history
+          return
         }
       }
 
@@ -206,7 +216,7 @@ const HomeScreen = () => {
   return (
     <SafeAreaView style={styles.container}>
       <Header />
-      <ScrollView contentContainerStyle={{flexGrow: 1}}>
+      <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
         <View style={styles.body}>
           <View style={styles.sentence}>
             <Text style={styles.text}>{sentenceSend}</Text>
@@ -221,7 +231,7 @@ const HomeScreen = () => {
             }
           </View>
 
-          <View style={{flex: 1}}>
+          <View style={{ flex: 1 }}>
             {word ? (
               <>
                 {word.length == 0 ? (
@@ -254,7 +264,7 @@ const HomeScreen = () => {
         </View>
       </ScrollView>
 
-      <View style={[styles.inputContainer, , {height: focusTextInput ? '20%' : '10%'}]}>
+      <View style={[styles.inputContainer, , { height: focusTextInput ? '20%' : '9%' }]}>
         <View style={styles.inputwrap}>
           <TextInput
             onChangeText={(text) => setSentence(text)}
