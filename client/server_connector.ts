@@ -7,7 +7,7 @@ import { ToastAndroid } from 'react-native'
 const Axios = axios.create({
   baseURL: `${API_HOST}`,
   // headers: { Authorization: `Bearer ${API_TOKEN}` },
-  timeout: 10000,
+  timeout: 2000,
   timeoutErrorMessage: "timeout"
 })
 
@@ -39,23 +39,17 @@ export const auth = (() => {
   const path = getResource(Resources.Auth)
 
   return {
-    login: async (data: TLoginData, token: string, config: AxiosRequestConfig<TLoginData>) => makeRequest(
+    login: (data: TLoginData, config: AxiosRequestConfig<TLoginData>) => makeRequest(
       Axios.post<TLoginResponseData>(`${path}/login`, data, {
         ...config,
-        headers: {
-          Authorization: `Bearer ${token}`
-        },
       })
     ),
-    register: async (data: TRegisterData, token: string, config: AxiosRequestConfig) => makeRequest(
+    register: (data: TRegisterData, config: AxiosRequestConfig) => makeRequest(
       Axios.post(`${path}/register`, data, {
         ...config,
-        headers: {
-          Authorization: `Bearer ${token}`
-        },
       })
     ),
-    changePassword: async (data: TChangePasswordData, token: string, config: AxiosRequestConfig) => makeRequest(
+    changePassword: (data: TChangePasswordData, token: string, config: AxiosRequestConfig) => makeRequest(
       Axios.put(`${path}/change-password`, data, {
         ...config,
         headers: {
@@ -63,7 +57,7 @@ export const auth = (() => {
         },
       })
     ),
-    changeInfo: async (data: TChangeInfoData, token: string, config: AxiosRequestConfig) => makeRequest(
+    changeInfo: (data: TChangeInfoData, token: string, config: AxiosRequestConfig) => makeRequest(
       Axios.put(`${path}/update`, data, {
         ...config,
         headers: {
@@ -71,7 +65,7 @@ export const auth = (() => {
         },
       })
     ),
-    getUserInfo: async (token: string, config: AxiosRequestConfig) => makeRequest(
+    getUserInfo: (token: string, config: AxiosRequestConfig) => makeRequest(
       Axios.get<TUserInfoResponseData>(`${path}`, {
         ...config,
         headers: {
@@ -87,7 +81,7 @@ export const record = (() => {
   const path = getResource(Resources.Sentence)
 
   return {
-    getHistory: async (token: string, config: AxiosRequestConfig) => makeRequest(
+    getHistory: (token: string, config: AxiosRequestConfig) => makeRequest(
       Axios.get<THistoryListData>(`${path}/all`, {
         ...config,
         headers: {
@@ -95,7 +89,7 @@ export const record = (() => {
         },
       })
     ),
-    addRecord: async (data: string, token: string, config: AxiosRequestConfig) => makeRequest(
+    addRecord: (data: string, token: string, config: AxiosRequestConfig) => makeRequest(
       Axios.post<TAddRecordResponseData>(`${path}`, { content: data },
         {
           ...config,
@@ -105,7 +99,7 @@ export const record = (() => {
         }
       )
     ),
-    delete: async (id: number, token: string, config: AxiosRequestConfig) => makeRequest(
+    delete: (id: number, token: string, config: AxiosRequestConfig) => makeRequest(
       Axios.delete(`${path}/${id}`, {
         ...config,
         headers: {
@@ -113,7 +107,7 @@ export const record = (() => {
         },
       })
     ),
-    getSavedRecords: async (token: string, config: AxiosRequestConfig) => makeRequest(
+    getSavedRecords: (token: string, config: AxiosRequestConfig) => makeRequest(
       Axios.get(`${path}/favour`, {
         ...config,
         headers: {
@@ -121,7 +115,7 @@ export const record = (() => {
         },
       })
     ),
-    changeSaving: async (id: number, token: string, config: AxiosRequestConfig) => {
+    changeSaving: (id: number, token: string, config: AxiosRequestConfig) => {
       // await syntax is not mandatory
       return makeRequest(Axios.get(`${path}/like/${id}`, {
         ...config,
@@ -178,7 +172,7 @@ export class auth_2 {
   private token: string
   private path: string = getResource(Resources.Auth)
 
-  constructor(token: string) {
+  constructor(token?: string) {
     // const validationResult = validateTokenBeforeRequest(token)
     // if (validationResult instanceof Reques)
     this.token = token
@@ -187,18 +181,12 @@ export class auth_2 {
   login(data: TLoginData, config: AxiosRequestConfig<TLoginData>) {
     return makeRequest(Axios.post<TLoginResponseData>(`${this.path}/login`, data, {
       ...config,
-      headers: {
-        Authorization: `Bearer ${this.token}`
-      },
     }))
   }
 
   register(data: TRegisterData, config: AxiosRequestConfig) {
     return makeRequest(Axios.post(`${this.path}/register`, data, {
       ...config,
-      headers: {
-        Authorization: `Bearer ${this.token}`
-      },
     }))
   }
 

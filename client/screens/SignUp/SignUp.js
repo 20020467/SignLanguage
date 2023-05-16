@@ -1,21 +1,21 @@
+import { useNavigation } from "@react-navigation/native";
+import { useState } from "react";
 import {
-  View,
-  Text,
+  Alert,
+  Image,
+  ScrollView,
   StyleSheet,
+  Text,
   TextInput,
   TouchableOpacity,
-  ScrollView,
-  Image,
-  Alert,
+  View,
 } from "react-native";
-import { useState } from "react";
-import { useNavigation } from "@react-navigation/native";
-import { API_HOST } from "@env";
 import Icon from "react-native-vector-icons/Ionicons";
-import axios from "axios";
+import { auth } from "../../server_connector.ts";
 
 const SignUp = () => {
   const navigation = useNavigation();
+
   const [show, setShow] = useState(false);
   const [showRepassword, setShowRepassword] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -101,6 +101,7 @@ const SignUp = () => {
 
   const handelSignUp = async () => {
     setLoading(true);
+
     const data = {
       username: input.username,
       password: input.password,
@@ -110,16 +111,15 @@ const SignUp = () => {
     };
 
     try {
-      const res = await axios.post(`${API_HOST}/api/auth/register`, data);
+      const res = await auth.register(data);
+
       if (res.data.message == "Register successfully") {
         const ConfirmButton = {
           text: "Đồng ý",
           onPress: () => navigation.navigate("SignIn"),
         };
 
-        Alert.alert("Đăng ký thành công!", undefined, [ConfirmButton], {
-          cancelable: true,
-        });
+        Alert.alert("Đăng ký thành công!", undefined, [ConfirmButton], { cancelable: true });
       }
     } catch (error) {
       let response = error.response.data;
@@ -128,8 +128,9 @@ const SignUp = () => {
           ...prevState,
           username: "Tên đăng nhập này đã có người sử dụng!",
         }));
-        setLoading(false);
       }
+    } finally {
+      setLoading(false);
     }
   };
 

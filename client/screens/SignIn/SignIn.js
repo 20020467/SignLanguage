@@ -1,8 +1,8 @@
-import { API_HOST } from "@env";
-import { useNavigation } from "@react-navigation/native";
-import axios from "axios";
-import React, { useContext, useState } from "react";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
+import { AxiosError, HttpStatusCode } from "axios";
+import { useCallback, useState } from "react";
 import {
+  Alert,
   Image,
   KeyboardAvoidingView,
   StyleSheet,
@@ -14,11 +14,20 @@ import {
 import { ScrollView } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Icon from "react-native-vector-icons/Ionicons";
-import { AppContext, LoginSuccess } from "../../context";
+import { LoginSuccess, useGlobalContext } from "../../context";
+import { auth } from "../../server_connector";
 
 const SignIn = () => {
   const navigation = useNavigation();
-  const { dispatch } = useContext(AppContext);
+  const { state: globalState, dispatch } = useGlobalContext()
+
+  useFocusEffect(
+    useCallback(() => {
+      globalState.token && navigation.navigate("MainScreen", {
+        screen: "HomeTab"
+      })
+    }, [globalState.token])
+  )
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -61,24 +70,25 @@ const SignIn = () => {
 
     try {
       console.log("fetch");
-      const res = await axios.post(`${API_HOST}/api/auth/login`, data);
-      const loginResponse = res.data;
+      const res = await auth.login(data);
+      const response = res.data;
       const userResponse = {
-        username: loginResponse.data.data.username,
-        token: loginResponse.data.token,
+        username: response.data.data.username,
+        token: response.data.token,
       };
 
-      if (loginResponse.data.data.username == username) {
+      if (response.data.data.username == username) {
         dispatch(LoginSuccess(userResponse));
         navigation.navigate("MainScreen");
-        setLoading(false);
       }
     } catch (error) {
-      let response = error.response.data;
-      if (response.error === "Unauthorized") {
-        setLoading(false);
-        alert("Tên đăng nhập hoặc mật khẩu không đúng");
+      if (error instanceof AxiosError && error.response.status == HttpStatusCode.Unauthorized) {
+        Alert.alert("Tên đăng nhập hoặc mật khẩu không đúng");
+      } else {
+        console.log(error) // TRACE
       }
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -128,20 +138,12 @@ const SignIn = () => {
                 }
                 secureTextEntry={!show}
                 onChangeText={(val) => setPassword(val)}
-              ></TextInput>
-              {show ? (
-                <Icon
-                  name="ios-eye-off-outline"
-                  style={styles.show}
-                  onPress={() => setShow(!show)}
-                />
-              ) : (
-                <Icon
-                  name="ios-eye-outline"
-                  style={styles.show}
-                  onPress={() => setShow(!show)}
-                />
-              )}
+              />
+              <Icon
+                name={show ? "ios-eye-outline" : "ios-eye-off-outline"}
+                style={styles.show}
+                onPress={() => setShow(!show)}
+              />
               <Text
                 style={{
                   color: "red",

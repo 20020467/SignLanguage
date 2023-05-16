@@ -37,7 +37,7 @@ const HomeScreen = () => {
   const [sentenceSend, setSentenceSend] = useState('');
   const [isSaved, setIsSaved] = useState(false);
   const [word, setWord] = useState();
-  const [idSentence, setIdSentence] = useState();
+  const [focusTextInput, setFocusTextInput] = useState(true);
   // const [isLoading, setIsLoading] = useState(false) // show/hide loading modal
   // const [isTranslating, setIsTranslating] = useState(false) // show/hide loading modal
   const [isRecording, setIsRecording] = useState(false);
@@ -195,9 +195,9 @@ const HomeScreen = () => {
             setIsSaved(res_saved)
             ToastAndroid.show(res_saved ? "Đã lưu" : "Hủy lưu", ToastAndroid.SHORT)
             console.log(response.data)
-          } else console.log("don't match")
+          } else console.log("don't match") // TEST
         })
-        .catch(msg => console.log(msg))
+        .catch(msg => console.log(msg)) // TRACE
     } else {
       console.log(translatedRecordID)
     }
@@ -206,7 +206,7 @@ const HomeScreen = () => {
   return (
     <SafeAreaView style={styles.container}>
       <Header />
-      <ScrollView>
+      <ScrollView contentContainerStyle={{flexGrow: 1}}>
         <View style={styles.body}>
           <View style={styles.sentence}>
             <Text style={styles.text}>{sentenceSend}</Text>
@@ -221,15 +221,15 @@ const HomeScreen = () => {
             }
           </View>
 
-          <View>
+          <View style={{flex: 1}}>
             {word ? (
               <>
                 {word.length == 0 ? (
                   <View style={styles.background}>
                     <Image
-                      style={styles.img}
+                      style={styles.backgroundImage}
                       source={require("../../assets/img/background.png")}
-                    ></Image>
+                    />
                   </View>
                 ) : (
                   <>
@@ -243,9 +243,10 @@ const HomeScreen = () => {
               <>
                 <View style={styles.background}>
                   <Image
-                    style={styles.img}
+                    style={styles.backgroundImage}
                     source={require("../../assets/img/background.png")}
-                  ></Image>
+                  />
+                  <Text style={styles.backgroundText}>Nhập văn bản cần dịch vào ô bên dưới</Text>
                 </View>
               </>
             )}
@@ -253,14 +254,18 @@ const HomeScreen = () => {
         </View>
       </ScrollView>
 
-      <View style={styles.test}>
+      <View style={[styles.inputContainer, , {height: focusTextInput ? '20%' : '10%'}]}>
         <View style={styles.inputwrap}>
           <TextInput
             onChangeText={(text) => setSentence(text)}
             defaultValue={sentence}
             style={styles.input}
             placeholder="Nhập văn bản..."
-          ></TextInput>
+            multiline={focusTextInput}
+            // numberOfLines={3}
+            onFocus={() => setFocusTextInput(true)}
+            onEndEditing={() => setFocusTextInput(false)}
+          />
 
           <TouchableOpacity onPress={() => setIsRecording(!isRecording)}>
             <Icon
@@ -296,7 +301,6 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     elevation: 5,
     marginBottom: 10,
-    display: "flex",
     flexDirection: "row",
   },
   text: {
@@ -318,28 +322,39 @@ const styles = StyleSheet.create({
   },
   background: {
     width: "100%",
-    justifyContent: "center",
+    height: '100%',
+    justifyContent: "space-around",
     alignItems: "center",
     marginTop: 40,
+    opacity: 0.55,
   },
-  img: {
+  backgroundImage: {
     width: "100%",
-    height: 250,
+    height: "50%",
   },
-
-  test: {
+  backgroundText: {
+    height: "32%",
+    fontSize: 18,
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  inputContainer: {
+    height: '10%',
     elevation: 20,
     backgroundColor: "white",
+    justifyContent: 'center',
+    // flex: 1,
   },
   inputwrap: {
-    display: "flex",
-    flexDirection: "row",
+    flex: 1,
     borderBottomWidth: 0.5,
     borderBottomColor: "grey",
+    flexDirection: "row",
+    alignItems: 'center',
   },
   input: {
     flex: 1,
-    height: 50,
+    // height: '40%',
     marginHorizontal: 12,
     padding: 10,
     paddingRight: 15,
