@@ -231,6 +231,7 @@ const styles = StyleSheet.create({
   img: {
     width: "100%",
     height: 250,
+    opacity: 0.8,
   },
 
   test: {

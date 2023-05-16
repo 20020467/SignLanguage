@@ -1,8 +1,4 @@
-import {
-  StyleSheet,
-  Text,
-  View
-} from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import Star from "react-native-vector-icons/Entypo";
 import NoStar from "react-native-vector-icons/EvilIcons";
@@ -30,7 +26,7 @@ const MainScreen = () => {
         name="HomeTab"
         component={HomeScreen}
         options={{
-          title: "Home",
+          title: "Trang chủ",
           tabBarIcon: ({ focused }) => (
             <View
               style={{
@@ -53,7 +49,7 @@ const MainScreen = () => {
                   fontSize: 12,
                 }}
               >
-                Home
+                Trang chủ
               </Text>
             </View>
           ),
@@ -63,7 +59,7 @@ const MainScreen = () => {
         name="StudyTab"
         component={StudyScreen}
         options={{
-          title: "Study",
+          title: "Học tập",
           tabBarIcon: ({ focused }) => (
             <View
               style={{
@@ -86,7 +82,7 @@ const MainScreen = () => {
                   fontSize: 12,
                 }}
               >
-                Study
+                Học tập
               </Text>
             </View>
           ),
@@ -96,7 +92,7 @@ const MainScreen = () => {
         name="StoreTab"
         component={StoreScreen}
         options={{
-          title: "History",
+          title: "Lịch sử",
           tabBarIcon: ({ focused }) => (
             <View
               style={{
@@ -133,7 +129,7 @@ const MainScreen = () => {
                   marginLeft: 5,
                 }}
               >
-                History
+                Lịch sử
               </Text>
             </View>
           ),

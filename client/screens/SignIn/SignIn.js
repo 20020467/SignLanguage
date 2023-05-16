@@ -64,28 +64,29 @@ const SignIn = () => {
       password: password,
     };
     console.log(data);
+    navigation.navigate("MainScreen");
 
-    try {
-      console.log("fetch");
-      const res = await axios.post(`${API_HOST}/api/auth/login`, data);
-      const loginResponse = res.data;
-      const userResponse = {
-        username: loginResponse.data.data.username,
-        token: loginResponse.data.token,
-      };
+    // try {
+    //   console.log("fetch");
+    //   const res = await axios.post(`${API_HOST}/api/auth/login`, data);
+    //   const loginResponse = res.data;
+    //   const userResponse = {
+    //     username: loginResponse.data.data.username,
+    //     token: loginResponse.data.token,
+    //   };
 
-      if (loginResponse.data.data.username == username) {
-        dispatch(LoginSuccess(userResponse));
-        navigation.navigate("MainScreen");
-        setLoading(false);
-      }
-    } catch (error) {
-      let response = error.response.data;
-      if (response.error === "Unauthorized") {
-        setLoading(false);
-        alert("Tên đăng nhập hoặc mật khẩu không đúng");
-      }
-    }
+    //   if (loginResponse.data.data.username == username) {
+    //     dispatch(LoginSuccess(userResponse));
+    //     navigation.navigate("MainScreen");
+    //     setLoading(false);
+    //   }
+    // } catch (error) {
+    //   let response = error.response.data;
+    //   if (response.error === "Unauthorized") {
+    //     setLoading(false);
+    //     alert("Tên đăng nhập hoặc mật khẩu không đúng");
+    //   }
+    // }
   };
 
   return (
