@@ -33,7 +33,6 @@ const style = StyleSheet.create({
   item1:{
     marginRight: width/15,
     marginLeft: width/15,
-    
     marginTop:10,
     backgroundColor:'#9FD0E6',
     fontSize:24,
@@ -56,7 +55,8 @@ const style = StyleSheet.create({
    
   },
   text:{
-    marginLeft: 10
+    marginLeft: 10,
+    fontWeight:'600',    
   }
 }
   
@@ -66,23 +66,20 @@ const StudyScreen = () => {
   const [type, setType] = useState("chevron-down-sharp");
   const [sentence, setSentence] =  useState([
     {
-      mean: 'Chào bạn', key: '1', img:require("../../assets/img/hi.png")
+      mean: 'Chào bạn', key: '1', img:require("../../assets/img/hello.jpg")
     },
     {
-      mean: 'Bạn có khỏe không', key: '2',img: require("../../assets/img/ques_health.png")
-    },
-    {
-      mean: 'Tôi khỏe', key: '3',img:require("../../assets/img/health.jpg")
-    },
-    {
-      mean: 'Cảm ơn', key: '4',img: require("../../assets/img/thanks.jpg")
+      mean: 'Tôi khỏe', key: '2',img:require("../../assets/img/health.jpg")
     },
     {
       mean: 'Tạm biệt', key: '5',img: require("../../assets/img/bye.jpg")
     },
     {
-      mean: 'Quê bạn ở đâu?', key: '6',img: require("../../assets/img/hello.jpg")
-    }
+      mean: 'Cảm ơn', key: '4',img: require("../../assets/img/thanks.jpg")
+    },
+    {
+      mean: 'Bạn khỏe không', key: '3',img: require("../../assets/img/healthasw.jpg")
+    },
   ]);
   const [shouldShow,setShoudShow] = useState(false);
   const [state, setState] = useState(0);
@@ -101,7 +98,7 @@ const StudyScreen = () => {
       {/* Content 1*/}
       <View style={{flex:2,}}>
         <Text style = {style.text}>
-          Danh sách học phần
+        DANH SÁCH HỌC PHẦN
         </Text>
         <ScrollView horizontal>
           {/* Flashcard*/}  
@@ -119,24 +116,8 @@ const StudyScreen = () => {
                   <Image source={require('../../assets/img/flashcard.jpg')} style={{height: 60, width: 100}} />
                 </View>
               </TouchableOpacity>
-            </View>          
-          {/*Bảng chữ cái*/}
-            <View style={style.card}>
-              <TouchableOpacity activeOpacity={0.8}>
-
-                <View style={{marginHorizontal: 20}}>
-                  <Text style={{fontSize: 18, fontWeight: 'bold'}}>Bảng chữ cái</Text>
-                  <Text style={{fontSize: 14, color: 'brown', marginTop: 2}}>
-                    29 chữ cái
-                  </Text>
-                </View>
-                <View style={{alignItems: 'center'}}>
-                  <Image source={require('../../assets/img/alphabet.jpg')} style={{height: 60, width: 100}} />
-                </View>
-              </TouchableOpacity>
-
-            </View>          
-          {/*Trắc nghiệm*/}
+            </View>       
+            {/*Trắc nghiệm*/}
             <View style={style.card}>
               <TouchableOpacity onPress={()=>navigation.navigate("MultipleChoice")}
               activeOpacity={0.8}>
@@ -150,17 +131,33 @@ const StudyScreen = () => {
                   <Image source={require('../../assets/img/multiple_choice.jpg')} style={{height: 60, width: 100}} />
                 </View>
               </TouchableOpacity>
+            </View>             
+          {/*Bảng chữ cái*/}
+            <View style={style.card}>
+              <TouchableOpacity activeOpacity={0.8}>
+                <View style={{marginHorizontal: 20}}>
+                  <Text style={{fontSize: 18, fontWeight: 'bold'}}>Bảng chữ cái</Text>
+                  <Text style={{fontSize: 14, color: 'brown', marginTop: 2}}>
+                    29 chữ cái
+                  </Text>
+                </View>
+                <View style={{alignItems: 'center'}}>
+                  <Image source={require('../../assets/img/alphabet.jpg')} style={{height: 60, width: 100}} />
+                </View>
+              </TouchableOpacity>
+
             </View>          
+          
         </ScrollView>
       </View>
       {/*Content 2*/}
       <View style={{flex:3, marginTop:-20}}>
         <Text style ={style.text}>
-          Một số câu giao tiếp bằng thủ ngữ
+          MỘT SỐ CÂU GIAO TIẾP BẰNG THỦ NGỮ
         </Text>
         <ScrollView style = {style.suggest}>
           {
-            sentence.map((i) => {if(i.key%2==0){
+            sentence.map((i) => {if(i.key%2==0) { 
               return (
                 <View key = {i.key} style = {style.item1}>
                   <Text >

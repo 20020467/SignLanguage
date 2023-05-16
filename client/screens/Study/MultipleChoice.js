@@ -93,8 +93,7 @@ const Exercise = ({navigation}) =>{
     }
     const renderOptions = () => {
         return (
-            <View style = {{}} >
-                
+            <View style = {{}} > 
                 {
                     allQuestions[currentQuestionIndex]?.options.map(option => (
                         <TouchableOpacity 
@@ -149,7 +148,6 @@ const Exercise = ({navigation}) =>{
                                     </View>
                                 ) : null
                             }
-
                         </TouchableOpacity>
                     ))
                 }
@@ -162,44 +160,20 @@ const Exercise = ({navigation}) =>{
                 <TouchableOpacity
                 onPress={handleNext}
                 style={{
-                    marginTop: 20, width: '100%', backgroundColor: COLORS.accent, padding: 20, borderRadius: 5
+                    marginTop: 20, width: '100%', backgroundColor: '#9FD0E6', padding: 20, borderRadius: 5
                 }}>
-                    <Text style={{fontSize: 20, color: COLORS.white, textAlign: 'center'}}>Next</Text>
+                    <Text style={{fontSize: 20, color: COLORS.white, textAlign: 'center'}}>Tiếp theo</Text>
                 </TouchableOpacity>
             )
         }else{
             return null
         }
     }
-
-
     const [progress, setProgress] = useState(new Animated.Value(0));
     const progressAnim = progress.interpolate({
         inputRange: [0, allQuestions.length],
         outputRange: ['0%','100%']
     })
-    // const renderProgressBar = () => {
-    //     return (
-    //         <View style={{
-    //             width: '100%',
-    //             height: 20,
-    //             borderRadius: 20,
-    //             backgroundColor: '#00000020',
-
-    //         }}>
-    //             <Animated.View style={[{
-    //                 height: 20,
-    //                 borderRadius: 20,
-    //                 backgroundColor: COLORS.accent
-    //             },{
-    //                 width: progressAnim
-    //             }]}>
-    //             </Animated.View>
-
-    //         </View>
-    //     )
-    // }
-
     return (
        <SafeAreaView style={{
            flex: 1
@@ -207,7 +181,7 @@ const Exercise = ({navigation}) =>{
         <ScrollView>
             <View style= {{ paddingTop: 20,
         marginBottom: 5,
-        height: 65,
+        height: 85,
         alignItems: "center",
         justifyContent: "center",
         flexDirection: "row",
@@ -217,18 +191,17 @@ const Exercise = ({navigation}) =>{
             onPress={() => {
                 navigation.goBack();
             }}>
-            <Text  style={{
+          
+            <IonIcon name="arrow-back-outline" size={30} style={{
                 position: "absolute",
-                top: 0,
-                left: -150,
-            }}>
-                Back
-            </Text>
+                top: -12,
+                left: -100,
+            }}/>
             </TouchableOpacity>
             </View>
             <View>
             <Text style = {{fontWeight:'bold', fontSize:20}}>
-                Question
+                Câu hỏi trắc nghiệm
             </Text>
             </View>
             </View>
@@ -261,18 +234,18 @@ const Exercise = ({navigation}) =>{
                >
                    <View style={{
                        flex: 1,
-                       backgroundColor: COLORS.primary,
+                       backgroundColor: 'white',
                        alignItems: 'center',
                        justifyContent: 'center'
                    }}>
                        <View style={{
-                           backgroundColor: COLORS.white,
+                           backgroundColor: '#FFFF99',
                            width: '90%',
                            borderRadius: 20,
                            padding: 20,
                            alignItems: 'center'
                        }}>
-                           <Text style={{fontSize: 30, fontWeight: 'bold'}}>{ score> (allQuestions.length/2) ? 'Congratulations!' : 'Oops!' }</Text>
+                           <Text style={{fontSize: 30, fontWeight: 'bold'}}>{ score> (allQuestions.length/2) ? 'Điểm của bạn' : 'Điểm của bạn' }</Text>
 
                            <View style={{
                                flexDirection: 'row',
@@ -285,7 +258,7 @@ const Exercise = ({navigation}) =>{
                                    color: score> (allQuestions.length/2) ? COLORS.success : COLORS.error
                                }}>{score}</Text>
                                 <Text style={{
-                                    fontSize: 20, color: COLORS.black
+                                    fontSize: 30, color: 'black'
                                 }}>/ { allQuestions.length }</Text>
                            </View>
                            {/* Retry Quiz button */}
@@ -293,30 +266,26 @@ const Exercise = ({navigation}) =>{
                            <TouchableOpacity
                            onPress={restartQuiz}
                            style={{
-                               backgroundColor: COLORS.accent,
+                               backgroundColor: '#9FD0E6',
                                padding: 20, width: '50%', borderRadius: 20
                            }}>
                                <Text style={{
-                                   textAlign: 'center', color: COLORS.white, fontSize: 20
-                               }}>Retry Quiz</Text>
+                                   textAlign: 'center', color: '9FD0E6', fontSize: 20
+                               }}>Làm lại</Text>
                            </TouchableOpacity>
                            <TouchableOpacity
                            onPress={()=>navigation.goBack()}
                            style={{
-                               backgroundColor: COLORS.error,
+                               backgroundColor: COLORS.success,
                                padding: 20, width: '50%', borderRadius: 20
                            }}>
                                <Text style={{
                                    textAlign: 'center', color: COLORS.white, fontSize: 20
-                               }}>Exit</Text>
+                               }}>Thoát</Text>
                            </TouchableOpacity>
 
                            </View>
-                         
-                           
-
-                       </View>
-
+                    </View>
                    </View>
                </Modal>
            </View>
@@ -324,6 +293,4 @@ const Exercise = ({navigation}) =>{
        </SafeAreaView>
     )
 }
-
-
 export default Exercise
